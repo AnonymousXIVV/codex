@@ -19,7 +19,6 @@ import {
   Star,
   Mail,
   ChevronDown,
-  ChevronUp,
   ChevronsUpDown,
 } from "lucide-react";
 import {

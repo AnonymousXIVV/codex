@@ -517,8 +517,8 @@ export const DEFAULT_SITE_CONFIG = {
 
   // Tidio Live Chat Integration
   tidio: {
-    enabled: false,
-    publicKey: "",
+    enabled: true,
+    publicKey: "tmteup6i0hhn7fxdh0yqmww0rhe8dg7l",
     disableOnAdmin: true,
     hideOnMobile: false,
     position: "bottom-right",

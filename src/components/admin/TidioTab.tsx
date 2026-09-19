@@ -441,6 +441,19 @@ export function TidioTab() {
                     <span>Bottom Left</span>
                   </button>
                 </div>
+
+                {/* Co-existence with WhatsApp info */}
+                <div className="mt-2.5 p-3 rounded-xl bg-blue-50/70 border border-blue-200/60 text-xs text-blue-900 flex items-start gap-2.5">
+                  <Sparkles className="size-4 text-blue-600 shrink-0 mt-0.5" />
+                  <div className="space-y-0.5">
+                    <span className="font-semibold text-[12px]">Smart WhatsApp Dock Alignment</span>
+                    <p className="text-[11px] text-blue-800/90 leading-relaxed">
+                      {tidioState.position === "bottom-right"
+                        ? "Active: WhatsApp Dock is automatically elevated directly above Tidio with a distinct 'WhatsApp & Direct' badge to prevent overlap. When a visitor opens Tidio chat, WhatsApp auto-hides so it never blocks messages."
+                        : "Opposite Corners: Tidio sits on the bottom-left and WhatsApp sits on the bottom-right for full spatial separation."}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Default Welcome Message */}

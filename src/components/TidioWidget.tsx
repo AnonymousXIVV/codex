@@ -31,11 +31,14 @@ export function TidioWidget() {
     }
 
     if (!tidio?.enabled || !tidio?.publicKey?.trim()) {
-      // If disabled or empty key, remove any existing tidio script and iframe
+      // If disabled or empty key, remove any existing tidio script, iframe, and styles
       const existingScript = document.getElementById("tidio-chat-script");
       if (existingScript) existingScript.remove();
       const tidioIframe = document.getElementById("tidio-chat-iframe");
       if (tidioIframe) tidioIframe.remove();
+      const styleEl = document.getElementById("tidio-custom-styles");
+      if (styleEl) styleEl.remove();
+      window.dispatchEvent(new CustomEvent("tidio-chat-close"));
       return;
     }
 
@@ -52,6 +55,25 @@ export function TidioWidget() {
     key = key.replace(/\.js$/, "");
 
     if (!key) return;
+
+    // Apply custom positioning and mobile visibility styles
+    const isLeft = tidio.position === "bottom-left";
+    const hideMobile = Boolean(tidio.hideOnMobile);
+
+    let styleEl = document.getElementById("tidio-custom-styles") as HTMLStyleElement | null;
+    if (!styleEl) {
+      styleEl = document.createElement("style");
+      styleEl.id = "tidio-custom-styles";
+      document.head.appendChild(styleEl);
+    }
+
+    styleEl.textContent = `
+      #tidio-chat-iframe, #tidio-chat {
+        ${isLeft ? "left: max(1rem, env(safe-area-inset-left)) !important; right: auto !important;" : "right: max(1rem, env(safe-area-inset-right)) !important; left: auto !important;"}
+        bottom: max(1rem, env(safe-area-inset-bottom)) !important;
+      }
+      ${hideMobile ? "@media (max-width: 640px) { #tidio-chat-iframe, #tidio-chat { display: none !important; } }" : ""}
+    `;
 
     // Check if already injected with the same key
     const scriptId = "tidio-chat-script";
@@ -72,7 +94,54 @@ export function TidioWidget() {
     if (window.tidioChatApi?.show) {
       window.tidioChatApi.show();
     }
-  }, [tidio?.enabled, tidio?.publicKey, tidio?.disableOnAdmin]);
+
+    // Listen for Tidio open/close states to coordinate with WhatsAppDock
+    let lastOpen = false;
+    const notifyState = (isOpen: boolean) => {
+      if (isOpen !== lastOpen) {
+        lastOpen = isOpen;
+        window.dispatchEvent(
+          new CustomEvent("tidio-chat-status", { detail: { isOpen } })
+        );
+        if (isOpen) {
+          window.dispatchEvent(new CustomEvent("tidio-chat-open"));
+        } else {
+          window.dispatchEvent(new CustomEvent("tidio-chat-close"));
+        }
+      }
+    };
+
+    let apiBound = false;
+    const bindApi = () => {
+      if (window.tidioChatApi?.on && !apiBound) {
+        apiBound = true;
+        window.tidioChatApi.on("open", () => notifyState(true));
+        window.tidioChatApi.on("close", () => notifyState(false));
+      }
+    };
+    bindApi();
+
+    // Fallback dimension observer on iframe in case event listeners aren't fired immediately
+    const checkIframe = () => {
+      bindApi();
+      const iframe = document.getElementById("tidio-chat-iframe");
+      if (iframe) {
+        const height = iframe.offsetHeight || iframe.getBoundingClientRect().height;
+        // When chat is open, Tidio iframe expands from ~94px to >250px
+        if (height > 220) {
+          notifyState(true);
+        } else {
+          notifyState(false);
+        }
+      }
+    };
+
+    const interval = setInterval(checkIframe, 800);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [tidio?.enabled, tidio?.publicKey, tidio?.disableOnAdmin, tidio?.position, tidio?.hideOnMobile]);
 
   return null;
 }
