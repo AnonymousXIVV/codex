@@ -1,0 +1,30 @@
+# Codex Dynamics - Apache / Hostinger Rewrite Configuration
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Secure database files from direct browser HTTP access
+  <FilesMatch "\.(sqlite|sqlite3|db)$">
+    Order deny,allow
+    Deny from all
+  </FilesMatch>
+
+  # 1. Map CRM Data & Action endpoints
+  RewriteRule ^api/crm/data/?$ api/crm-data.php [L,QSA]
+  RewriteRule ^api/crm/action/?$ api/crm-action.php [L,QSA]
+
+  # 2. Map Public Endpoints
+  RewriteRule ^api/public/content/?$ api/public/content.php [L,QSA]
+  RewriteRule ^api/public/site-config/?$ api/public/site-config.php [L,QSA]
+  RewriteRule ^api/public/blog/?$ api/public/blog.php [L,QSA]
+
+  # 3. Map Inbound Trackers & Enquiries
+  RewriteRule ^api/track-visitor/?$ api/track-visitor.php [L,QSA]
+  RewriteRule ^api/submit-enquiry/?$ api/submit-enquiry.php [L,QSA]
+
+  # 4. Single Page Application (SPA) Fallback for static builds
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} !^/api/
+  RewriteRule ^ index.html [L]
+</IfModule>

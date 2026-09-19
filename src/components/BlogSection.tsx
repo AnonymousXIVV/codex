@@ -29,6 +29,14 @@ export function BlogSection() {
   useEffect(() => {
     async function loadBlogs() {
       try {
+        const pubRes = await fetch("/api/public/content");
+        if (pubRes.ok) {
+          const pubJson = await pubRes.json();
+          if (pubJson.blogs && pubJson.blogs.length > 0) {
+            setBlogs(pubJson.blogs.filter((b: BlogPost) => b.status === "published" || !b.status));
+            return;
+          }
+        }
         const res = await fetch("/api/crm/data");
         if (res.ok) {
           const json = await res.json();

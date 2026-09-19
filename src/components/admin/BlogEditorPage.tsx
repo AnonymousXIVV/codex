@@ -100,7 +100,8 @@ export function BlogEditorPage({
     (initialBlog?.status as any) || "published"
   );
   const [imageUrl, setImageUrl] = useState(
-    initialBlog?.image_url ||
+    initialBlog?.cover_image ||
+      initialBlog?.image_url ||
       "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80"
   );
   const [imageAlt, setImageAlt] = useState(
@@ -412,6 +413,7 @@ export function BlogEditorPage({
         author,
         status: publishStatus,
         image_url: imageUrl,
+        cover_image: imageUrl,
         image_alt: imageAlt,
         image_caption: imageCaption,
         focus_keyword: focusKeyword,

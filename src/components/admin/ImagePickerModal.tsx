@@ -130,6 +130,8 @@ export function ImagePickerModal({
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             action: "upload_image",
+            name: file.name,
+            data: base64Data,
             payload: {
               name: file.name,
               data: base64Data,

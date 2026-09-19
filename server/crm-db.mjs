@@ -962,7 +962,12 @@ export function getPublicContent() {
 
 export function getBlogPostBySlug(slug) {
   const db = getDb();
-  return db.prepare("SELECT * FROM blog_posts WHERE slug = ?").get(slug);
+  const post = db.prepare("SELECT * FROM blog_posts WHERE slug = ?").get(slug);
+  if (post) {
+    db.prepare("UPDATE blog_posts SET views = views + 1 WHERE id = ?").run(post.id);
+    post.views = (post.views || 0) + 1;
+  }
+  return post;
 }
 
 export function getSetting(key) {
@@ -1071,6 +1076,7 @@ export function addBlogPost({
   meta_description,
   status,
   cover_image,
+  image_url,
   author,
   category,
   tags,
@@ -1096,7 +1102,7 @@ export function addBlogPost({
   const keyword = focus_keyword || focusKeyword || "";
   const postAuthor = author || "Codex Dynamics Research";
   const postCategory = category || "Engineering";
-  const postCover = cover_image || "";
+  const postCover = cover_image || image_url || "";
   const postStatus = status || "published";
 
   const stmt = db.prepare(`
@@ -1134,6 +1140,7 @@ export function updateBlogPost(id, {
   meta_description,
   status,
   cover_image,
+  image_url,
   author,
   category,
   tags,
@@ -1150,6 +1157,8 @@ export function updateBlogPost(id, {
   if (!safeSlug && title) {
     safeSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
   }
+
+  const effectiveCover = cover_image !== undefined ? cover_image : (image_url !== undefined ? image_url : null);
 
   db.prepare(`
     UPDATE blog_posts SET
@@ -1175,7 +1184,7 @@ export function updateBlogPost(id, {
     meta_title !== undefined ? meta_title : null,
     meta_description !== undefined ? meta_description : null,
     status !== undefined ? status : null,
-    cover_image !== undefined ? cover_image : null,
+    effectiveCover,
     author !== undefined ? author : null,
     category !== undefined ? category : null,
     safeTags,

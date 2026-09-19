@@ -185,6 +185,7 @@ function AdminCRM() {
     const ok = await dispatchAction("add_visitor_to_leads", {
       visitor_id: visitor.id,
       lead_data: customData,
+      ...(customData || {}),
     });
     if (ok) {
       toast.success(`Visitor from ${visitor.city || visitor.country} added to Leads!`);
@@ -425,7 +426,7 @@ function AdminCRM() {
             {activeTab === "backlinks" && (
               <BacklinksTab
                 backlinks={backlinks}
-                onAddBacklink={(data) => dispatchAction("add_backlink", data)}
+                onAddBacklink={(data) => dispatchAction("save_backlink", data)}
                 onEditBacklink={(id, data) => dispatchAction("update_backlink", { id, ...data })}
                 onDeleteBacklink={(id) => dispatchAction("delete_backlink", { id })}
               />
@@ -471,7 +472,7 @@ function AdminCRM() {
                 onChangePassword={handleChangePassword}
                 onRestoreBackup={(backupData) => dispatchAction("restore_backup", { backupData })}
                 onOpenHostingerModal={() => setIsHostingerModalOpen(true)}
-                fullData={{ stats, visitors, enquiries, backlinks, blogs, reviews, projects, regions, browsers, devices }}
+                fullData={{ stats, visitors, leads, enquiries, backlinks, blogs, reviews, projects, regions, browsers, devices, settings: { webhook_url: webhookUrl } }}
               />
             )}
           </div>

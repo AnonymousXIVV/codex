@@ -245,7 +245,7 @@ export function crmApiPlugin() {
               return;
             }
 
-            if (action === "save_backlink") {
+            if (action === "save_backlink" || action === "add_backlink") {
               addBacklink(payload);
             } else if (action === "update_backlink") {
               updateBacklink(payload.id, payload);
@@ -339,7 +339,8 @@ export function crmApiPlugin() {
               return;
             } else if (action === "upload_image") {
               try {
-                const { name, data } = payload;
+                const name = payload.name || payload.payload?.name || "image.jpg";
+                const data = payload.data || payload.payload?.data;
                 if (!data) throw new Error("No image data provided");
                 const matches = data.match(/^data:([A-Za-z0-9-+/]+);base64,(.+)$/);
                 const base64Str = matches ? matches[2] : data;
@@ -399,7 +400,7 @@ export function crmApiPlugin() {
               browser: body.browser || (userAgent.includes("Safari") && !userAgent.includes("Chrome") ? "Safari" : userAgent.includes("Firefox") ? "Firefox" : "Chrome"),
               device: body.device || (/Mobile|iPhone|Android/i.test(userAgent) ? "Mobile" : "Desktop"),
               userAgent,
-              pageUrl: body.page || "/",
+              pageUrl: body.page || body.page_url || "/",
               referrer,
               durationSeconds: Number(body.duration_seconds) || 1,
               visitCount: Number(body.visit_count) || 1,

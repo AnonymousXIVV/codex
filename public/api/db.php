@@ -1,13 +1,14 @@
 <?php
 /**
- * Codex Dynamics CRM - Native PHP SQLite3 / PDO Database Connector
- * Production-ready for Hostinger Shared Hosting, cPanel, Apache & Nginx.
+ * Codex Dynamics - Database Connection & Schema Bootstrapper (PHP / SQLite3)
+ * Provides PDO connection, robust table schema, default admin seeding, and JSON parsing.
  */
 
-header('Content-Type: application/json; charset=utf-8');
+// Enable CORS and JSON headers
 header('Access-Control-Allow-Origin: *');
 header('Access-Control-Allow-Methods: GET, POST, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization, X-Requested-With');
+header('Content-Type: application/json; charset=utf-8');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     http_response_code(200);
@@ -20,11 +21,12 @@ function getCrmPdo() {
         return $pdo;
     }
 
-    // Determine database path
+    // Determine database path - search possible paths prioritizing .data directory
     $possiblePaths = [
         dirname(__DIR__, 2) . '/.data/database.sqlite',
-        dirname(__DIR__, 1) . '/database.sqlite',
+        dirname(__DIR__, 1) . '/.data/database.sqlite',
         dirname(__DIR__, 2) . '/database.sqlite',
+        dirname(__DIR__, 1) . '/database.sqlite',
         __DIR__ . '/database.sqlite'
     ];
 
@@ -70,35 +72,36 @@ function getCrmPdo() {
                 session_id TEXT,
                 ip_address TEXT,
                 country TEXT,
-                country_code TEXT DEFAULT 'US',
+                country_code TEXT,
                 flag TEXT,
-                city TEXT DEFAULT 'San Francisco',
-                region TEXT DEFAULT 'California',
-                postal_code TEXT DEFAULT '94105',
-                street TEXT DEFAULT '101 Market St, Financial District',
+                city TEXT,
+                region TEXT,
+                postal_code TEXT,
+                street TEXT,
                 browser TEXT,
                 device TEXT,
                 user_agent TEXT,
                 page_url TEXT,
-                referrer TEXT DEFAULT 'Direct',
-                duration_seconds INTEGER DEFAULT 120,
+                referrer TEXT,
+                duration_seconds INTEGER DEFAULT 0,
                 visit_count INTEGER DEFAULT 1,
                 is_returning INTEGER DEFAULT 0,
                 pages_viewed TEXT,
                 cookies_data TEXT,
+                is_lead INTEGER DEFAULT 0,
                 email TEXT,
                 name TEXT,
                 phone TEXT,
-                is_lead INTEGER DEFAULT 0,
-                created_at TEXT DEFAULT CURRENT_TIMESTAMP
+                created_at TEXT DEFAULT CURRENT_TIMESTAMP,
+                updated_at TEXT DEFAULT CURRENT_TIMESTAMP
             );
             CREATE TABLE IF NOT EXISTS enquiries (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT,
-                email TEXT,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
                 phone TEXT,
                 company TEXT,
-                message TEXT,
+                message TEXT NOT NULL,
                 source TEXT DEFAULT 'website',
                 status TEXT DEFAULT 'new',
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
@@ -175,6 +178,14 @@ function getCrmPdo() {
                 value TEXT
             );
         ");
+
+        // Ensure default administrator user exists
+        $userCheck = $pdo->prepare("SELECT id FROM users WHERE LOWER(email) = ? LIMIT 1");
+        $userCheck->execute(['admin@codexdynamics.com']);
+        if (!$userCheck->fetch()) {
+            $userInsert = $pdo->prepare("INSERT INTO users (email, password_hash, name) VALUES (?, ?, ?)");
+            $userInsert->execute(['admin@codexdynamics.com', 'Admin123!', 'Administrator']);
+        }
 
         return $pdo;
     } catch (Exception $e) {
