@@ -1,21 +1,26 @@
 import React, { useState } from "react";
-import { Link2, Plus, ExternalLink, Trash2 } from "lucide-react";
+import { Link2, Plus, ExternalLink, Trash2, Edit3, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import type { Backlink } from "@/types/crm";
 
 interface BacklinksTabProps {
   backlinks: Backlink[];
   onAddBacklink: (data: { name: string; url: string; notes: string }) => Promise<boolean>;
+  onEditBacklink?: (id: number, data: { name: string; url: string; notes: string }) => Promise<boolean>;
   onDeleteBacklink: (id: number) => Promise<boolean>;
 }
 
 export function BacklinksTab({
   backlinks,
   onAddBacklink,
+  onEditBacklink,
   onDeleteBacklink,
 }: BacklinksTabProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [editingBacklink, setEditingBacklink] = useState<Backlink | null>(null);
+
   const [form, setForm] = useState({ name: "", url: "", notes: "" });
+  const [editForm, setEditForm] = useState({ name: "", url: "", notes: "" });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,6 +30,29 @@ export function BacklinksTab({
       setForm({ name: "", url: "", notes: "" });
       setIsOpen(false);
       toast.success("SEO backlink saved to SQLite database.");
+    }
+  };
+
+  const handleStartEdit = (b: Backlink) => {
+    setEditingBacklink(b);
+    setEditForm({
+      name: b.name || "",
+      url: b.url || "",
+      notes: b.notes || "",
+    });
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingBacklink || !editForm.name || !editForm.url) return;
+    if (onEditBacklink) {
+      const ok = await onEditBacklink(editingBacklink.id, editForm);
+      if (ok) {
+        setEditingBacklink(null);
+        toast.success("Backlink updated in SQLite.");
+      }
+    } else {
+      toast.error("Edit handler not configured.");
     }
   };
 
@@ -46,7 +74,10 @@ export function BacklinksTab({
 
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            setIsOpen(!isOpen);
+            setEditingBacklink(null);
+          }}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-label hover:bg-black text-paper text-xs font-medium transition-all shadow-sm active:scale-[0.99] cursor-pointer shrink-0"
         >
           <Plus className="size-3.5" />
@@ -58,67 +89,147 @@ export function BacklinksTab({
       {isOpen && (
         <div className="surface-lift rounded-2xl bg-card border border-purple-200 p-6 shadow-sm">
           <h3 className="text-xs font-semibold uppercase tracking-wider text-label mb-4">
-            Register New Referring Backlink
+            Register New Backlink / Media Mention
           </h3>
 
           <form onSubmit={handleSubmit} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1.5">
-                Platform / Publisher Name
+                Publisher / Platform Name
               </label>
               <input
                 type="text"
                 required
-                placeholder="e.g. Forbes, TechCrunch, Clutch.co"
+                placeholder="e.g. Forbes Tech Council / GitHub"
                 value={form.name}
                 onChange={(e) => setForm({ ...form, name: e.target.value })}
-                className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-purple-600 focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition-all"
+                className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-purple-600 focus:bg-white rounded-xl px-3.5 py-2.5 text-xs text-label outline-none transition-all"
               />
             </div>
 
             <div>
               <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1.5">
-                Backlink Target URL
+                Target Live URL
               </label>
               <input
                 type="url"
                 required
-                placeholder="https://clutch.co/profile/codex-dynamics"
+                placeholder="https://forbes.com/article/codex-dynamics-review"
                 value={form.url}
                 onChange={(e) => setForm({ ...form, url: e.target.value })}
-                className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-purple-600 focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition-all"
+                className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-purple-600 focus:bg-white rounded-xl px-3.5 py-2.5 text-xs text-label outline-none transition-all font-mono"
               />
             </div>
 
             <div className="sm:col-span-2">
               <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1.5">
-                SEO Anchor Text & Notes
+                Anchor Text & SEO Notes
               </label>
               <input
                 type="text"
-                placeholder="e.g. DoFollow, Anchor: 'custom software agency', DA: 84"
+                placeholder="e.g. DoFollow link on 'Custom Engineering Studio', DA: 84"
                 value={form.notes}
                 onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-purple-600 focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition-all"
+                className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-purple-600 focus:bg-white rounded-xl px-3.5 py-2.5 text-xs text-label outline-none transition-all"
               />
             </div>
 
-            <div className="sm:col-span-2 flex justify-end gap-2 pt-2">
+            <div className="sm:col-span-2 flex items-center justify-end gap-2 pt-2">
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                className="px-4 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-label hover:bg-fill transition-colors cursor-pointer"
+                className="px-4 py-2 rounded-full border border-black/10 hover:bg-fill text-muted-foreground text-xs font-medium transition cursor-pointer"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="px-5 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-white text-xs font-medium transition-all shadow-sm cursor-pointer"
+                className="px-5 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-paper text-xs font-medium transition-all shadow-sm active:scale-[0.99] cursor-pointer"
               >
                 Save Backlink
               </button>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Edit Backlink Modal */}
+      {editingBacklink && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="surface-lift w-full max-w-lg rounded-3xl bg-card border border-black/10 p-6 sm:p-8 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-hairline">
+              <div className="flex items-center gap-2">
+                <Edit3 className="size-4 text-purple-600" />
+                <h3 className="text-sm font-semibold text-label">
+                  Edit Backlink #{editingBacklink.id}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingBacklink(null)}
+                className="p-1.5 text-subtle hover:text-label rounded-full hover:bg-fill transition"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdate} className="space-y-3.5">
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1">
+                  Publisher / Source Name
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.name}
+                  onChange={(e) => setEditForm({ ...editForm, name: e.target.value })}
+                  className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-purple-600 focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1">
+                  Live URL
+                </label>
+                <input
+                  type="url"
+                  required
+                  value={editForm.url}
+                  onChange={(e) => setEditForm({ ...editForm, url: e.target.value })}
+                  className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-purple-600 focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1">
+                  Anchor Text & SEO Notes
+                </label>
+                <textarea
+                  rows={3}
+                  value={editForm.notes}
+                  onChange={(e) => setEditForm({ ...editForm, notes: e.target.value })}
+                  className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-purple-600 focus:bg-white rounded-xl p-2.5 text-xs text-label outline-none transition"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-hairline">
+                <button
+                  type="button"
+                  onClick={() => setEditingBacklink(null)}
+                  className="px-4 py-2 rounded-full border border-black/10 hover:bg-fill text-muted-foreground text-xs font-medium transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-purple-600 hover:bg-purple-700 text-paper text-xs font-medium transition shadow-sm cursor-pointer"
+                >
+                  <Check className="size-3.5" />
+                  <span>Save Changes</span>
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -173,17 +284,28 @@ export function BacklinksTab({
                     </td>
 
                     <td className="py-3 px-4 text-right">
-                      <button
-                        type="button"
-                        onClick={async () => {
-                          await onDeleteBacklink(b.id);
-                          toast.info("Backlink removed.");
-                        }}
-                        className="p-1.5 text-subtle hover:text-red-600 rounded-full hover:bg-red-50 transition-colors cursor-pointer"
-                        title="Delete backlink"
-                      >
-                        <Trash2 className="size-3.5" />
-                      </button>
+                      <div className="inline-flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => handleStartEdit(b)}
+                          className="p-1.5 text-subtle hover:text-purple-600 rounded-full hover:bg-purple-50 transition-colors cursor-pointer"
+                          title="Edit backlink"
+                        >
+                          <Edit3 className="size-3.5" />
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            await onDeleteBacklink(b.id);
+                            toast.info("Backlink removed.");
+                          }}
+                          className="p-1.5 text-subtle hover:text-red-600 rounded-full hover:bg-red-50 transition-colors cursor-pointer"
+                          title="Delete backlink"
+                        >
+                          <Trash2 className="size-3.5" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

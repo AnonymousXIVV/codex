@@ -198,6 +198,24 @@ function initSchema(db) {
     db.prepare("INSERT INTO users (email, password_hash, name) VALUES (?, ?, ?)")
       .run("admin@codexdynamics.com", "Admin123!", "Administrator");
   }
+
+  // Ensure high-performance indexes
+  const performanceIndexes = [
+    "CREATE INDEX IF NOT EXISTS idx_visitors_created_at ON visitors(created_at);",
+    "CREATE INDEX IF NOT EXISTS idx_visitors_session ON visitors(session_id);",
+    "CREATE INDEX IF NOT EXISTS idx_leads_created_at ON leads(created_at);",
+    "CREATE INDEX IF NOT EXISTS idx_enquiries_created_at ON enquiries(created_at);",
+    "CREATE INDEX IF NOT EXISTS idx_blog_posts_slug ON blog_posts(slug);",
+    "CREATE INDEX IF NOT EXISTS idx_projects_published ON projects(is_published);",
+    "CREATE INDEX IF NOT EXISTS idx_reviews_published ON reviews(is_published);"
+  ];
+  for (const idx of performanceIndexes) {
+    try {
+      db.exec(idx);
+    } catch {
+      // index already exists
+    }
+  }
 }
 
 function seedInitialDataIfEmpty(db) {
@@ -976,6 +994,22 @@ export function updateAdminPassword(email, newPassword) {
 export function updateEnquiryStatus(id, status) {
   const db = getDb();
   db.prepare("UPDATE enquiries SET status = ? WHERE id = ?").run(status, Number(id));
+
+  // Synchronize with linked lead if one exists with the same email
+  try {
+    const enquiry = db.prepare("SELECT email FROM enquiries WHERE id = ?").get(Number(id));
+    if (enquiry?.email) {
+      const leadStatusMap = {
+        new: "new",
+        contacted: "contacted",
+        closed: "won"
+      };
+      const leadStatus = leadStatusMap[status] || status;
+      db.prepare("UPDATE leads SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE email = ?").run(leadStatus, enquiry.email);
+    }
+  } catch {
+    // Graceful sync ignore
+  }
 }
 
 export function deleteEnquiry(id) {
@@ -983,9 +1017,39 @@ export function deleteEnquiry(id) {
   db.prepare("DELETE FROM enquiries WHERE id = ?").run(Number(id));
 }
 
+export function deleteVisitor(id) {
+  const db = getDb();
+  db.prepare("DELETE FROM visitors WHERE id = ?").run(Number(id));
+}
+
+export function clearVisitors(olderThanDays = null) {
+  const db = getDb();
+  if (olderThanDays !== null && Number(olderThanDays) > 0) {
+    db.prepare("DELETE FROM visitors WHERE datetime(created_at) < datetime('now', ? || ' days')").run(`-${Number(olderThanDays)}`);
+  } else {
+    db.prepare("DELETE FROM visitors").run();
+  }
+}
+
 export function addBacklink({ name, url, notes }) {
   const db = getDb();
   db.prepare("INSERT INTO backlinks (name, url, notes) VALUES (?, ?, ?)").run(name, url, notes || "");
+}
+
+export function updateBacklink(id, { name, url, notes }) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE backlinks SET
+      name = COALESCE(?, name),
+      url = COALESCE(?, url),
+      notes = COALESCE(?, notes)
+    WHERE id = ?
+  `).run(
+    name !== undefined ? name : null,
+    url !== undefined ? url : null,
+    notes !== undefined ? notes : null,
+    Number(id)
+  );
 }
 
 export function deleteBacklink(id) {
@@ -1185,12 +1249,54 @@ export function deleteReview(id) {
   db.prepare("DELETE FROM reviews WHERE id = ?").run(Number(id));
 }
 
+export function updateReview(id, { author, rating, comment, image_path, is_published }) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE reviews SET
+      author = COALESCE(?, author),
+      rating = COALESCE(?, rating),
+      comment = COALESCE(?, comment),
+      image_path = COALESCE(?, image_path),
+      is_published = COALESCE(?, is_published)
+    WHERE id = ?
+  `).run(
+    author !== undefined ? author : null,
+    rating !== undefined ? Number(rating) : null,
+    comment !== undefined ? comment : null,
+    image_path !== undefined ? image_path : null,
+    is_published !== undefined ? (is_published ? 1 : 0) : null,
+    Number(id)
+  );
+}
+
 export function addProject({ title, site_name, site_url, description, category, is_published }) {
   const db = getDb();
   db.prepare(`
     INSERT INTO projects (title, site_name, site_url, description, category, is_published)
     VALUES (?, ?, ?, ?, ?, ?)
   `).run(title, site_name || "", site_url, description || "", category || "Web Development", is_published ? 1 : 0);
+}
+
+export function updateProject(id, { title, site_name, site_url, description, category, is_published }) {
+  const db = getDb();
+  db.prepare(`
+    UPDATE projects SET
+      title = COALESCE(?, title),
+      site_name = COALESCE(?, site_name),
+      site_url = COALESCE(?, site_url),
+      description = COALESCE(?, description),
+      category = COALESCE(?, category),
+      is_published = COALESCE(?, is_published)
+    WHERE id = ?
+  `).run(
+    title !== undefined ? title : null,
+    site_name !== undefined ? site_name : null,
+    site_url !== undefined ? site_url : null,
+    description !== undefined ? description : null,
+    category !== undefined ? category : null,
+    is_published !== undefined ? (is_published ? 1 : 0) : null,
+    Number(id)
+  );
 }
 
 export function toggleProjectPublish(id, is_published) {
@@ -1201,6 +1307,88 @@ export function toggleProjectPublish(id, is_published) {
 export function deleteProject(id) {
   const db = getDb();
   db.prepare("DELETE FROM projects WHERE id = ?").run(Number(id));
+}
+
+export function restoreBackup(data) {
+  const db = getDb();
+  if (!data || typeof data !== "object") {
+    throw new Error("Invalid backup format: root must be a JSON object");
+  }
+
+  db.exec("BEGIN TRANSACTION;");
+  try {
+    if (Array.isArray(data.reviews)) {
+      db.prepare("DELETE FROM reviews").run();
+      const insert = db.prepare("INSERT INTO reviews (id, author, rating, comment, image_path, is_published, created_at) VALUES (?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))");
+      for (const r of data.reviews) {
+        insert.run(r.id || null, r.author, Number(r.rating) || 5, r.comment, r.image_path || null, r.is_published ? 1 : 0, r.created_at || null);
+      }
+    }
+
+    if (Array.isArray(data.projects)) {
+      db.prepare("DELETE FROM projects").run();
+      const insert = db.prepare("INSERT INTO projects (id, title, site_name, site_url, description, category, is_published, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))");
+      for (const p of data.projects) {
+        insert.run(p.id || null, p.title, p.site_name || "", p.site_url, p.description || "", p.category || "Web Development", p.is_published ? 1 : 0, p.created_at || null);
+      }
+    }
+
+    if (Array.isArray(data.backlinks)) {
+      db.prepare("DELETE FROM backlinks").run();
+      const insert = db.prepare("INSERT INTO backlinks (id, name, url, notes, created_at) VALUES (?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))");
+      for (const b of data.backlinks) {
+        insert.run(b.id || null, b.name, b.url, b.notes || "", b.created_at || null);
+      }
+    }
+
+    const posts = Array.isArray(data.blog_posts) ? data.blog_posts : (Array.isArray(data.blogs) ? data.blogs : null);
+    if (posts) {
+      db.prepare("DELETE FROM blog_posts").run();
+      const insert = db.prepare("INSERT INTO blog_posts (id, title, slug, excerpt, content, meta_title, meta_description, status, cover_image, author, category, tags, focus_keyword, views, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), COALESCE(?, CURRENT_TIMESTAMP))");
+      for (const b of posts) {
+        insert.run(
+          b.id || null, b.title, b.slug, b.excerpt || "", b.content, b.meta_title || b.title, b.meta_description || b.excerpt || "",
+          b.status || "draft", b.cover_image || "", b.author || "Codex Dynamics Research", b.category || "Engineering",
+          typeof b.tags === "string" ? b.tags : JSON.stringify(b.tags || []), b.focus_keyword || "", Number(b.views) || 0,
+          b.created_at || null, b.updated_at || null
+        );
+      }
+    }
+
+    if (Array.isArray(data.leads)) {
+      db.prepare("DELETE FROM leads").run();
+      const insert = db.prepare("INSERT INTO leads (id, visitor_id, name, email, phone, company, message, source, status, score, notes, ip_address, country, flag, city, postal_code, street, pages_viewed_count, duration_seconds, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP), COALESCE(?, CURRENT_TIMESTAMP))");
+      for (const l of data.leads) {
+        insert.run(
+          l.id || null, l.visitor_id || null, l.name, l.email, l.phone || null, l.company || null, l.message || null,
+          l.source || "website_contact", l.status || "new", Number(l.score) || 50, l.notes || null, l.ip_address || null,
+          l.country || null, l.flag || null, l.city || null, l.postal_code || null, l.street || null,
+          Number(l.pages_viewed_count) || 1, Number(l.duration_seconds) || 0, l.created_at || null, l.updated_at || null
+        );
+      }
+    }
+
+    if (Array.isArray(data.enquiries)) {
+      db.prepare("DELETE FROM enquiries").run();
+      const insert = db.prepare("INSERT INTO enquiries (id, name, email, phone, company, message, source, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))");
+      for (const e of data.enquiries) {
+        insert.run(e.id || null, e.name, e.email, e.phone || null, e.company || null, e.message, e.source || "website", e.status || "new", e.created_at || null);
+      }
+    }
+
+    if (data.settings && typeof data.settings === "object") {
+      const setStmt = db.prepare("INSERT INTO settings (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value");
+      for (const [k, v] of Object.entries(data.settings)) {
+        setStmt.run(k, typeof v === "string" ? v : JSON.stringify(v));
+      }
+    }
+
+    db.exec("COMMIT;");
+    return { ok: true, message: "CRM database successfully restored." };
+  } catch (err) {
+    db.exec("ROLLBACK;");
+    throw err;
+  }
 }
 
 export function getSiteConfig() {

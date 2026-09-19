@@ -13,6 +13,7 @@ import {
   updateLeadNotes,
   deleteLead,
   addBacklink,
+  updateBacklink,
   deleteBacklink,
   addBlogPost,
   updateBlogPost,
@@ -20,11 +21,16 @@ import {
   duplicateBlogPost,
   deleteBlogPost,
   addReview,
+  updateReview,
   toggleReviewPublish,
   deleteReview,
   addProject,
+  updateProject,
   toggleProjectPublish,
   deleteProject,
+  deleteVisitor,
+  clearVisitors,
+  restoreBackup,
   getPublicContent,
   getBlogPostBySlug,
   verifyAdminCredentials,
@@ -241,6 +247,8 @@ export function crmApiPlugin() {
 
             if (action === "save_backlink") {
               addBacklink(payload);
+            } else if (action === "update_backlink") {
+              updateBacklink(payload.id, payload);
             } else if (action === "delete_backlink") {
               deleteBacklink(payload.id);
             } else if (action === "save_blog") {
@@ -259,16 +267,38 @@ export function crmApiPlugin() {
               deleteBlogPost(payload.id);
             } else if (action === "save_review") {
               addReview(payload);
+            } else if (action === "update_review") {
+              updateReview(payload.id, payload);
             } else if (action === "toggle_review") {
               toggleReviewPublish(payload.id, payload.is_published);
             } else if (action === "delete_review") {
               deleteReview(payload.id);
             } else if (action === "save_project") {
               addProject(payload);
+            } else if (action === "update_project") {
+              updateProject(payload.id, payload);
             } else if (action === "toggle_project") {
               toggleProjectPublish(payload.id, payload.is_published);
             } else if (action === "delete_project") {
               deleteProject(payload.id);
+            } else if (action === "delete_visitor") {
+              deleteVisitor(payload.id);
+            } else if (action === "clear_visitors") {
+              clearVisitors(payload.olderThanDays);
+            } else if (action === "restore_backup") {
+              try {
+                restoreBackup(payload.backupData || payload.data || payload);
+                const updatedCrm = getAllCrmData();
+                res.setHeader("Content-Type", "application/json");
+                res.statusCode = 200;
+                res.end(JSON.stringify({ ok: true, message: "Database restored successfully.", ...updatedCrm }));
+                return;
+              } catch (restoreErr) {
+                res.setHeader("Content-Type", "application/json");
+                res.statusCode = 400;
+                res.end(JSON.stringify({ ok: false, error: restoreErr.message || "Failed to restore backup." }));
+                return;
+              }
             } else if (action === "update_enquiry_status") {
               updateEnquiryStatus(payload.id, payload.status);
             } else if (action === "delete_enquiry") {

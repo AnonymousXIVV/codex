@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { Briefcase, Plus, ExternalLink, Trash2 } from "lucide-react";
+import { Briefcase, Plus, ExternalLink, Trash2, Edit3, X, Check } from "lucide-react";
 import { toast } from "sonner";
 import type { Project } from "@/types/crm";
 
 interface ProjectsTabProps {
   projects: Project[];
   onSaveProject: (data: any) => Promise<boolean>;
+  onEditProject?: (id: number, data: any) => Promise<boolean>;
   onToggleProject: (id: number, is_published: boolean) => Promise<boolean>;
   onDeleteProject: (id: number) => Promise<boolean>;
 }
@@ -13,11 +14,23 @@ interface ProjectsTabProps {
 export function ProjectsTab({
   projects,
   onSaveProject,
+  onEditProject,
   onToggleProject,
   onDeleteProject,
 }: ProjectsTabProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+
   const [form, setForm] = useState({
+    title: "",
+    site_name: "",
+    site_url: "",
+    description: "",
+    category: "Web Engineering",
+    is_published: true,
+  });
+
+  const [editForm, setEditForm] = useState({
     title: "",
     site_name: "",
     site_url: "",
@@ -44,6 +57,32 @@ export function ProjectsTab({
     }
   };
 
+  const handleStartEdit = (p: Project) => {
+    setEditingProject(p);
+    setEditForm({
+      title: p.title || "",
+      site_name: p.site_name || "",
+      site_url: p.site_url || "",
+      description: p.description || "",
+      category: p.category || "Web Engineering",
+      is_published: Boolean(p.is_published),
+    });
+  };
+
+  const handleUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingProject || !editForm.title || !editForm.site_url) return;
+    if (onEditProject) {
+      const ok = await onEditProject(editingProject.id, editForm);
+      if (ok) {
+        setEditingProject(null);
+        toast.success("Project updated successfully in SQLite.");
+      }
+    } else {
+      toast.error("Edit handler not configured.");
+    }
+  };
+
   return (
     <div className="space-y-4">
       {/* Header Banner */}
@@ -56,13 +95,16 @@ export function ProjectsTab({
             </h2>
           </div>
           <p className="text-xs text-muted-foreground mt-1">
-            Publish client site links, project case studies, and live deliverables so visitors can explore real production URLs.
+            Publish client site links, project case studies, and live deliverables. Easily add, edit, or toggle visibility.
           </p>
         </div>
 
         <button
           type="button"
-          onClick={() => setIsOpen(!isOpen)}
+          onClick={() => {
+            setIsOpen(!isOpen);
+            setEditingProject(null);
+          }}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-label hover:bg-black text-paper text-xs font-medium transition-all shadow-sm active:scale-[0.99] cursor-pointer shrink-0"
         >
           <Plus className="size-3.5" />
@@ -98,8 +140,7 @@ export function ProjectsTab({
               </label>
               <input
                 type="text"
-                required
-                placeholder="e.g. Apex Motors Official"
+                placeholder="e.g. Apex Motor Cars GmbH"
                 value={form.site_name}
                 onChange={(e) => setForm({ ...form, site_name: e.target.value })}
                 className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2.5 text-xs text-label outline-none transition-all"
@@ -108,12 +149,12 @@ export function ProjectsTab({
 
             <div>
               <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1.5">
-                Live Website Link (External URL)
+                Production URL
               </label>
               <input
                 type="url"
                 required
-                placeholder="https://apexmotors-example.com"
+                placeholder="https://example.com"
                 value={form.site_url}
                 onChange={(e) => setForm({ ...form, site_url: e.target.value })}
                 className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2.5 text-xs text-label outline-none transition-all font-mono"
@@ -124,22 +165,27 @@ export function ProjectsTab({
               <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1.5">
                 Category
               </label>
-              <input
-                type="text"
-                placeholder="e.g. Full-Stack App, SaaS Platform, E-Commerce"
+              <select
                 value={form.category}
                 onChange={(e) => setForm({ ...form, category: e.target.value })}
-                className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2.5 text-xs text-label outline-none transition-all"
-              />
+                className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2.5 text-xs text-label outline-none transition-all cursor-pointer"
+              >
+                <option value="Web Engineering">Web Engineering</option>
+                <option value="Full-Stack SaaS">Full-Stack SaaS</option>
+                <option value="Mobile App">Mobile App</option>
+                <option value="Creative Production">Creative Production</option>
+                <option value="Branding & Identity">Branding & Identity</option>
+                <option value="E-Commerce">E-Commerce</option>
+              </select>
             </div>
 
             <div className="sm:col-span-2">
               <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1.5">
-                Project Scope & Results
+                Description & Architectural Scope
               </label>
               <textarea
-                rows={2}
-                placeholder="Key accomplishments, technologies deployed, and client impact..."
+                rows={3}
+                placeholder="Key technical achievements, stack used, and deliverable metrics..."
                 value={form.description}
                 onChange={(e) => setForm({ ...form, description: e.target.value })}
                 className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl p-3 text-xs text-label outline-none transition-all"
@@ -147,33 +193,156 @@ export function ProjectsTab({
             </div>
 
             <div className="sm:col-span-2 flex items-center justify-between pt-2">
-              <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
+              <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-label select-none">
                 <input
                   type="checkbox"
                   checked={form.is_published}
                   onChange={(e) => setForm({ ...form, is_published: e.target.checked })}
-                  className="rounded text-blue focus:ring-blue"
+                  className="rounded text-blue focus:ring-blue size-4 border-black/15 cursor-pointer"
                 />
-                <span>Publish to live portfolio section</span>
+                <span>Publish immediately to Codex Dynamics main landing page</span>
               </label>
 
-              <div className="flex gap-2">
+              <div className="flex items-center gap-2">
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="px-4 py-2 rounded-full text-xs font-medium text-muted-foreground hover:text-label hover:bg-fill transition-colors cursor-pointer"
+                  className="px-4 py-2 rounded-full border border-black/10 hover:bg-fill text-muted-foreground text-xs font-medium transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-full bg-blue hover:bg-blue-hover text-paper text-xs font-medium transition-all shadow-sm cursor-pointer"
+                  className="px-5 py-2 rounded-full bg-blue hover:bg-blue-hover text-paper text-xs font-medium transition-all shadow-sm active:scale-[0.99] cursor-pointer"
                 >
                   Save Project
                 </button>
               </div>
             </div>
           </form>
+        </div>
+      )}
+
+      {/* Edit Project Modal */}
+      {editingProject && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-150">
+          <div className="surface-lift w-full max-w-lg rounded-3xl bg-card border border-black/10 p-6 sm:p-8 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-hairline">
+              <div className="flex items-center gap-2">
+                <Edit3 className="size-4 text-blue" />
+                <h3 className="text-sm font-semibold text-label">
+                  Edit Portfolio Project #{editingProject.id}
+                </h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditingProject(null)}
+                className="p-1.5 text-subtle hover:text-label rounded-full hover:bg-fill transition"
+              >
+                <X className="size-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdate} className="space-y-3.5">
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1">
+                  Project Title
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editForm.title}
+                  onChange={(e) => setEditForm({ ...editForm, title: e.target.value })}
+                  className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1">
+                    Client / Company
+                  </label>
+                  <input
+                    type="text"
+                    value={editForm.site_name}
+                    onChange={(e) => setEditForm({ ...editForm, site_name: e.target.value })}
+                    className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1">
+                    Category
+                  </label>
+                  <select
+                    value={editForm.category}
+                    onChange={(e) => setEditForm({ ...editForm, category: e.target.value })}
+                    className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition"
+                  >
+                    <option value="Web Engineering">Web Engineering</option>
+                    <option value="Full-Stack SaaS">Full-Stack SaaS</option>
+                    <option value="Mobile App">Mobile App</option>
+                    <option value="Creative Production">Creative Production</option>
+                    <option value="Branding & Identity">Branding & Identity</option>
+                    <option value="E-Commerce">E-Commerce</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1">
+                  Production URL
+                </label>
+                <input
+                  type="url"
+                  required
+                  value={editForm.site_url}
+                  onChange={(e) => setEditForm({ ...editForm, site_url: e.target.value })}
+                  className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition font-mono"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1">
+                  Description
+                </label>
+                <textarea
+                  rows={3}
+                  value={editForm.description}
+                  onChange={(e) => setEditForm({ ...editForm, description: e.target.value })}
+                  className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl p-2.5 text-xs text-label outline-none transition"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-3 border-t border-hairline">
+                <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-label select-none">
+                  <input
+                    type="checkbox"
+                    checked={editForm.is_published}
+                    onChange={(e) => setEditForm({ ...editForm, is_published: e.target.checked })}
+                    className="rounded text-blue focus:ring-blue size-4 border-black/15 cursor-pointer"
+                  />
+                  <span>Published on public site</span>
+                </label>
+
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditingProject(null)}
+                    className="px-4 py-2 rounded-full border border-black/10 hover:bg-fill text-muted-foreground text-xs font-medium transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="inline-flex items-center gap-1.5 px-5 py-2 rounded-full bg-blue hover:bg-blue-hover text-paper text-xs font-medium transition shadow-sm cursor-pointer"
+                  >
+                    <Check className="size-3.5" />
+                    <span>Save Changes</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
         </div>
       )}
 
@@ -232,17 +401,28 @@ export function ProjectsTab({
                   <ExternalLink className="size-3" />
                 </a>
 
-                <button
-                  type="button"
-                  onClick={async () => {
-                    await onDeleteProject(p.id);
-                    toast.info("Project deleted.");
-                  }}
-                  className="p-1.5 text-subtle hover:text-red-600 rounded-full hover:bg-red-50 transition-colors cursor-pointer"
-                  title="Delete project"
-                >
-                  <Trash2 className="size-3.5" />
-                </button>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => handleStartEdit(p)}
+                    className="p-1.5 text-subtle hover:text-blue rounded-full hover:bg-blue/10 transition-colors cursor-pointer"
+                    title="Edit project"
+                  >
+                    <Edit3 className="size-3.5" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      await onDeleteProject(p.id);
+                      toast.info("Project deleted.");
+                    }}
+                    className="p-1.5 text-subtle hover:text-red-600 rounded-full hover:bg-red-50 transition-colors cursor-pointer"
+                    title="Delete project"
+                  >
+                    <Trash2 className="size-3.5" />
+                  </button>
+                </div>
               </div>
             </div>
           ))

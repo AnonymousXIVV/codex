@@ -16,6 +16,7 @@ import {
   Shield,
   Users,
   MessageSquare,
+  Globe,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { CrmStats } from "@/types/crm";
@@ -30,6 +31,7 @@ export type AdminTabKey =
   | "enquiries"
   | "reviews"
   | "projects"
+  | "content"
   | "settings";
 
 interface AdminSidebarProps {
@@ -143,6 +145,14 @@ export function AdminSidebar({
           count: stats.totalProjects,
           badgeLive: false,
           badgeColor: "bg-black/5 text-subtle border-black/5",
+        },
+        {
+          id: "content" as const,
+          label: "Website Copy & Info",
+          icon: Globe,
+          count: null,
+          badgeLive: false,
+          badgeColor: "",
         },
       ],
     },

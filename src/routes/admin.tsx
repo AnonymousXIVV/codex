@@ -29,6 +29,7 @@ import { ReviewsTab } from "@/components/admin/ReviewsTab";
 import { ProjectsTab } from "@/components/admin/ProjectsTab";
 import { SettingsTab } from "@/components/admin/SettingsTab";
 import { TidioTab } from "@/components/admin/TidioTab";
+import { SiteContentTab } from "@/components/admin/SiteContentTab";
 import { HostingerModal } from "@/components/admin/HostingerModal";
 
 export const Route = createFileRoute("/admin")({ component: AdminCRM });
@@ -370,11 +371,15 @@ function AdminCRM() {
           <div className="pt-1">
             {activeTab === "tidio" && <TidioTab />}
 
+            {activeTab === "site_content" && <SiteContentTab />}
+
             {activeTab === "visitors" && (
               <VisitorsTab
                 visitors={visitors}
                 onSimulate={handleSimulateVisitor}
                 onAddToLeads={handleAddVisitorToLeads}
+                onDeleteVisitor={(id) => dispatchAction("delete_visitor", { id })}
+                onClearVisitors={(olderThanDays) => dispatchAction("clear_visitors", { olderThanDays })}
                 leadsSessionIds={
                   new Set(
                     leads
@@ -421,6 +426,7 @@ function AdminCRM() {
               <BacklinksTab
                 backlinks={backlinks}
                 onAddBacklink={(data) => dispatchAction("add_backlink", data)}
+                onEditBacklink={(id, data) => dispatchAction("update_backlink", { id, ...data })}
                 onDeleteBacklink={(id) => dispatchAction("delete_backlink", { id })}
               />
             )}
@@ -440,6 +446,7 @@ function AdminCRM() {
               <ReviewsTab
                 reviews={reviews}
                 onSaveReview={(data) => dispatchAction("save_review", data)}
+                onEditReview={(id, data) => dispatchAction("update_review", { id, ...data })}
                 onToggleReview={(id, is_published) => dispatchAction("toggle_review", { id, is_published })}
                 onDeleteReview={(id) => dispatchAction("delete_review", { id })}
               />
@@ -449,6 +456,7 @@ function AdminCRM() {
               <ProjectsTab
                 projects={projects}
                 onSaveProject={(data) => dispatchAction("save_project", data)}
+                onEditProject={(id, data) => dispatchAction("update_project", { id, ...data })}
                 onToggleProject={(id, is_published) => dispatchAction("toggle_project", { id, is_published })}
                 onDeleteProject={(id) => dispatchAction("delete_project", { id })}
               />
@@ -461,6 +469,7 @@ function AdminCRM() {
                 onSaveWebhook={handleSaveWebhook}
                 onTestWebhook={handleTestWebhook}
                 onChangePassword={handleChangePassword}
+                onRestoreBackup={(backupData) => dispatchAction("restore_backup", { backupData })}
                 onOpenHostingerModal={() => setIsHostingerModalOpen(true)}
                 fullData={{ stats, visitors, enquiries, backlinks, blogs, reviews, projects, regions, browsers, devices }}
               />

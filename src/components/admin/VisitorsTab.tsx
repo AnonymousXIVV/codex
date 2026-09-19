@@ -10,8 +10,10 @@ import {
   Eye,
   UserPlus,
   Clock,
-  History,
   Filter,
+  Trash2,
+  ChevronDown,
+  Eraser,
 } from "lucide-react";
 import { toast } from "sonner";
 import type { Visitor } from "@/types/crm";
@@ -24,6 +26,8 @@ interface VisitorsTabProps {
   visitors: Visitor[];
   onSimulate: () => void;
   onAddToLeads?: (visitor: Visitor, customData?: any) => Promise<void>;
+  onDeleteVisitor?: (id: number) => Promise<boolean>;
+  onClearVisitors?: (olderThanDays: number | null) => Promise<boolean>;
   leadsSessionIds?: Set<string>;
 }
 
@@ -31,12 +35,15 @@ export function VisitorsTab({
   visitors,
   onSimulate,
   onAddToLeads,
+  onDeleteVisitor,
+  onClearVisitors,
   leadsSessionIds = new Set(),
 }: VisitorsTabProps) {
   const [filter, setFilter] = useState("");
   const [browserFilter, setBrowserFilter] = useState<string>("all");
   const [copiedIp, setCopiedIp] = useState<string | null>(null);
   const [selectedVisitor, setSelectedVisitor] = useState<Visitor | null>(null);
+  const [isPruneOpen, setIsPruneOpen] = useState(false);
 
   const handleCopyIp = (ip: string) => {
     navigator.clipboard.writeText(ip);
@@ -62,6 +69,34 @@ export function VisitorsTab({
     const mins = Math.floor(s / 60);
     const secs = s % 60;
     return `${mins}m ${secs}s`;
+  };
+
+  const handlePrune = async (days: number | null) => {
+    setIsPruneOpen(false);
+    const promptText = days === null
+      ? "Are you sure you want to clear ALL visitor telemetry logs from SQLite?"
+      : `Are you sure you want to delete visitor logs older than ${days} days?`;
+
+    if (!window.confirm(promptText)) return;
+
+    if (onClearVisitors) {
+      const ok = await onClearVisitors(days);
+      if (ok) {
+        toast.success(days === null ? "All visitor logs purged." : `Pruned logs older than ${days} days.`);
+      }
+    } else {
+      toast.error("Prune handler not configured.");
+    }
+  };
+
+  const handleDeleteOne = async (id: number) => {
+    if (!window.confirm(`Delete visitor session #${id}?`)) return;
+    if (onDeleteVisitor) {
+      const ok = await onDeleteVisitor(id);
+      if (ok) {
+        toast.info("Visitor session deleted.");
+      }
+    }
   };
 
   const filteredVisitors = visitors.filter((v) => {
@@ -107,7 +142,47 @@ export function VisitorsTab({
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
+          {/* Prune Menu */}
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsPruneOpen(!isPruneOpen)}
+              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full border border-black/10 hover:bg-fill text-muted-foreground hover:text-label text-xs font-medium transition cursor-pointer"
+            >
+              <Eraser className="size-3.5" />
+              <span>Prune Logs</span>
+              <ChevronDown className="size-3" />
+            </button>
+
+            {isPruneOpen && (
+              <div className="absolute right-0 mt-2 w-48 rounded-2xl bg-card border border-black/10 shadow-lg p-1.5 z-30 space-y-1 animate-in fade-in">
+                <button
+                  type="button"
+                  onClick={() => handlePrune(30)}
+                  className="w-full text-left px-3 py-1.5 text-xs text-label hover:bg-fill rounded-xl transition cursor-pointer"
+                >
+                  Delete older than 30 days
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handlePrune(7)}
+                  className="w-full text-left px-3 py-1.5 text-xs text-label hover:bg-fill rounded-xl transition cursor-pointer"
+                >
+                  Delete older than 7 days
+                </button>
+                <div className="border-t border-hairline my-1" />
+                <button
+                  type="button"
+                  onClick={() => handlePrune(null)}
+                  className="w-full text-left px-3 py-1.5 text-xs text-red-600 hover:bg-red-50 rounded-xl transition font-medium cursor-pointer"
+                >
+                  Purge All Visitor Records
+                </button>
+              </div>
+            )}
+          </div>
+
           <button
             type="button"
             onClick={onSimulate}
@@ -140,7 +215,7 @@ export function VisitorsTab({
               <select
                 value={browserFilter}
                 onChange={(e) => setBrowserFilter(e.target.value)}
-                className="bg-white border border-black/8 rounded-full px-3 py-1.5 text-xs text-label outline-none"
+                className="bg-white border border-black/8 rounded-full px-3 py-1.5 text-xs text-label outline-none cursor-pointer"
               >
                 <option value="all">All Browsers</option>
                 <option value="chrome">Chrome</option>
@@ -181,91 +256,106 @@ export function VisitorsTab({
                 </tr>
               ) : (
                 filteredVisitors.map((v) => {
-                  const geo = resolveGeoLocation(v.country, v.flag);
-                  const flag = v.flag || geo.flag;
-                  const country = v.country || geo.country;
-                  const isLead = v.is_lead || leadsSessionIds.has(v.session_id);
+                  const geo = resolveGeoLocation({
+                    country: v.country,
+                    country_code: v.country_code,
+                    flag: v.flag,
+                    city: v.city,
+                    region: v.region,
+                    postal_code: v.postal_code,
+                    street: v.street,
+                    ip_address: v.ip_address,
+                  });
+
+                  const isLead = Boolean(v.is_lead || leadsSessionIds.has(v.session_id));
 
                   return (
-                    <tr key={v.id} className="hover:bg-fill-subtle/50 transition-colors group">
-                      <td className="py-3.5 px-4 whitespace-nowrap">
+                    <tr
+                      key={v.id}
+                      className="hover:bg-fill-subtle/50 transition-colors group"
+                    >
+                      {/* Time */}
+                      <td className="py-3.5 px-4 font-mono text-[11px]">
                         <div className="flex items-center gap-2">
-                          <span className="size-2 rounded-full bg-emerald-500 shrink-0" />
-                          <span className="font-mono text-[11px] text-muted-foreground">
+                          <span className="size-2 rounded-full bg-emerald-500 animate-pulse" />
+                          <span className="text-subtle font-medium">
                             {v.created_at ? v.created_at.slice(11, 19) : "Just now"}
                           </span>
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1.5 font-mono text-xs font-semibold text-label">
-                          <span>{v.ip_address}</span>
+                      {/* IP */}
+                      <td className="py-3.5 px-4 font-mono text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-label">{v.ip_address}</span>
                           <button
                             type="button"
                             onClick={() => handleCopyIp(v.ip_address)}
-                            className="text-subtle hover:text-label p-1 rounded transition-colors cursor-pointer"
+                            className="text-subtle hover:text-label p-1 rounded-md transition-colors cursor-pointer"
                             title="Copy IP"
                           >
                             {copiedIp === v.ip_address ? (
-                              <CheckCircle2 className="size-3 text-emerald-600" />
+                              <CheckCircle2 className="size-3.5 text-emerald-600" />
                             ) : (
-                              <Copy className="size-3" />
+                              <Copy className="size-3.5" />
                             )}
                           </button>
                         </div>
                       </td>
 
-                      {/* Location with Official Flag and Country Name */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2.5">
-                          <CountryFlag country={country} countryCode={v.country_code} flag={flag} size="md" />
+                      {/* Location */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-2">
+                          <CountryFlag flag={geo.flag} countryCode={geo.country_code} country={geo.country} />
                           <div>
-                            <span className="font-semibold text-label">{country}</span>
-                            <span className="text-[11px] text-muted-foreground ml-1.5 font-normal">
-                              ({v.city || geo.city})
-                            </span>
+                            <div className="font-medium text-label text-xs">
+                              {geo.city ? `${geo.city}, ${geo.country}` : geo.country}
+                            </div>
+                            <div className="text-[10px] text-subtle font-mono truncate max-w-[160px]" title={geo.street}>
+                              {geo.street}
+                            </div>
                           </div>
                         </div>
                       </td>
 
-                      {/* Browser with Official Logo/Icon and Full Name */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <BrowserBadge browser={v.browser} showFull size="sm" />
+                      {/* Browser */}
+                      <td className="py-3.5 px-4">
+                        <BrowserBadge browser={v.browser} />
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-fill border border-black/5 text-[11px] text-label">
+                      {/* Device */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                           {getDeviceIcon(v.device)}
                           <span>{v.device || "Desktop"}</span>
                         </div>
                       </td>
 
-                      {/* Duration & Visits */}
-                      <td className="py-3.5 px-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <span className="inline-flex items-center gap-1 font-mono text-xs font-medium text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200/60">
-                            <Clock className="size-3 text-emerald-600" />
-                            <span>{formatDuration(v.duration_seconds)}</span>
-                          </span>
-
-                          {v.is_returning || (v.visit_count && v.visit_count > 1) ? (
-                            <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-purple-700 bg-purple-50 px-1.5 py-0.5 rounded-full border border-purple-200">
-                              <History className="size-2.5" />
-                              <span>{v.visit_count || 2}x</span>
+                      {/* Duration */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-1.5 text-xs">
+                          <Clock className="size-3 text-subtle" />
+                          <span className="font-medium text-label">{formatDuration(v.duration_seconds)}</span>
+                          {v.visit_count > 1 && (
+                            <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-blue/10 text-blue font-semibold">
+                              {v.visit_count}x
                             </span>
-                          ) : (
-                            <span className="text-[10px] font-medium text-muted-foreground">1st</span>
                           )}
                         </div>
                       </td>
 
-                      <td className="py-3.5 px-4 whitespace-nowrap font-mono text-[11px] text-blue font-medium">
-                        {v.page_url || "/"}
+                      {/* Active Route */}
+                      <td className="py-3.5 px-4">
+                        <div className="flex items-center gap-1.5 max-w-[140px] truncate text-[11px] font-mono text-muted-foreground">
+                          <span className="px-1.5 py-0.5 rounded bg-fill border border-black/5">
+                            {v.page_url || "/"}
+                          </span>
+                        </div>
                       </td>
 
-                      {/* Action: View More Modal & Add to Leads */}
-                      <td className="py-3.5 px-4 whitespace-nowrap text-right">
-                        <div className="inline-flex items-center gap-2">
+                      {/* Actions */}
+                      <td className="py-3.5 px-4 text-right">
+                        <div className="inline-flex items-center justify-end gap-1.5">
                           <button
                             type="button"
                             onClick={() => setSelectedVisitor(v)}
@@ -292,6 +382,17 @@ export function VisitorsTab({
                               <UserPlus className="size-3.5" />
                             </button>
                           ) : null}
+
+                          {onDeleteVisitor && (
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteOne(v.id)}
+                              className="p-1.5 rounded-full text-subtle hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                              title="Delete log"
+                            >
+                              <Trash2 className="size-3.5" />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

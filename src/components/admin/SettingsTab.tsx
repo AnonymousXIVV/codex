@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import {
   Shield,
   KeyRound,
@@ -7,11 +7,13 @@ import {
   CheckCircle2,
   AlertCircle,
   Download,
+  Upload,
   Database,
   RefreshCw,
   ExternalLink,
   Laptop,
 } from "lucide-react";
+import { toast } from "sonner";
 import type { CrmStats } from "@/types/crm";
 
 interface SettingsTabProps {
@@ -21,6 +23,7 @@ interface SettingsTabProps {
   onTestWebhook: (url: string) => Promise<{ ok: boolean; message: string }>;
   onChangePassword: (currentPass: string, newPass: string) => Promise<{ ok: boolean; message?: string; error?: string }>;
   onOpenHostingerModal: () => void;
+  onRestoreBackup?: (backupData: any) => Promise<boolean>;
   fullData: any;
 }
 
@@ -31,8 +34,11 @@ export function SettingsTab({
   onTestWebhook,
   onChangePassword,
   onOpenHostingerModal,
+  onRestoreBackup,
   fullData,
 }: SettingsTabProps) {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const [restoring, setRestoring] = useState(false);
   // Password state
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -121,6 +127,45 @@ export function SettingsTab({
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
+  };
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setRestoring(true);
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+
+      if (!parsed || typeof parsed !== "object") {
+        throw new Error("Invalid backup JSON structure.");
+      }
+
+      if (
+        !window.confirm(
+          "Are you sure you want to restore the SQLite database from this backup file? Existing records with matching IDs will be restored."
+        )
+      ) {
+        return;
+      }
+
+      if (onRestoreBackup) {
+        const ok = await onRestoreBackup(parsed);
+        if (ok) {
+          toast.success("Database restored successfully from backup.");
+        }
+      } else {
+        toast.error("Restore handler not configured.");
+      }
+    } catch (err: any) {
+      toast.error(`Restore failed: ${err.message || String(err)}`);
+    } finally {
+      setRestoring(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
   };
 
   return (
@@ -385,7 +430,7 @@ export function SettingsTab({
               <button
                 type="button"
                 onClick={handleExportJson}
-                className="w-full flex items-center justify-between p-3.5 rounded-xl border border-black/10 bg-fill/50 hover:bg-fill text-label transition text-xs font-medium group"
+                className="w-full flex items-center justify-between p-3.5 rounded-xl border border-black/10 bg-fill/50 hover:bg-fill text-label transition text-xs font-medium group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <Download className="size-4 text-blue group-hover:translate-y-0.5 transition" />
@@ -394,10 +439,35 @@ export function SettingsTab({
                 <span className="text-[11px] text-subtle font-mono">Instant Export</span>
               </button>
 
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".json,application/json"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+
+              <button
+                type="button"
+                disabled={restoring}
+                onClick={() => fileInputRef.current?.click()}
+                className="w-full flex items-center justify-between p-3.5 rounded-xl border border-black/10 bg-fill/50 hover:bg-fill text-label transition text-xs font-medium group cursor-pointer disabled:opacity-50"
+              >
+                <div className="flex items-center gap-2.5">
+                  {restoring ? (
+                    <RefreshCw className="size-4 text-blue animate-spin" />
+                  ) : (
+                    <Upload className="size-4 text-blue group-hover:-translate-y-0.5 transition" />
+                  )}
+                  <span>{restoring ? "Restoring Database..." : "Restore Database from JSON Backup"}</span>
+                </div>
+                <span className="text-[11px] text-subtle font-mono">Import File</span>
+              </button>
+
               <button
                 type="button"
                 onClick={onOpenHostingerModal}
-                className="w-full flex items-center justify-between p-3.5 rounded-xl border border-black/10 bg-fill/50 hover:bg-fill text-label transition text-xs font-medium group"
+                className="w-full flex items-center justify-between p-3.5 rounded-xl border border-black/10 bg-fill/50 hover:bg-fill text-label transition text-xs font-medium group cursor-pointer"
               >
                 <div className="flex items-center gap-2.5">
                   <ExternalLink className="size-4 text-purple-600 group-hover:rotate-12 transition" />
