@@ -130,11 +130,15 @@ export function EmergencySettingsSection({ config, onChange }: EmergencySettings
             <label className="block text-xs font-semibold text-label mb-1">Public Explanation Message</label>
             <textarea
               rows={2}
-              value={emergency.message || ""}
+              value={emergency.message || emergency.subtext || ""}
               onChange={(e) =>
                 onChange({
                   ...config,
-                  emergency: { ...emergency, message: e.target.value },
+                  emergency: {
+                    ...emergency,
+                    message: e.target.value,
+                    subtext: e.target.value,
+                  },
                 })
               }
               placeholder="Detailed explanation displayed to visitors..."
@@ -146,11 +150,15 @@ export function EmergencySettingsSection({ config, onChange }: EmergencySettings
             <label className="block text-xs font-semibold text-label mb-1">Estimated Return Date / Time</label>
             <input
               type="text"
-              value={emergency.estimatedReturn || ""}
+              value={emergency.estimatedReturn || emergency.estimatedLaunch || ""}
               onChange={(e) =>
                 onChange({
                   ...config,
-                  emergency: { ...emergency, estimatedReturn: e.target.value },
+                  emergency: {
+                    ...emergency,
+                    estimatedReturn: e.target.value,
+                    estimatedLaunch: e.target.value,
+                  },
                 })
               }
               placeholder="e.g. 2026-10-01 14:00 UTC or 'In 2 hours'"

@@ -170,6 +170,7 @@ function getCrmPdo() {
                 site_url TEXT,
                 description TEXT,
                 category TEXT,
+                image_url TEXT,
                 is_published INTEGER DEFAULT 1,
                 created_at TEXT DEFAULT CURRENT_TIMESTAMP
             );
@@ -178,6 +179,13 @@ function getCrmPdo() {
                 value TEXT
             );
         ");
+
+        // Dynamic column migrations for projects table
+        try {
+            $pdo->exec("ALTER TABLE projects ADD COLUMN image_url TEXT");
+        } catch (Exception $e) {
+            // Column already exists
+        }
 
         // Ensure default administrator user exists
         $userCheck = $pdo->prepare("SELECT id FROM users WHERE LOWER(email) = ? LIMIT 1");

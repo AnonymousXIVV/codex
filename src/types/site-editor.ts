@@ -234,14 +234,18 @@ export interface SeoSettings {
   gaId?: string;
   gscVerification?: string;
   pixelId?: string;
+  metaPixelId?: string;
 }
 
 export interface EmergencySettings {
   maintenanceMode: boolean;
   headline: string;
   subtext: string;
+  message?: string;
   estimatedLaunch?: string;
+  estimatedReturn?: string;
   notifyEmail?: string;
+  emergencyContact?: string;
 }
 
 export interface CodeInjectionSettings {

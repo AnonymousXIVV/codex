@@ -11,10 +11,12 @@ export function MaintenanceScreen() {
   const [submitted, setSubmitted] = useState(false);
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
 
-  useEffect(() => {
-    if (!emergency?.estimatedLaunch) return;
+  const launchTarget = emergency?.estimatedLaunch || emergency?.estimatedReturn;
 
-    const target = new Date(emergency.estimatedLaunch).getTime();
+  useEffect(() => {
+    if (!launchTarget) return;
+
+    const target = new Date(launchTarget).getTime();
     if (isNaN(target)) return;
 
     const updateTimer = () => {
@@ -32,13 +34,31 @@ export function MaintenanceScreen() {
     updateTimer();
     const interval = setInterval(updateTimer, 1000);
     return () => clearInterval(interval);
-  }, [emergency?.estimatedLaunch]);
+  }, [launchTarget]);
 
-  const handleNotify = (e: React.FormEvent) => {
+  const handleNotify = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!notifyEmail.trim()) return;
+    const email = notifyEmail.trim();
+    if (!email) return;
     setSubmitted(true);
     toast.success("Thank you! We'll notify you as soon as our platform is back live.");
+
+    try {
+      await fetch("/api/crm/action", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "create_lead",
+          name: "Maintenance Subscriber",
+          email,
+          source: "maintenance_screen",
+          score: 65,
+          notes: "Subscribed for relaunch notification during maintenance mode.",
+        }),
+      });
+    } catch {
+      // Background capture
+    }
   };
 
   return (
@@ -79,6 +99,7 @@ export function MaintenanceScreen() {
 
         <p className="text-sm sm:text-base text-muted-foreground leading-relaxed max-w-md mx-auto mb-8">
           {emergency?.subtext ||
+            emergency?.message ||
             "We are fine-tuning our high-performance digital studio platform. We will be back shortly with enhanced speed, security, and capabilities."}
         </p>
 

@@ -598,6 +598,7 @@ export const DEFAULT_SITE_CONFIG = {
     gaId: "",
     gscVerification: "",
     pixelId: "",
+    metaPixelId: "",
   },
 
   // Maintenance & Emergency Mode
@@ -605,8 +606,11 @@ export const DEFAULT_SITE_CONFIG = {
     maintenanceMode: false,
     headline: "System Maintenance & Upgrades in Progress",
     subtext: "We are fine-tuning our high-performance digital studio platform. We will be back shortly with enhanced capabilities.",
+    message: "We are fine-tuning our high-performance digital studio platform. We will be back shortly with enhanced capabilities.",
     estimatedLaunch: "2026-10-01T12:00",
+    estimatedReturn: "2026-10-01T12:00",
     notifyEmail: "codexdynamix@gmail.com",
+    emergencyContact: "codexdynamix@gmail.com",
   },
 
   // Custom Code Injections

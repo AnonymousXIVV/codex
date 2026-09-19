@@ -27,6 +27,7 @@ export function ProjectsTab({
     site_url: "",
     description: "",
     category: "Web Engineering",
+    image_url: "",
     is_published: true,
   });
 
@@ -36,6 +37,7 @@ export function ProjectsTab({
     site_url: "",
     description: "",
     category: "Web Engineering",
+    image_url: "",
     is_published: true,
   });
 
@@ -50,6 +52,7 @@ export function ProjectsTab({
         site_url: "",
         description: "",
         category: "Web Engineering",
+        image_url: "",
         is_published: true,
       });
       setIsOpen(false);
@@ -65,6 +68,7 @@ export function ProjectsTab({
       site_url: p.site_url || "",
       description: p.description || "",
       category: p.category || "Web Engineering",
+      image_url: p.image_url || "",
       is_published: Boolean(p.is_published),
     });
   };
@@ -192,6 +196,19 @@ export function ProjectsTab({
               />
             </div>
 
+            <div className="sm:col-span-2">
+              <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1.5">
+                Project Image / Screenshot URL
+              </label>
+              <input
+                type="text"
+                placeholder="/work/storefront.jpg or https://images.unsplash.com/..."
+                value={form.image_url}
+                onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2.5 text-xs text-label outline-none transition-all font-mono"
+              />
+            </div>
+
             <div className="sm:col-span-2 flex items-center justify-between pt-2">
               <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-label select-none">
                 <input
@@ -313,6 +330,19 @@ export function ProjectsTab({
                 />
               </div>
 
+              <div>
+                <label className="block text-[11px] uppercase tracking-wider font-semibold text-subtle mb-1">
+                  Project Image / Screenshot URL
+                </label>
+                <input
+                  type="text"
+                  placeholder="/work/storefront.jpg or https://..."
+                  value={editForm.image_url}
+                  onChange={(e) => setEditForm({ ...editForm, image_url: e.target.value })}
+                  className="w-full bg-fill/60 hover:bg-fill border border-black/8 focus:border-blue focus:bg-white rounded-xl px-3.5 py-2 text-xs text-label outline-none transition font-mono"
+                />
+              </div>
+
               <div className="flex items-center justify-between pt-3 border-t border-hairline">
                 <label className="flex items-center gap-2 cursor-pointer text-xs font-medium text-label select-none">
                   <input
@@ -359,6 +389,17 @@ export function ProjectsTab({
               className="surface-lift rounded-2xl bg-card border border-black/8 p-5 sm:p-6 shadow-[0_0_0_1px_rgb(0_0_0_/_0.04)] flex flex-col justify-between space-y-4"
             >
               <div className="space-y-2">
+                {p.image_url ? (
+                  <div className="w-full h-32 rounded-xl overflow-hidden bg-black/5 border border-black/8 mb-2">
+                    <img
+                      src={p.image_url}
+                      alt={p.title}
+                      referrerPolicy="no-referrer"
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                ) : null}
+
                 <div className="flex items-center justify-between">
                   <span className="px-2.5 py-0.5 rounded-full bg-blue/10 text-blue border border-blue/20 text-[10px] font-semibold uppercase tracking-wider">
                     {p.category}

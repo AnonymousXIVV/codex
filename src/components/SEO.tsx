@@ -116,6 +116,25 @@ export function SEO({
       document.head.appendChild(gaInit);
     }
 
+    // Meta Pixel injection if metaPixelId or pixelId provided
+    const pixelId = config.seo?.metaPixelId || config.seo?.pixelId;
+    if (pixelId && !document.getElementById("meta-pixel-script")) {
+      const fbScript = document.createElement("script");
+      fbScript.id = "meta-pixel-script";
+      fbScript.textContent = `!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','${pixelId}');fbq('track','PageView');`;
+      document.head.appendChild(fbScript);
+
+      const noScript = document.createElement("noscript");
+      noScript.id = "meta-pixel-noscript";
+      const img = document.createElement("img");
+      img.height = 1;
+      img.width = 1;
+      img.style.display = "none";
+      img.src = `https://www.facebook.com/tr?id=${pixelId}&ev=PageView&noscript=1`;
+      noScript.appendChild(img);
+      document.head.appendChild(noScript);
+    }
+
     // 2. Standard Meta Tags
     setMeta('meta[name="description"]', "name", "description", finalDescription);
     if (keywords && keywords.length > 0) {
@@ -215,6 +234,8 @@ export function SEO({
     config.branding?.favicon,
     config.seo?.gscVerification,
     config.seo?.gaId,
+    config.seo?.metaPixelId,
+    config.seo?.pixelId,
     articleAuthor,
     articlePublishedTime,
     articleModifiedTime,

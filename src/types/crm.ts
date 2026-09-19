@@ -163,6 +163,7 @@ export interface Project {
   site_url: string;
   description: string;
   category: string;
+  image_url?: string;
   is_published: number;
   created_at: string;
 }

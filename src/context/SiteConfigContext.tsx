@@ -29,6 +29,64 @@ interface SiteConfigContextType {
   addresses: AddressItem[];
 }
 
+function safeMergeConfig(base: SiteConfig, override: Partial<SiteConfig>): SiteConfig {
+  if (!override || typeof override !== "object") return base;
+  return {
+    ...base,
+    ...override,
+    colors: { ...base.colors, ...(override.colors || {}) },
+    hero: { ...base.hero, ...(override.hero || {}) },
+    highlights: { ...base.highlights, ...(override.highlights || {}) },
+    services: {
+      ...base.services,
+      ...(override.services || {}),
+      items: Array.isArray(override.services?.items) && override.services.items.length > 0
+        ? override.services.items.map((it) => {
+            const def = base.services?.items?.find((d) => d.id === it.id) || {};
+            return { ...def, ...it };
+          })
+        : (base.services?.items || []),
+    },
+    about: { ...base.about, ...(override.about || {}) },
+    studio: { ...base.studio, ...(override.studio || {}) },
+    results: { ...base.results, ...(override.results || {}) },
+    contact: { ...base.contact, ...(override.contact || {}) },
+    footer: { ...base.footer, ...(override.footer || {}) },
+    theme: { ...base.theme, ...(override.theme || {}) },
+    tidio: { ...base.tidio, ...(override.tidio || {}) },
+    headerSocials: {
+      ...base.headerSocials,
+      ...(override.headerSocials || {}),
+      linkedin: { ...base.headerSocials?.linkedin, ...(override.headerSocials?.linkedin || {}) },
+      x: { ...base.headerSocials?.x, ...(override.headerSocials?.x || {}) },
+      github: { ...base.headerSocials?.github, ...(override.headerSocials?.github || {}) },
+      instagram: { ...base.headerSocials?.instagram, ...(override.headerSocials?.instagram || {}) },
+      facebook: { ...base.headerSocials?.facebook, ...(override.headerSocials?.facebook || {}) },
+    },
+    socialContacts: Array.isArray(override.socialContacts) && override.socialContacts.length > 0
+      ? override.socialContacts
+      : (base.socialContacts || []),
+    addresses: Array.isArray(override.addresses) && override.addresses.length > 0
+      ? override.addresses
+      : (base.addresses || []),
+    branding: { ...base.branding, ...(override.branding || {}) },
+    banner: { ...base.banner, ...(override.banner || {}) },
+    whatsapp: { ...base.whatsapp, ...(override.whatsapp || {}) },
+    contactForm: { ...base.contactForm, ...(override.contactForm || {}) },
+    seo: { ...base.seo, ...(override.seo || {}) },
+    emergency: {
+      ...base.emergency,
+      ...(override.emergency || {}),
+      subtext: override.emergency?.subtext || override.emergency?.message || base.emergency?.subtext,
+      message: override.emergency?.message || override.emergency?.subtext || base.emergency?.message,
+      estimatedLaunch: override.emergency?.estimatedLaunch || override.emergency?.estimatedReturn || base.emergency?.estimatedLaunch,
+      estimatedReturn: override.emergency?.estimatedReturn || override.emergency?.estimatedLaunch || base.emergency?.estimatedReturn,
+    },
+    codeInjection: { ...base.codeInjection, ...(override.codeInjection || {}) },
+    snapshots: Array.isArray(override.snapshots) ? override.snapshots : (base.snapshots || []),
+  };
+}
+
 const SiteConfigContext = createContext<SiteConfigContextType | null>(null);
 
 export function SiteConfigProvider({ children }: { children: React.ReactNode }) {
@@ -42,7 +100,7 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
       if (res.ok) {
         const data = await res.json();
         if (data.ok && data.config) {
-          setConfig(data.config);
+          setConfig((prev) => safeMergeConfig(prev || DEFAULT_SITE_CONFIG, data.config));
         }
       }
     } catch {
@@ -57,50 +115,53 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
   }, [fetchConfig]);
 
   const updateLocalConfig = useCallback((updated: SiteConfig) => {
-    setConfig(updated);
+    setConfig(safeMergeConfig(DEFAULT_SITE_CONFIG, updated));
   }, []);
+
+  const contacts = Array.isArray(config?.socialContacts) ? config.socialContacts : DEFAULT_SITE_CONFIG.socialContacts;
+  const addressList = Array.isArray(config?.addresses) ? config.addresses : DEFAULT_SITE_CONFIG.addresses;
 
   const primaryPhone = useMemo(() => {
     return (
-      config.socialContacts.find((c) => c.type === "phone" && c.isPrimary) ||
-      config.socialContacts.find((c) => c.type === "phone")
+      contacts.find((c) => c.type === "phone" && c.isPrimary) ||
+      contacts.find((c) => c.type === "phone")
     );
-  }, [config.socialContacts]);
+  }, [contacts]);
 
   const primaryWhatsApp = useMemo(() => {
     return (
-      config.socialContacts.find((c) => c.type === "whatsapp" && c.isPrimary) ||
-      config.socialContacts.find((c) => c.type === "whatsapp")
+      contacts.find((c) => c.type === "whatsapp" && c.isPrimary) ||
+      contacts.find((c) => c.type === "whatsapp")
     );
-  }, [config.socialContacts]);
+  }, [contacts]);
 
   const primaryTelegram = useMemo(() => {
     return (
-      config.socialContacts.find((c) => c.type === "telegram" && c.isPrimary) ||
-      config.socialContacts.find((c) => c.type === "telegram")
+      contacts.find((c) => c.type === "telegram" && c.isPrimary) ||
+      contacts.find((c) => c.type === "telegram")
     );
-  }, [config.socialContacts]);
+  }, [contacts]);
 
   const primaryViber = useMemo(() => {
     return (
-      config.socialContacts.find((c) => c.type === "viber" && c.isPrimary) ||
-      config.socialContacts.find((c) => c.type === "viber")
+      contacts.find((c) => c.type === "viber" && c.isPrimary) ||
+      contacts.find((c) => c.type === "viber")
     );
-  }, [config.socialContacts]);
+  }, [contacts]);
 
   const primaryEmail = useMemo(() => {
     return (
-      config.socialContacts.find((c) => c.type === "email" && c.isPrimary) ||
-      config.socialContacts.find((c) => c.type === "email")
+      contacts.find((c) => c.type === "email" && c.isPrimary) ||
+      contacts.find((c) => c.type === "email")
     );
-  }, [config.socialContacts]);
+  }, [contacts]);
 
   const primaryAddress = useMemo(() => {
     return (
-      config.addresses.find((a) => a.isPrimary) ||
-      config.addresses[0]
+      addressList.find((a) => a.isPrimary) ||
+      addressList[0]
     );
-  }, [config.addresses]);
+  }, [addressList]);
 
   const socialsGrouped = useMemo(() => {
     const grouped = {
@@ -117,7 +178,7 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
       custom: [] as SocialContact[],
     };
 
-    for (const item of config.socialContacts) {
+    for (const item of contacts) {
       if (item.type in grouped) {
         grouped[item.type as keyof typeof grouped].push(item);
       } else {
@@ -126,7 +187,7 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
     }
 
     return grouped;
-  }, [config.socialContacts]);
+  }, [contacts]);
 
   const value = useMemo<SiteConfigContextType>(
     () => ({
@@ -141,7 +202,7 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
       primaryEmail,
       primaryAddress,
       socialsGrouped,
-      addresses: config.addresses,
+      addresses: addressList,
     }),
     [
       config,
@@ -155,6 +216,7 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
       primaryEmail,
       primaryAddress,
       socialsGrouped,
+      addressList,
     ]
   );
 
@@ -162,9 +224,13 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
 }
 
 function deriveFromConfig(config: SiteConfig) {
+  const safeConfig = safeMergeConfig(DEFAULT_SITE_CONFIG, config || {});
+  const contacts = Array.isArray(safeConfig.socialContacts) ? safeConfig.socialContacts : [];
+  const addresses = Array.isArray(safeConfig.addresses) ? safeConfig.addresses : [];
+
   const pick = (type: SocialContact["type"]) =>
-    config.socialContacts.find((c) => c.type === type && c.isPrimary) ||
-    config.socialContacts.find((c) => c.type === type);
+    contacts.find((c) => c.type === type && c.isPrimary) ||
+    contacts.find((c) => c.type === type);
 
   const grouped = {
     whatsapp: [] as SocialContact[],
@@ -176,7 +242,7 @@ function deriveFromConfig(config: SiteConfig) {
     facebook: [] as SocialContact[],
     custom: [] as SocialContact[],
   };
-  for (const item of config.socialContacts) {
+  for (const item of contacts) {
     if (item.type in grouped) grouped[item.type as keyof typeof grouped].push(item);
     else grouped.custom.push(item);
   }
@@ -187,9 +253,9 @@ function deriveFromConfig(config: SiteConfig) {
     primaryTelegram: pick("telegram"),
     primaryViber: pick("viber"),
     primaryEmail: pick("email"),
-    primaryAddress: config.addresses.find((a) => a.isPrimary) || config.addresses[0],
+    primaryAddress: addresses.find((a) => a.isPrimary) || addresses[0],
     socialsGrouped: grouped,
-    addresses: config.addresses,
+    addresses: addresses,
   };
 }
 

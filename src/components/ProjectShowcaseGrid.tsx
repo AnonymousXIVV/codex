@@ -65,7 +65,7 @@ export function ProjectShowcaseGrid() {
               "Sub-second First Contentful Paint",
               "Full accessibility & SEO compliance",
             ],
-            image: "/work/storefront.jpg",
+            image: p.image_url || "/work/storefront.jpg",
             site_url: p.site_url,
             completionDate: p.created_at ? new Date(p.created_at).getFullYear().toString() : "Recent",
             lighthouse: {

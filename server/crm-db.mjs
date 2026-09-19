@@ -112,6 +112,7 @@ function initSchema(db) {
       site_url TEXT,
       description TEXT,
       category TEXT,
+      image_url TEXT,
       is_published INTEGER DEFAULT 1,
       created_at TEXT DEFAULT CURRENT_TIMESTAMP
     );
@@ -215,6 +216,13 @@ function initSchema(db) {
     } catch {
       // index already exists
     }
+  }
+
+  // Ensure image_url column in projects
+  try {
+    db.exec("ALTER TABLE projects ADD COLUMN image_url TEXT;");
+  } catch {
+    // column already exists
   }
 }
 
@@ -1278,15 +1286,15 @@ export function updateReview(id, { author, rating, comment, image_path, is_publi
   );
 }
 
-export function addProject({ title, site_name, site_url, description, category, is_published }) {
+export function addProject({ title, site_name, site_url, description, category, image_url, is_published }) {
   const db = getDb();
   db.prepare(`
-    INSERT INTO projects (title, site_name, site_url, description, category, is_published)
-    VALUES (?, ?, ?, ?, ?, ?)
-  `).run(title, site_name || "", site_url, description || "", category || "Web Development", is_published ? 1 : 0);
+    INSERT INTO projects (title, site_name, site_url, description, category, image_url, is_published)
+    VALUES (?, ?, ?, ?, ?, ?, ?)
+  `).run(title, site_name || "", site_url, description || "", category || "Web Development", image_url || "", is_published ? 1 : 0);
 }
 
-export function updateProject(id, { title, site_name, site_url, description, category, is_published }) {
+export function updateProject(id, { title, site_name, site_url, description, category, image_url, is_published }) {
   const db = getDb();
   db.prepare(`
     UPDATE projects SET
@@ -1295,6 +1303,7 @@ export function updateProject(id, { title, site_name, site_url, description, cat
       site_url = COALESCE(?, site_url),
       description = COALESCE(?, description),
       category = COALESCE(?, category),
+      image_url = COALESCE(?, image_url),
       is_published = COALESCE(?, is_published)
     WHERE id = ?
   `).run(
@@ -1303,6 +1312,7 @@ export function updateProject(id, { title, site_name, site_url, description, cat
     site_url !== undefined ? site_url : null,
     description !== undefined ? description : null,
     category !== undefined ? category : null,
+    image_url !== undefined ? image_url : null,
     is_published !== undefined ? (is_published ? 1 : 0) : null,
     Number(id)
   );
@@ -1336,9 +1346,9 @@ export function restoreBackup(data) {
 
     if (Array.isArray(data.projects)) {
       db.prepare("DELETE FROM projects").run();
-      const insert = db.prepare("INSERT INTO projects (id, title, site_name, site_url, description, category, is_published, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))");
+      const insert = db.prepare("INSERT INTO projects (id, title, site_name, site_url, description, category, image_url, is_published, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))");
       for (const p of data.projects) {
-        insert.run(p.id || null, p.title, p.site_name || "", p.site_url, p.description || "", p.category || "Web Development", p.is_published ? 1 : 0, p.created_at || null);
+        insert.run(p.id || null, p.title, p.site_name || "", p.site_url, p.description || "", p.category || "Web Development", p.image_url || "", p.is_published ? 1 : 0, p.created_at || null);
       }
     }
 
@@ -1453,7 +1463,14 @@ export function getSiteConfig() {
       whatsapp: { ...DEFAULT_SITE_CONFIG.whatsapp, ...(parsed.whatsapp || {}) },
       contactForm: { ...DEFAULT_SITE_CONFIG.contactForm, ...(parsed.contactForm || {}) },
       seo: { ...DEFAULT_SITE_CONFIG.seo, ...(parsed.seo || {}) },
-      emergency: { ...DEFAULT_SITE_CONFIG.emergency, ...(parsed.emergency || {}) },
+      emergency: {
+        ...DEFAULT_SITE_CONFIG.emergency,
+        ...(parsed.emergency || {}),
+        subtext: parsed.emergency?.subtext || parsed.emergency?.message || DEFAULT_SITE_CONFIG.emergency.subtext,
+        message: parsed.emergency?.message || parsed.emergency?.subtext || DEFAULT_SITE_CONFIG.emergency.message,
+        estimatedLaunch: parsed.emergency?.estimatedLaunch || parsed.emergency?.estimatedReturn || DEFAULT_SITE_CONFIG.emergency.estimatedLaunch,
+        estimatedReturn: parsed.emergency?.estimatedReturn || parsed.emergency?.estimatedLaunch || DEFAULT_SITE_CONFIG.emergency.estimatedReturn,
+      },
       codeInjection: { ...DEFAULT_SITE_CONFIG.codeInjection, ...(parsed.codeInjection || {}) },
       snapshots: Array.isArray(parsed.snapshots) ? parsed.snapshots : (DEFAULT_SITE_CONFIG.snapshots || []),
     };
