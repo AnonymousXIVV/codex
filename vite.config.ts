@@ -152,6 +152,15 @@ function preventViteReloadPlugin(): Plugin {
   return {
     name: "prevent-vite-reload-loop",
     configureServer(server) {
+      // 0. Ensure /src/styles.css requested as stylesheet is served with ?direct (text/css)
+      server.middlewares.use((req, res, next) => {
+        const url = req.url || "";
+        if (url === "/src/styles.css" || url === "/src/styles.css?") {
+          req.url = "/src/styles.css?direct";
+        }
+        next();
+      });
+
       // 1. Suppress unintended full-reloads emitted over WebSocket for non-source file changes
       const origSend = server.ws.send;
       server.ws.send = function (payload: any, ...args: any[]) {

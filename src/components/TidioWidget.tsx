@@ -67,13 +67,18 @@ export function TidioWidget() {
       document.head.appendChild(styleEl);
     }
 
-    styleEl.textContent = `
-      #tidio-chat-iframe, #tidio-chat {
-        ${isLeft ? "left: max(1rem, env(safe-area-inset-left)) !important; right: auto !important;" : "right: max(1rem, env(safe-area-inset-right)) !important; left: auto !important;"}
-        bottom: max(1rem, env(safe-area-inset-bottom)) !important;
-      }
-      ${hideMobile ? "@media (max-width: 640px) { #tidio-chat-iframe, #tidio-chat { display: none !important; } }" : ""}
-    `;
+    const updateStyles = (isOpen: boolean) => {
+      if (!styleEl) return;
+      styleEl.textContent = `
+        #tidio-chat-iframe, #tidio-chat {
+          ${isLeft ? "left: env(safe-area-inset-left, 0px) !important; right: auto !important;" : "right: env(safe-area-inset-right, 0px) !important; left: auto !important;"}
+          bottom: env(safe-area-inset-bottom, 0px) !important;
+          z-index: ${isOpen ? "2147483647" : "2147483640"} !important;
+        }
+        ${hideMobile ? "@media (max-width: 640px) { #tidio-chat-iframe, #tidio-chat { display: none !important; } }" : ""}
+      `;
+    };
+    updateStyles(false);
 
     // Check if already injected with the same key
     const scriptId = "tidio-chat-script";
@@ -100,6 +105,7 @@ export function TidioWidget() {
     const notifyState = (isOpen: boolean) => {
       if (isOpen !== lastOpen) {
         lastOpen = isOpen;
+        updateStyles(isOpen);
         window.dispatchEvent(
           new CustomEvent("tidio-chat-status", { detail: { isOpen } })
         );

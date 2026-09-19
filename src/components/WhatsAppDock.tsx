@@ -31,9 +31,16 @@ export function WhatsAppDock() {
 
     const handleOpen = () => setIsTidioOpen(true);
     const handleClose = () => setIsTidioOpen(false);
+    const handleStatus = (e: Event) => {
+      const custom = e as CustomEvent<{ isOpen?: boolean }>;
+      if (typeof custom.detail?.isOpen === "boolean") {
+        setIsTidioOpen(custom.detail.isOpen);
+      }
+    };
 
     window.addEventListener("tidio-chat-open", handleOpen);
     window.addEventListener("tidio-chat-close", handleClose);
+    window.addEventListener("tidio-chat-status", handleStatus);
 
     // Initial check in case Tidio is already open
     const iframe = document.getElementById("tidio-chat-iframe");
@@ -44,6 +51,7 @@ export function WhatsAppDock() {
     return () => {
       window.removeEventListener("tidio-chat-open", handleOpen);
       window.removeEventListener("tidio-chat-close", handleClose);
+      window.removeEventListener("tidio-chat-status", handleStatus);
     };
   }, []);
 
@@ -88,6 +96,8 @@ export function WhatsAppDock() {
     { href: facebookHref, label: "Facebook", Logo: FacebookLogo, external: true },
   ];
 
+  const isTidioMobileHidden = Boolean(tidio?.hideOnMobile);
+
   return (
     <AnimatePresence>
       {!isTidioOpen && (
@@ -98,14 +108,21 @@ export function WhatsAppDock() {
           exit={{ opacity: 0, scale: 0.85, y: 14 }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
           className={`pointer-events-none fixed ${
-            isLeft
-              ? "left-[max(1rem,env(safe-area-inset-left))] items-start"
-              : "right-[max(1rem,env(safe-area-inset-right))] items-end"
+            shouldOffset
+              ? isLeft
+                ? "left-[calc(22px+env(safe-area-inset-left,0px))] items-start"
+                : "right-[calc(22px+env(safe-area-inset-right,0px))] items-end"
+              : isLeft
+                ? "left-[calc(18px+env(safe-area-inset-left,0px))] items-start"
+                : "right-[calc(18px+env(safe-area-inset-right,0px))] items-end"
           } ${
             shouldOffset
-              ? "bottom-[calc(max(1rem,env(safe-area-inset-bottom))+72px)] sm:bottom-[calc(max(1rem,env(safe-area-inset-bottom))+78px)]"
-              : "bottom-[max(1rem,env(safe-area-inset-bottom))]"
-          } z-40 flex flex-col gap-2.5 transition-all duration-300`}
+              ? isTidioMobileHidden
+                ? "bottom-[calc(18px+env(safe-area-inset-bottom,0px))] sm:bottom-[calc(118px+env(safe-area-inset-bottom,0px))]"
+                : "bottom-[calc(118px+env(safe-area-inset-bottom,0px))]"
+              : "bottom-[calc(18px+env(safe-area-inset-bottom,0px))]"
+          } z-[2147483647] flex flex-col gap-2.5 transition-all duration-300`}
+          style={{ zIndex: 2147483647 }}
         >
           <div
             className={`pointer-events-auto flex flex-col ${isLeft ? "items-start" : "items-end"} gap-2.5`}
@@ -138,33 +155,25 @@ export function WhatsAppDock() {
                       <span className="dock-label rounded-full px-3 py-1 text-[13px] font-medium text-label">
                         {channel.label}
                       </span>
-                      <channel.Logo className="size-11 drop-shadow-[0_8px_18px_rgb(0_0_0_/_0.2)]" />
+                      <div className="flex size-[50px] items-center justify-center">
+                        <channel.Logo className="size-9 drop-shadow-[0_8px_18px_rgb(0_0_0_/_0.2)]" />
+                      </div>
                     </motion.a>
                   ))}
                 </motion.div>
               ) : null}
             </AnimatePresence>
 
-            <div className={`group flex items-center gap-2.5 ${isLeft ? "flex-row-reverse" : "flex-row"}`}>
-              {/* Context Pill Label: prevents any client confusion between WhatsApp and Tidio live chat */}
-              {shouldOffset && (
-                <span
-                  className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/95 dark:bg-[#1A1A1A]/95 backdrop-blur-md shadow-md border border-black/10 dark:border-white/10 text-xs font-semibold text-label pointer-events-none whitespace-nowrap transition-all duration-200 group-hover:shadow-lg"
-                >
-                  <span className="size-2 rounded-full bg-[#25D366] animate-pulse" />
-                  <span>WhatsApp & Direct</span>
-                </span>
-              )}
-
+            <div className={`flex items-center ${isLeft ? "flex-row-reverse" : "flex-row"}`}>
               <a
                 href={whatsappHref}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="relative flex size-13 sm:size-14 items-center justify-center rounded-full transition-transform duration-150 ease-out active:scale-[0.96]"
-                aria-label="WhatsApp and Direct Communication Channels"
+                className="relative flex size-[50px] min-w-[50px] min-h-[50px] w-[50px] h-[50px] items-center justify-center rounded-full transition-transform duration-150 ease-out hover:scale-105 active:scale-[0.96] shadow-[0_6px_20px_rgba(37,211,102,0.38),0_2px_6px_rgba(0,0,0,0.1)]"
+                aria-label="WhatsApp"
                 onFocus={() => setOpen(true)}
               >
-                <WhatsAppLogo className="size-13 sm:size-14 drop-shadow-[0_10px_24px_rgb(37_211_102_/_0.45)]" />
+                <WhatsAppLogo className="size-[50px] w-[50px] h-[50px]" />
                 <span className="wa-pulse" aria-hidden="true" />
               </a>
             </div>
