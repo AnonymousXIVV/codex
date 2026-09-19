@@ -12,6 +12,8 @@ import { BlogSection } from "@/components/BlogSection";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
 import { WhatsAppDock } from "@/components/WhatsAppDock";
+import { AnnouncementBanner } from "@/components/AnnouncementBanner";
+import { MaintenanceScreen } from "@/components/MaintenanceScreen";
 import { useSiteConfig } from "@/context/SiteConfigContext";
 import { usePreviewMode } from "@/context/PreviewModeContext";
 import {
@@ -89,12 +91,19 @@ export function SitePageBody({ page = "home" }: { page?: PreviewPage }) {
 export function SiteChrome({ page = "home" }: { page?: PreviewPage }) {
   const { config } = useSiteConfig();
   const preview = usePreviewMode();
+
+  // If maintenance mode is active and not in preview editor iframe, show maintenance screen
+  if (config.emergency?.maintenanceMode && !preview.isPreview) {
+    return <MaintenanceScreen />;
+  }
+
   const showHeader = isComponentEnabled(config, "header-builder");
   const showFooter = isComponentEnabled(config, "footer-widgets");
   const showDock = isComponentEnabled(config, "sticky-contact-dock") && !preview.isPreview;
 
   return (
     <>
+      <AnnouncementBanner />
       {showHeader ? <Nav /> : null}
       <main>
         <SitePageBody page={page} />

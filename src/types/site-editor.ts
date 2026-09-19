@@ -184,7 +184,76 @@ export interface SiteConfig {
   headerSocials?: HeaderSocialsConfig;
   theme?: ThemeSettings;
   tidio?: TidioSettings;
+  branding?: BrandingSettings;
+  banner?: BannerSettings;
+  whatsapp?: WhatsAppSettings;
+  contactForm?: ContactFormSettings;
+  seo?: SeoSettings;
+  emergency?: EmergencySettings;
+  codeInjection?: CodeInjectionSettings;
+  snapshots?: SnapshotItem[];
   [key: string]: any;
+}
+
+export interface BrandingSettings {
+  accentPreset?: string;
+  logoDark?: string;
+  logoLight?: string;
+  favicon?: string;
+}
+
+export interface BannerSettings {
+  enabled: boolean;
+  text: string;
+  ctaText?: string;
+  ctaUrl?: string;
+  styleVariant?: "blue" | "dark" | "gradient" | "amber" | "emerald";
+  closable?: boolean;
+}
+
+export interface WhatsAppSettings {
+  enabled: boolean;
+  number: string;
+  defaultMessage: string;
+  position: "bottom-right" | "bottom-left";
+  showExtraChannels?: boolean;
+}
+
+export interface ContactFormSettings {
+  showBudget?: boolean;
+  showTimeline?: boolean;
+  showCompany?: boolean;
+  showServiceSelect?: boolean;
+}
+
+export interface SeoSettings {
+  metaTitle: string;
+  metaDescription: string;
+  canonicalUrl?: string;
+  ogImage?: string;
+  gaId?: string;
+  gscVerification?: string;
+  pixelId?: string;
+}
+
+export interface EmergencySettings {
+  maintenanceMode: boolean;
+  headline: string;
+  subtext: string;
+  estimatedLaunch?: string;
+  notifyEmail?: string;
+}
+
+export interface CodeInjectionSettings {
+  headerCode?: string;
+  footerCode?: string;
+}
+
+export interface SnapshotItem {
+  id: string;
+  name: string;
+  timestamp: string;
+  config: Partial<SiteConfig>;
 }
 
 export interface ThemeSettings {
@@ -276,12 +345,28 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       isPrimary: true,
     },
     {
+      id: "ph-2",
+      type: "phone",
+      label: "Kyiv Studio Landline",
+      value: "+380 44 233 4567",
+      href: "tel:+380442334567",
+      isPrimary: false,
+    },
+    {
       id: "tg-1",
       type: "telegram",
       label: "Official Telegram",
       value: "+380636406783",
       href: "https://t.me/+380636406783",
       isPrimary: true,
+    },
+    {
+      id: "tg-2",
+      type: "telegram",
+      label: "Client Success Desk",
+      value: "@codex_desk",
+      href: "https://t.me/codex_desk",
+      isPrimary: false,
     },
     {
       id: "vb-1",
@@ -292,12 +377,28 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       isPrimary: true,
     },
     {
+      id: "vb-2",
+      type: "viber",
+      label: "Support Line Viber",
+      value: "+380 50 123 4567",
+      href: "viber://chat?number=%2B380501234567",
+      isPrimary: false,
+    },
+    {
       id: "em-1",
       type: "email",
       label: "Primary Email",
       value: "codexdynamix@gmail.com",
       href: "mailto:codexdynamix@gmail.com",
       isPrimary: true,
+    },
+    {
+      id: "em-2",
+      type: "email",
+      label: "Direct Studio Desk",
+      value: "hello@codexdynamics.com",
+      href: "mailto:hello@codexdynamics.com",
+      isPrimary: false,
     },
     {
       id: "ig-1",
@@ -744,4 +845,60 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       label: "Facebook",
     },
   },
+
+  branding: {
+    accentPreset: "blue",
+    logoDark: "",
+    logoLight: "",
+    favicon: "/favicon.svg",
+  },
+
+  banner: {
+    enabled: false,
+    text: "✨ Exclusive Q4 Digital Strategy: Accelerate your business with bespoke web development.",
+    ctaText: "Book Discovery",
+    ctaUrl: "#contact",
+    styleVariant: "blue",
+    closable: true,
+  },
+
+  whatsapp: {
+    enabled: true,
+    number: "+380636406783",
+    defaultMessage: "Hello Codex Dynamics, I'm interested in building a high-performance web project.",
+    position: "bottom-right",
+    showExtraChannels: true,
+  },
+
+  contactForm: {
+    showBudget: true,
+    showTimeline: true,
+    showCompany: true,
+    showServiceSelect: true,
+  },
+
+  seo: {
+    metaTitle: "Codex Dynamics — High-Performance Websites & Digital Studio",
+    metaDescription: "High-performance websites, web design, web development, and digital marketing studio. Precision engineering on every screen.",
+    canonicalUrl: "https://codexdynamics.com",
+    ogImage: "/hero/studio.jpg",
+    gaId: "",
+    gscVerification: "",
+    pixelId: "",
+  },
+
+  emergency: {
+    maintenanceMode: false,
+    headline: "System Maintenance & Upgrades in Progress",
+    subtext: "We are fine-tuning our high-performance digital studio platform. We will be back shortly with enhanced capabilities.",
+    estimatedLaunch: "2026-10-01T12:00",
+    notifyEmail: "codexdynamix@gmail.com",
+  },
+
+  codeInjection: {
+    headerCode: "",
+    footerCode: "",
+  },
+
+  snapshots: [],
 };

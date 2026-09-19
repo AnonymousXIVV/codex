@@ -15,6 +15,11 @@ import {
   Users,
   MessageSquare,
   Globe,
+  Sparkles,
+  Palette,
+  Layout,
+  Megaphone,
+  AlertTriangle,
 } from "lucide-react";
 import type { AdminTabKey } from "./AdminSidebar";
 
@@ -29,6 +34,36 @@ interface AdminHeaderProps {
 }
 
 const tabMeta: Record<AdminTabKey, { label: string; icon: any; subtitle: string }> = {
+  customizer: {
+    label: "Studio Customizer & Visual Architecture",
+    icon: Sparkles,
+    subtitle: "Complete visual branding, section order, conversion docks, SEO and emergency controls",
+  },
+  branding: {
+    label: "Visual Branding & Themes",
+    icon: Palette,
+    subtitle: "Colorways, custom HEX primary accents, corner radius tokens, typography and logos",
+  },
+  layout: {
+    label: "Layout & Sections Builder",
+    icon: Layout,
+    subtitle: "Reorder homepage sections with up/down controls, toggle visibility, and hero & header styles",
+  },
+  conversion: {
+    label: "Conversion Tools & Floating Docks",
+    icon: Megaphone,
+    subtitle: "Global announcement bar, WhatsApp floating dock, multi-channel flyout, and lead form qualification",
+  },
+  seo_studio: {
+    label: "SEO & Social Sharing Studio",
+    icon: Globe,
+    subtitle: "Meta tags with character counters, live Google SERP preview, OpenGraph social card, and GA4 telemetry",
+  },
+  emergency: {
+    label: "Emergency Mode & Snapshots",
+    icon: AlertTriangle,
+    subtitle: "Public maintenance countdown screen, 1-click SQLite configuration snapshots, and code injection",
+  },
   tidio: {
     label: "Tidio Live Chat",
     icon: MessageSquare,
@@ -85,7 +120,7 @@ const tabMeta: Record<AdminTabKey, { label: string; icon: any; subtitle: string 
     subtitle: "Featured production websites and client case studies",
   },
   settings: {
-    label: "Settings & Alerts",
+    label: "Security & Database",
     icon: Shield,
     subtitle: "Security credentials, instant lead webhooks, and database backups",
   },
@@ -101,6 +136,13 @@ export function AdminHeader({
 }: AdminHeaderProps) {
   const current = tabMeta[activeTab] || tabMeta.visitors;
   const TabIcon = current.icon;
+  const isCustomizerActive =
+    activeTab === "customizer" ||
+    activeTab === "branding" ||
+    activeTab === "layout" ||
+    activeTab === "conversion" ||
+    activeTab === "seo_studio" ||
+    activeTab === "emergency";
   const isContentActive = activeTab === "content" || activeTab === "site_content";
 
   return (
@@ -141,19 +183,35 @@ export function AdminHeader({
         {/* Right Side: Quick Actions */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
           {onSelectTab && (
-            <button
-              type="button"
-              onClick={() => onSelectTab("content")}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all hover:shadow-xs cursor-pointer ${
-                isContentActive
-                  ? "bg-blue text-white border-blue shadow-xs"
-                  : "bg-blue/10 hover:bg-blue/20 text-blue border-blue/25"
-              }`}
-              title="Edit live phone, WhatsApp, email, addresses, header social buttons & site copy"
-            >
-              <Globe className="size-3.5" />
-              <span>Edit Contacts & Site</span>
-            </button>
+            <>
+              <button
+                type="button"
+                onClick={() => onSelectTab("customizer")}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border transition-all hover:shadow-xs cursor-pointer ${
+                  isCustomizerActive
+                    ? "bg-blue text-white border-blue shadow-xs"
+                    : "bg-blue/10 hover:bg-blue/20 text-blue border-blue/25"
+                }`}
+                title="Open Studio Customizer (Branding, Layout, WhatsApp, SEO & Emergency)"
+              >
+                <Sparkles className="size-3.5" />
+                <span>Studio Customizer</span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onSelectTab("content")}
+                className={`hidden xl:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all hover:shadow-xs cursor-pointer ${
+                  isContentActive
+                    ? "bg-black/90 text-white border-black/90 shadow-xs"
+                    : "bg-fill hover:bg-fill-elevated text-label border-black/8"
+                }`}
+                title="Edit live phone, WhatsApp, email, addresses, header social buttons & site copy"
+              >
+                <Globe className="size-3.5" />
+                <span>Contacts & Copy</span>
+              </button>
+            </>
           )}
 
           <button

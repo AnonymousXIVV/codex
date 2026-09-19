@@ -36,7 +36,19 @@ export function SiteCanvas({
       style={buildThemeStyle(config)}
     >
       {theme?.customCss ? <style data-theme-css>{theme.customCss}</style> : null}
+      {config.codeInjection?.headerCode ? (
+        <div
+          data-custom-head-injection
+          dangerouslySetInnerHTML={{ __html: config.codeInjection.headerCode }}
+        />
+      ) : null}
       {children}
+      {config.codeInjection?.footerCode ? (
+        <div
+          data-custom-footer-injection
+          dangerouslySetInnerHTML={{ __html: config.codeInjection.footerCode }}
+        />
+      ) : null}
     </div>
   );
 }

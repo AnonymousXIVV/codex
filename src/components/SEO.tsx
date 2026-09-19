@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useSiteConfig } from "@/context/SiteConfigContext";
 
 export interface SEOProps {
   title?: string;
@@ -30,10 +31,10 @@ const DEFAULT_OG_IMAGE = "/hero/studio.jpg";
  */
 export function SEO({
   title,
-  description = DEFAULT_DESCRIPTION,
+  description,
   canonical,
   ogType = "website",
-  ogImage = DEFAULT_OG_IMAGE,
+  ogImage,
   articleAuthor = DEFAULT_SITE_NAME,
   articlePublishedTime,
   articleModifiedTime,
@@ -44,15 +45,24 @@ export function SEO({
   schemaOrg,
   noIndex = false,
 }: SEOProps) {
-  const fullTitle = title
-    ? `${title} — ${DEFAULT_SITE_NAME}`
-    : DEFAULT_TITLE;
+  const { config } = useSiteConfig();
+
+  const siteName = config.siteName || DEFAULT_SITE_NAME;
+  const configTitle = config.seo?.metaTitle || DEFAULT_TITLE;
+  const configDesc = config.seo?.metaDescription || DEFAULT_DESCRIPTION;
+  const configOgImage = config.seo?.ogImage || DEFAULT_OG_IMAGE;
+  const configCanonical = config.seo?.canonicalUrl;
+
+  const finalTitle = title ? `${title} — ${siteName}` : configTitle;
+  const finalDescription = description || configDesc;
+  const finalOgImage = ogImage || configOgImage;
+  const finalCanonical = canonical || configCanonical;
 
   useEffect(() => {
     if (typeof document === "undefined") return;
 
     // 1. Title
-    document.title = fullTitle;
+    document.title = finalTitle;
 
     // Helper to safely set or create a <meta> tag
     const setMeta = (selector: string, attributeName: string, attributeValue: string, content: string) => {
@@ -70,7 +80,7 @@ export function SEO({
       let el = document.head.querySelector<HTMLLinkElement>(`link[rel="${rel}"]`);
       if (!el) {
         el = document.createElement("link");
-        el.setAttribute("rel", rel);
+        el.setAttribute(rel, rel);
         document.head.appendChild(el);
       }
       el.setAttribute("href", href);
@@ -82,8 +92,32 @@ export function SEO({
       if (el) el.remove();
     };
 
+    // Favicon update
+    if (config.branding?.favicon) {
+      setLink("icon", config.branding.favicon);
+    }
+
+    // Google Search Console Verification
+    if (config.seo?.gscVerification) {
+      setMeta('meta[name="google-site-verification"]', "name", "google-site-verification", config.seo.gscVerification);
+    }
+
+    // Google Analytics 4 Injection if gaId provided
+    if (config.seo?.gaId && !document.getElementById("ga4-script")) {
+      const gaScript = document.createElement("script");
+      gaScript.id = "ga4-script";
+      gaScript.async = true;
+      gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${config.seo.gaId}`;
+      document.head.appendChild(gaScript);
+
+      const gaInit = document.createElement("script");
+      gaInit.id = "ga4-init";
+      gaInit.textContent = `window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','${config.seo.gaId}');`;
+      document.head.appendChild(gaInit);
+    }
+
     // 2. Standard Meta Tags
-    setMeta('meta[name="description"]', "name", "description", description);
+    setMeta('meta[name="description"]', "name", "description", finalDescription);
     if (keywords && keywords.length > 0) {
       setMeta('meta[name="keywords"]', "name", "keywords", keywords.join(", "));
     } else {
@@ -97,32 +131,29 @@ export function SEO({
     }
 
     // 3. Canonical Link
-    const currentUrl = canonical || (typeof window !== "undefined" ? window.location.href : "");
+    const currentUrl = finalCanonical || (typeof window !== "undefined" ? window.location.href : "");
     if (currentUrl) {
       setLink("canonical", currentUrl);
     }
 
     // 4. Open Graph Tags
-    setMeta('meta[property="og:site_name"]', "property", "og:site_name", DEFAULT_SITE_NAME);
-    setMeta('meta[property="og:title"]', "property", "og:title", title || DEFAULT_TITLE);
-    setMeta('meta[property="og:description"]', "property", "og:description", description);
+    setMeta('meta[property="og:site_name"]', "property", "og:site_name", siteName);
+    setMeta('meta[property="og:title"]', "property", "og:title", title || configTitle);
+    setMeta('meta[property="og:description"]', "property", "og:description", finalDescription);
     setMeta('meta[property="og:type"]', "property", "og:type", ogType);
     if (currentUrl) {
       setMeta('meta[property="og:url"]', "property", "og:url", currentUrl);
     }
-    if (ogImage) {
-      const absoluteImage = ogImage.startsWith("http")
-        ? ogImage
-        : `${window.location.origin}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`;
+    if (finalOgImage) {
+      const absoluteImage = finalOgImage.startsWith("http")
+        ? finalOgImage
+        : `${window.location.origin}${finalOgImage.startsWith("/") ? "" : "/"}${finalOgImage}`;
       setMeta('meta[property="og:image"]', "property", "og:image", absoluteImage);
-      setMeta('meta[property="og:image:alt"]', "property", "og:image:alt", title || DEFAULT_SITE_NAME);
     }
 
-    // Article Specific Open Graph tags
+    // Article Specific Tags
     if (ogType === "article") {
-      if (articleAuthor) {
-        setMeta('meta[property="article:author"]', "property", "article:author", articleAuthor);
-      }
+      setMeta('meta[property="article:author"]', "property", "article:author", articleAuthor);
       if (articlePublishedTime) {
         setMeta('meta[property="article:published_time"]', "property", "article:published_time", articlePublishedTime);
       }
@@ -145,12 +176,12 @@ export function SEO({
 
     // 5. Twitter Card Tags
     setMeta('meta[name="twitter:card"]', "name", "twitter:card", twitterCard);
-    setMeta('meta[name="twitter:title"]', "name", "twitter:title", title || DEFAULT_TITLE);
-    setMeta('meta[name="twitter:description"]', "name", "twitter:description", description);
-    if (ogImage) {
-      const absoluteImage = ogImage.startsWith("http")
-        ? ogImage
-        : `${window.location.origin}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`;
+    setMeta('meta[name="twitter:title"]', "name", "twitter:title", title || configTitle);
+    setMeta('meta[name="twitter:description"]', "name", "twitter:description", finalDescription);
+    if (finalOgImage) {
+      const absoluteImage = finalOgImage.startsWith("http")
+        ? finalOgImage
+        : `${window.location.origin}${finalOgImage.startsWith("/") ? "" : "/"}${finalOgImage}`;
       setMeta('meta[name="twitter:image"]', "name", "twitter:image", absoluteImage);
     }
 
@@ -169,18 +200,21 @@ export function SEO({
       scriptEl.remove();
     }
 
-    // Cleanup on unmount if needed
     return () => {
-      // Revert to site default title if component unmounts
       document.title = DEFAULT_TITLE;
     };
   }, [
-    fullTitle,
+    finalTitle,
     title,
-    description,
-    canonical,
+    finalDescription,
+    finalCanonical,
     ogType,
-    ogImage,
+    finalOgImage,
+    siteName,
+    configTitle,
+    config.branding?.favicon,
+    config.seo?.gscVerification,
+    config.seo?.gaId,
     articleAuthor,
     articlePublishedTime,
     articleModifiedTime,

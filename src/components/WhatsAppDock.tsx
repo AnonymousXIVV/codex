@@ -24,8 +24,18 @@ export function WhatsAppDock() {
     socialsGrouped,
   } = useSiteConfig();
 
+  const waConfig = config.whatsapp;
+  if (waConfig && waConfig.enabled === false) {
+    return null;
+  }
+
+  const rawPhone = (waConfig?.number || primaryWhatsApp?.value || "+380636406783").replace(/[^\d]/g, "");
+  const defaultMsg = waConfig?.defaultMessage || "";
+  const whatsappHref = `https://wa.me/${rawPhone}${defaultMsg ? `?text=${encodeURIComponent(defaultMsg)}` : ""}`;
+  const isLeft = waConfig?.position === "bottom-left";
+  const showExtras = waConfig?.showExtraChannels !== false;
+
   const recipientEmail = config.formSubmitEmail || primaryEmail?.value || "hello@codexdynamics.com";
-  const whatsappHref = primaryWhatsApp?.href || LINKS.whatsapp;
   const telegramHref = primaryTelegram?.href || LINKS.telegram;
   const viberHref = primaryViber?.href || LINKS.viber;
   const phoneHref = primaryPhone?.href || LINKS.tel;
@@ -42,21 +52,27 @@ export function WhatsAppDock() {
   ];
 
   return (
-    <div className="pointer-events-none fixed right-[max(1rem,env(safe-area-inset-right))] bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex flex-col items-end gap-2.5">
+    <div
+      className={`pointer-events-none fixed ${
+        isLeft
+          ? "left-[max(1rem,env(safe-area-inset-left))] items-start"
+          : "right-[max(1rem,env(safe-area-inset-right))] items-end"
+      } bottom-[max(1rem,env(safe-area-inset-bottom))] z-40 flex flex-col gap-2.5`}
+    >
       <div
-        className="pointer-events-auto flex flex-col items-end gap-2.5"
+        className={`pointer-events-auto flex flex-col ${isLeft ? "items-start" : "items-end"} gap-2.5`}
         onMouseEnter={() => setOpen(true)}
         onMouseLeave={() => setOpen(false)}
       >
       <AnimatePresence>
-        {open ? (
+        {open && showExtras ? (
           <motion.div
             key="stack"
             initial={{ opacity: 0, y: 10, filter: "blur(6px)" }}
             animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
             exit={{ opacity: 0, y: 8, filter: "blur(4px)" }}
             transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
-            className="flex flex-col items-end gap-2.5"
+            className={`flex flex-col ${isLeft ? "items-start" : "items-end"} gap-2.5`}
           >
             {extras.map((channel, i) => (
               <motion.a
@@ -65,10 +81,10 @@ export function WhatsAppDock() {
                 {...("external" in channel && channel.external === false
                   ? {}
                   : { target: "_blank", rel: "noopener noreferrer" })}
-                initial={{ opacity: 0, x: 12 }}
+                initial={{ opacity: 0, x: isLeft ? -12 : 12 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.03 * i, duration: 0.28 }}
-                className="group flex items-center gap-2.5"
+                className={`group flex items-center gap-2.5 ${isLeft ? "flex-row-reverse" : "flex-row"}`}
                 aria-label={channel.label}
               >
                 <span className="dock-label rounded-full px-3 py-1 text-[13px] font-medium text-label">

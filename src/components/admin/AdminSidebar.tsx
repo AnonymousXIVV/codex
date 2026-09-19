@@ -17,11 +17,25 @@ import {
   Users,
   MessageSquare,
   Globe,
+  Palette,
+  Layout,
+  Megaphone,
+  AlertTriangle,
+  Phone,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { CrmStats } from "@/types/crm";
+import { useSiteConfig } from "@/context/SiteConfigContext";
 
 export type AdminTabKey =
+  | "customizer"
+  | "branding"
+  | "layout"
+  | "conversion"
+  | "seo_studio"
+  | "emergency"
+  | "content"
+  | "site_content"
   | "tidio"
   | "visitors"
   | "leads"
@@ -31,8 +45,6 @@ export type AdminTabKey =
   | "enquiries"
   | "reviews"
   | "projects"
-  | "content"
-  | "site_content"
   | "settings";
 
 interface AdminSidebarProps {
@@ -56,23 +68,82 @@ export function AdminSidebar({
   onSimulateVisitor,
   onLogout,
 }: AdminSidebarProps) {
+  const { config } = useSiteConfig();
+  const isMaintenance = Boolean(config.emergency?.maintenanceMode);
+
   const navSections = [
     {
-      group: "Live Site & Branding",
+      group: "Studio & Site Customizer",
       items: [
+        {
+          id: "customizer" as const,
+          label: "Studio Customizer",
+          icon: Sparkles,
+          count: null,
+          badgeLive: true,
+          badgeText: "Visual Suite",
+          badgeColor: "bg-blue/10 text-blue border-blue/20",
+        },
+        {
+          id: "branding" as const,
+          label: "Visual Branding & Colors",
+          icon: Palette,
+          count: null,
+          badgeLive: false,
+          badgeText: "Theme",
+          badgeColor: "bg-purple-50 text-purple-700 border-purple-200/70",
+        },
+        {
+          id: "layout" as const,
+          label: "Layout & Sections Builder",
+          icon: Layout,
+          count: null,
+          badgeLive: false,
+          badgeText: "Reorder",
+          badgeColor: "bg-amber-50 text-amber-700 border-amber-200/70",
+        },
+        {
+          id: "conversion" as const,
+          label: "Conversion & Floating Docks",
+          icon: Megaphone,
+          count: null,
+          badgeLive: false,
+          badgeText: "WhatsApp",
+          badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200/70",
+        },
+        {
+          id: "seo_studio" as const,
+          label: "SEO & Social Sharing",
+          icon: Globe,
+          count: null,
+          badgeLive: false,
+          badgeText: "SERP & OG",
+          badgeColor: "bg-sky-50 text-sky-700 border-sky-200/70",
+        },
+        {
+          id: "emergency" as const,
+          label: "Emergency & Snapshots",
+          icon: AlertTriangle,
+          count: null,
+          badgeLive: isMaintenance,
+          badgeText: isMaintenance ? "MAINTENANCE" : "Backups",
+          badgeColor: isMaintenance
+            ? "bg-red-600 text-white border-red-600 animate-pulse"
+            : "bg-black/5 text-subtle border-black/5",
+        },
         {
           id: "content" as const,
           label: "Site Contacts & Socials",
-          icon: Globe,
+          icon: Phone,
           count: null,
-          badgeLive: true,
-          badgeText: "Public Site",
-          badgeColor: "bg-blue/10 text-blue border-blue/20",
+          badgeLive: false,
+          badgeText: "Public Copy",
+          badgeColor: "bg-black/5 text-subtle border-black/5",
         },
       ],
     },
     {
-      group: "Live Chat & Support",
+      group: "Live Chat & Telemetry",
       items: [
         {
           id: "tidio" as const,
@@ -83,11 +154,6 @@ export function AdminSidebar({
           badgeText: null,
           badgeColor: "bg-[#0066FF]/10 text-[#0066FF] border-[#0066FF]/20",
         },
-      ],
-    },
-    {
-      group: "Traffic & Telemetry",
-      items: [
         {
           id: "visitors" as const,
           label: "Live Visitors",
@@ -109,7 +175,7 @@ export function AdminSidebar({
       ],
     },
     {
-      group: "Client & Inquiries",
+      group: "Clients & Inquiries",
       items: [
         {
           id: "leads" as const,
@@ -173,16 +239,16 @@ export function AdminSidebar({
       ],
     },
     {
-      group: "System & Control",
+      group: "System & Security",
       items: [
         {
           id: "settings" as const,
-          label: "Settings & Alerts",
+          label: "Security & Database",
           icon: Shield,
           count: null,
           badgeLive: false,
-          badgeText: null,
-          badgeColor: "",
+          badgeText: "SQLite",
+          badgeColor: "bg-black/5 text-subtle border-black/5",
         },
       ],
     },

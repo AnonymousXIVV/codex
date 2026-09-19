@@ -19,6 +19,10 @@ type Inquiry = {
   name: string;
   phone: string;
   email: string;
+  company?: string;
+  budget?: string;
+  timeline?: string;
+  service?: string;
   message: string;
 };
 
@@ -26,6 +30,10 @@ const emptyForm: Inquiry = {
   name: "",
   phone: "",
   email: "",
+  company: "",
+  budget: "",
+  timeline: "",
+  service: "",
   message: "",
 };
 
@@ -186,11 +194,26 @@ export function Contact() {
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    const extraNotes = [
+      formData.company ? `Company: ${formData.company}` : null,
+      formData.service ? `Service: ${formData.service}` : null,
+      formData.budget ? `Budget: ${formData.budget}` : null,
+      formData.timeline ? `Timeline: ${formData.timeline}` : null,
+    ].filter(Boolean).join(" | ");
+
+    const finalMessage = extraNotes
+      ? `[${extraNotes}]\n\n${formData.message.trim()}`
+      : formData.message.trim();
+
     const data: Inquiry = {
       name: formData.name.trim(),
       phone: formData.phone.trim(),
       email: formData.email.trim(),
-      message: formData.message.trim(),
+      company: formData.company?.trim(),
+      budget: formData.budget?.trim(),
+      timeline: formData.timeline?.trim(),
+      service: formData.service?.trim(),
+      message: finalMessage,
     };
     if (!data.name || !data.email || !data.message) {
       toast.error("Please fill in every field.");
@@ -273,62 +296,186 @@ export function Contact() {
               </div>
 
               <ul className="divide-y divide-hairline border-t border-hairline">
-                {socialsGrouped.phone.map((phone, idx) => (
-                  <li key={`phone-${idx}`}>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        copyText(phone.value.replace(/[^\d+]/g, ""), "Number copied.")
-                      }
-                      className="flex w-full items-center gap-4 px-5 py-4 text-left hover:bg-fill cursor-pointer"
-                    >
-                      <PhoneLogo className="size-9 shrink-0" />
-                      <span>
-                        <span className="block text-xs text-subtle">
-                          {phone.label || "Mobile · WhatsApp · Telegram · Viber"}
+                {/* Phone Numbers */}
+                {socialsGrouped.phone?.map((phone, idx) => (
+                  <li key={`phone-${phone.id || idx}`}>
+                    <div className="flex w-full items-center justify-between gap-3 px-5 py-3.5 hover:bg-fill transition-colors">
+                      <a
+                        href={phone.href || `tel:${phone.value.replace(/[^\d+]/g, "")}`}
+                        className="flex items-center gap-3.5 flex-1 min-w-0"
+                      >
+                        <PhoneLogo className="size-8 sm:size-9 shrink-0" />
+                        <span className="min-w-0 truncate">
+                          <span className="block text-xs text-subtle truncate">
+                            {phone.label || "Direct Phone Line"} {phone.isPrimary && "· Primary"}
+                          </span>
+                          <span className="mt-0.5 block text-[14px] sm:text-[15px] font-medium text-label truncate font-mono">
+                            {phone.value}
+                          </span>
                         </span>
-                        <span className="mt-0.5 block text-[15px] font-medium text-label">
-                          {phone.value}
-                        </span>
-                      </span>
-                    </button>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          copyText(phone.value.replace(/[^\d+]/g, ""), "Phone number copied.")
+                        }
+                        className="px-2.5 py-1 text-xs text-muted-foreground hover:text-label hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition shrink-0 cursor-pointer"
+                        title="Copy number"
+                      >
+                        Copy
+                      </button>
+                    </div>
                   </li>
                 ))}
 
-                {socialsGrouped.email.map((email, idx) => (
-                  <li key={`email-${idx}`}>
-                    <a
-                      href={email.href || `mailto:${email.value}`}
-                      className="flex items-center gap-4 px-5 py-4 hover:bg-fill"
-                    >
-                      <GmailLogo className="size-9 shrink-0" />
-                      <span>
-                        <span className="block text-xs text-subtle">
-                          {email.label || "Email"}
+                {/* WhatsApp Lines */}
+                {socialsGrouped.whatsapp?.map((wa, idx) => (
+                  <li key={`wa-${wa.id || idx}`}>
+                    <div className="flex w-full items-center justify-between gap-3 px-5 py-3.5 hover:bg-fill transition-colors">
+                      <a
+                        href={wa.href || `https://wa.me/${wa.value.replace(/[^0-9]/g, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3.5 flex-1 min-w-0"
+                      >
+                        <WhatsAppLogo className="size-8 sm:size-9 shrink-0" />
+                        <span className="min-w-0 truncate">
+                          <span className="block text-xs text-subtle truncate">
+                            {wa.label || "WhatsApp Business"} {wa.isPrimary && "· Primary"}
+                          </span>
+                          <span className="mt-0.5 block text-[14px] sm:text-[15px] font-medium text-label truncate font-mono">
+                            {wa.value}
+                          </span>
                         </span>
-                        <span className="mt-0.5 block text-[15px] font-medium text-label">
-                          {email.value}
-                        </span>
-                      </span>
-                    </a>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          copyText(wa.value.replace(/[^0-9+]/g, ""), "WhatsApp number copied.")
+                        }
+                        className="px-2.5 py-1 text-xs text-muted-foreground hover:text-label hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition shrink-0 cursor-pointer"
+                        title="Copy WhatsApp"
+                      >
+                        Copy
+                      </button>
+                    </div>
                   </li>
                 ))}
 
-                {addresses.map((addr, idx) => (
-                  <li key={`addr-${idx}`}>
+                {/* Telegram Accounts */}
+                {socialsGrouped.telegram?.map((tg, idx) => (
+                  <li key={`tg-${tg.id || idx}`}>
+                    <div className="flex w-full items-center justify-between gap-3 px-5 py-3.5 hover:bg-fill transition-colors">
+                      <a
+                        href={tg.href || `https://t.me/${tg.value.replace(/^@/, "")}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3.5 flex-1 min-w-0"
+                      >
+                        <TelegramLogo className="size-8 sm:size-9 shrink-0" />
+                        <span className="min-w-0 truncate">
+                          <span className="block text-xs text-subtle truncate">
+                            {tg.label || "Telegram Desk"} {tg.isPrimary && "· Primary"}
+                          </span>
+                          <span className="mt-0.5 block text-[14px] sm:text-[15px] font-medium text-label truncate font-mono">
+                            {tg.value}
+                          </span>
+                        </span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          copyText(tg.value, "Telegram copied.")
+                        }
+                        className="px-2.5 py-1 text-xs text-muted-foreground hover:text-label hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition shrink-0 cursor-pointer"
+                        title="Copy Telegram"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </li>
+                ))}
+
+                {/* Viber Lines */}
+                {socialsGrouped.viber?.map((vb, idx) => (
+                  <li key={`vb-${vb.id || idx}`}>
+                    <div className="flex w-full items-center justify-between gap-3 px-5 py-3.5 hover:bg-fill transition-colors">
+                      <a
+                        href={vb.href || `viber://chat?number=${encodeURIComponent(vb.value)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3.5 flex-1 min-w-0"
+                      >
+                        <ViberLogo className="size-8 sm:size-9 shrink-0" />
+                        <span className="min-w-0 truncate">
+                          <span className="block text-xs text-subtle truncate">
+                            {vb.label || "Viber Client Desk"} {vb.isPrimary && "· Primary"}
+                          </span>
+                          <span className="mt-0.5 block text-[14px] sm:text-[15px] font-medium text-label truncate font-mono">
+                            {vb.value}
+                          </span>
+                        </span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          copyText(vb.value.replace(/[^\d+]/g, ""), "Viber copied.")
+                        }
+                        className="px-2.5 py-1 text-xs text-muted-foreground hover:text-label hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition shrink-0 cursor-pointer"
+                        title="Copy Viber"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </li>
+                ))}
+
+                {/* Emails */}
+                {socialsGrouped.email?.map((email, idx) => (
+                  <li key={`email-${email.id || idx}`}>
+                    <div className="flex w-full items-center justify-between gap-3 px-5 py-3.5 hover:bg-fill transition-colors">
+                      <a
+                        href={email.href || `mailto:${email.value}`}
+                        className="flex items-center gap-3.5 flex-1 min-w-0"
+                      >
+                        <GmailLogo className="size-8 sm:size-9 shrink-0" />
+                        <span className="min-w-0 truncate">
+                          <span className="block text-xs text-subtle truncate">
+                            {email.label || "Email Inbox"} {email.isPrimary && "· Primary"}
+                          </span>
+                          <span className="mt-0.5 block text-[14px] sm:text-[15px] font-medium text-label truncate font-mono">
+                            {email.value}
+                          </span>
+                        </span>
+                      </a>
+                      <button
+                        type="button"
+                        onClick={() => copyText(email.value, "Email address copied.")}
+                        className="px-2.5 py-1 text-xs text-muted-foreground hover:text-label hover:bg-black/5 dark:hover:bg-white/10 rounded-lg transition shrink-0 cursor-pointer"
+                        title="Copy Email"
+                      >
+                        Copy
+                      </button>
+                    </div>
+                  </li>
+                ))}
+
+                {/* Physical Studio Addresses */}
+                {addresses?.map((addr, idx) => (
+                  <li key={`addr-${addr.id || idx}`}>
                     <a
                       href={`https://maps.google.com/?q=${encodeURIComponent(addr.fullAddress || `${addr.street}, ${addr.city}`)}`}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-4 px-5 py-4 hover:bg-fill"
+                      className="flex items-center gap-3.5 px-5 py-3.5 hover:bg-fill transition-colors"
                     >
-                      <MapsLogo className="size-9 shrink-0" />
-                      <span>
-                        <span className="block text-xs text-subtle">
-                          {addr.city ? `${addr.city} Studio` : "Studio"} {addr.label ? `· ${addr.label}` : ""}
+                      <MapsLogo className="size-8 sm:size-9 shrink-0" />
+                      <span className="min-w-0 truncate">
+                        <span className="block text-xs text-subtle truncate">
+                          {addr.label || (addr.city ? `${addr.city} Studio` : "Studio Location")} {addr.isPrimary && "· Primary HQ"}
                         </span>
-                        <span className="mt-0.5 block text-[15px] font-medium text-label">
-                          {addr.street}
+                        <span className="mt-0.5 block text-[14px] sm:text-[15px] font-medium text-label truncate">
+                          {addr.street} {addr.city ? `· ${addr.city}` : ""}
                         </span>
                       </span>
                     </a>
@@ -458,6 +605,111 @@ export function Contact() {
                         required
                       />
                     </label>
+
+                    {config.contactForm?.showCompany !== false && (
+                      <label className="block px-5 py-4">
+                        <span className="mb-1.5 block text-xs font-medium tracking-wide text-subtle uppercase">
+                          Company / Brand (Optional)
+                        </span>
+                        <input
+                          id="company"
+                          name="company"
+                          type="text"
+                          maxLength={120}
+                          value={formData.company || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              company: e.target.value,
+                            }))
+                          }
+                          className="w-full bg-transparent text-base text-label outline-none placeholder:text-subtle"
+                          placeholder="e.g. Acme Corp or Studio"
+                        />
+                      </label>
+                    )}
+
+                    {config.contactForm?.showServiceSelect !== false && (
+                      <label className="block px-5 py-4">
+                        <span className="mb-1.5 block text-xs font-medium tracking-wide text-subtle uppercase">
+                          Service Needed
+                        </span>
+                        <select
+                          id="service"
+                          name="service"
+                          value={formData.service || ""}
+                          onChange={(e) =>
+                            setFormData((prev) => ({
+                              ...prev,
+                              service: e.target.value,
+                            }))
+                          }
+                          className="w-full bg-transparent text-base text-label outline-none"
+                        >
+                          <option value="">Select a service focus...</option>
+                          <option value="Web Development & Engineering">Web Development & Engineering</option>
+                          <option value="Brand Identity & Web Design">Brand Identity & Web Design</option>
+                          <option value="SMM & Digital Campaigns">SMM & Digital Campaigns</option>
+                          <option value="Full Digital Ecosystem Rebuild">Full Digital Ecosystem Rebuild</option>
+                        </select>
+                      </label>
+                    )}
+
+                    {(config.contactForm?.showBudget !== false || config.contactForm?.showTimeline !== false) && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 divide-y sm:divide-y-0 sm:divide-x divide-hairline">
+                        {config.contactForm?.showBudget !== false && (
+                          <label className="block px-5 py-4">
+                            <span className="mb-1.5 block text-xs font-medium tracking-wide text-subtle uppercase">
+                              Budget Range
+                            </span>
+                            <select
+                              id="budget"
+                              name="budget"
+                              value={formData.budget || ""}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  budget: e.target.value,
+                                }))
+                              }
+                              className="w-full bg-transparent text-sm text-label outline-none"
+                            >
+                              <option value="">Select budget...</option>
+                              <option value="$3,000 – $5,000">$3,000 – $5,000</option>
+                              <option value="$5,000 – $10,000">$5,000 – $10,000</option>
+                              <option value="$10,000 – $25,000">$10,000 – $25,000</option>
+                              <option value="$25,000+">$25,000+ Enterprise</option>
+                            </select>
+                          </label>
+                        )}
+                        {config.contactForm?.showTimeline !== false && (
+                          <label className="block px-5 py-4">
+                            <span className="mb-1.5 block text-xs font-medium tracking-wide text-subtle uppercase">
+                              Target Timeline
+                            </span>
+                            <select
+                              id="timeline"
+                              name="timeline"
+                              value={formData.timeline || ""}
+                              onChange={(e) =>
+                                setFormData((prev) => ({
+                                  ...prev,
+                                  timeline: e.target.value,
+                                }))
+                              }
+                              className="w-full bg-transparent text-sm text-label outline-none"
+                            >
+                              <option value="">Select timeline...</option>
+                              <option value="Urgent (< 2 weeks)">Urgent (&lt; 2 weeks)</option>
+                              <option value="1 month">1 month</option>
+                              <option value="2 – 3 months">2 – 3 months</option>
+                              <option value="Flexible">Flexible / Planning</option>
+                            </select>
+                          </label>
+                        )}
+                      </div>
+                    )}
+
                     <label className="block px-5 py-4">
                       <span className="mb-1.5 block text-xs font-medium tracking-wide text-subtle uppercase">
                         Message

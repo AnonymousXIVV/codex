@@ -1448,6 +1448,14 @@ export function getSiteConfig() {
         Array.isArray(parsed.addresses) && parsed.addresses.length > 0
           ? parsed.addresses
           : DEFAULT_SITE_CONFIG.addresses,
+      branding: { ...DEFAULT_SITE_CONFIG.branding, ...(parsed.branding || {}) },
+      banner: { ...DEFAULT_SITE_CONFIG.banner, ...(parsed.banner || {}) },
+      whatsapp: { ...DEFAULT_SITE_CONFIG.whatsapp, ...(parsed.whatsapp || {}) },
+      contactForm: { ...DEFAULT_SITE_CONFIG.contactForm, ...(parsed.contactForm || {}) },
+      seo: { ...DEFAULT_SITE_CONFIG.seo, ...(parsed.seo || {}) },
+      emergency: { ...DEFAULT_SITE_CONFIG.emergency, ...(parsed.emergency || {}) },
+      codeInjection: { ...DEFAULT_SITE_CONFIG.codeInjection, ...(parsed.codeInjection || {}) },
+      snapshots: Array.isArray(parsed.snapshots) ? parsed.snapshots : (DEFAULT_SITE_CONFIG.snapshots || []),
     };
   } catch {
     return DEFAULT_SITE_CONFIG;

@@ -41,12 +41,28 @@ export const DEFAULT_SITE_CONFIG = {
       isPrimary: true,
     },
     {
+      id: "ph-2",
+      type: "phone",
+      label: "Kyiv Studio Landline",
+      value: "+380 44 233 4567",
+      href: "tel:+380442334567",
+      isPrimary: false,
+    },
+    {
       id: "tg-1",
       type: "telegram",
       label: "Official Telegram",
       value: "+380636406783",
       href: "https://t.me/+380636406783",
       isPrimary: true,
+    },
+    {
+      id: "tg-2",
+      type: "telegram",
+      label: "Client Success Desk",
+      value: "@codex_desk",
+      href: "https://t.me/codex_desk",
+      isPrimary: false,
     },
     {
       id: "vb-1",
@@ -57,12 +73,28 @@ export const DEFAULT_SITE_CONFIG = {
       isPrimary: true,
     },
     {
+      id: "vb-2",
+      type: "viber",
+      label: "Support Line Viber",
+      value: "+380 50 123 4567",
+      href: "viber://chat?number=%2B380501234567",
+      isPrimary: false,
+    },
+    {
       id: "em-1",
       type: "email",
       label: "Primary Email",
       value: "codexdynamix@gmail.com",
       href: "mailto:codexdynamix@gmail.com",
       isPrimary: true,
+    },
+    {
+      id: "em-2",
+      type: "email",
+      label: "Direct Studio Desk",
+      value: "hello@codexdynamics.com",
+      href: "mailto:hello@codexdynamics.com",
+      isPrimary: false,
     },
     {
       id: "ig-1",
@@ -521,4 +553,68 @@ export const DEFAULT_SITE_CONFIG = {
       label: "Facebook",
     },
   },
+
+  // Branding & Assets
+  branding: {
+    accentPreset: "blue",
+    logoDark: "",
+    logoLight: "",
+    favicon: "/favicon.svg",
+  },
+
+  // Top Announcement Banner
+  banner: {
+    enabled: false,
+    text: "✨ Exclusive Q4 Digital Strategy: Accelerate your business with bespoke web development.",
+    ctaText: "Book Discovery",
+    ctaUrl: "#contact",
+    styleVariant: "blue",
+    closable: true,
+  },
+
+  // WhatsApp & Floating Action Dock
+  whatsapp: {
+    enabled: true,
+    number: "+380636406783",
+    defaultMessage: "Hello Codex Dynamics, I'm interested in building a high-performance web project.",
+    position: "bottom-right",
+    showExtraChannels: true,
+  },
+
+  // Contact Form Field Customizer
+  contactForm: {
+    showBudget: true,
+    showTimeline: true,
+    showCompany: true,
+    showServiceSelect: true,
+  },
+
+  // SEO & Social OpenGraph
+  seo: {
+    metaTitle: "Codex Dynamics — High-Performance Websites & Digital Studio",
+    metaDescription: "High-performance websites, web design, web development, and digital marketing studio. Precision engineering on every screen.",
+    canonicalUrl: "https://codexdynamics.com",
+    ogImage: "/hero/studio.jpg",
+    gaId: "",
+    gscVerification: "",
+    pixelId: "",
+  },
+
+  // Maintenance & Emergency Mode
+  emergency: {
+    maintenanceMode: false,
+    headline: "System Maintenance & Upgrades in Progress",
+    subtext: "We are fine-tuning our high-performance digital studio platform. We will be back shortly with enhanced capabilities.",
+    estimatedLaunch: "2026-10-01T12:00",
+    notifyEmail: "codexdynamix@gmail.com",
+  },
+
+  // Custom Code Injections
+  codeInjection: {
+    headerCode: "",
+    footerCode: "",
+  },
+
+  // Saved snapshots for 1-click restore
+  snapshots: [],
 };

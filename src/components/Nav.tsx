@@ -22,7 +22,16 @@ import { useContactModal } from "@/context/ContactModalContext";
 import { usePreviewMode } from "@/context/PreviewModeContext";
 import { hrefToPreviewPage } from "@/lib/theme-engine";
 
-function Mark({ letter }: { letter?: string }) {
+function Mark({ letter, logoUrl }: { letter?: string; logoUrl?: string }) {
+  if (logoUrl) {
+    return (
+      <img
+        src={logoUrl}
+        alt="Logo"
+        className="size-7 object-contain rounded-[6px]"
+      />
+    );
+  }
   return (
     <span
       className="relative flex size-7 shrink-0 items-center justify-center rounded-[8px] bg-blue text-paper shadow-[inset_0_0.5px_0_rgb(255_255_255_/_0.35)]"
@@ -242,7 +251,7 @@ export function Nav() {
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
             className="flex items-center gap-2"
           >
-            <Mark letter={brandInitial} />
+            <Mark letter={brandInitial} logoUrl={config.branding?.logoLight || config.branding?.logoDark} />
             <span className="text-[14px] font-semibold tracking-tight text-label">{brandName}</span>
           </button>
           <div className="hidden items-center gap-1 lg:flex">
@@ -348,7 +357,7 @@ export function Nav() {
             className="flex min-h-11 items-center gap-2 rounded-full py-1 pr-2 pl-0.5"
             aria-label={`${brandName} home`}
           >
-            <Mark letter={brandInitial} />
+            <Mark letter={brandInitial} logoUrl={config.branding?.logoLight || config.branding?.logoDark} />
             <span className="text-[13px] font-semibold tracking-tight">
               {brandName}
             </span>

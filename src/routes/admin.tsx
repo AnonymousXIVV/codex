@@ -373,7 +373,9 @@ function AdminCRM() {
           <div className="pt-1">
             {activeTab === "tidio" && <TidioTab />}
 
-            {(activeTab === "site_content" || activeTab === "content") && <SiteContentTab />}
+            {(activeTab === "site_content" || activeTab === "content") && (
+              <SiteContentTab onSwitchTab={(tab) => setActiveTab(tab)} />
+            )}
 
             {activeTab === "visitors" && (
               <VisitorsTab
@@ -464,7 +466,13 @@ function AdminCRM() {
               />
             )}
 
-            {activeTab === "settings" && (
+            {(activeTab === "settings" ||
+              activeTab === "customizer" ||
+              activeTab === "branding" ||
+              activeTab === "layout" ||
+              activeTab === "conversion" ||
+              activeTab === "seo_studio" ||
+              activeTab === "emergency") && (
               <SettingsTab
                 stats={stats}
                 webhookUrl={webhookUrl}
@@ -473,7 +481,43 @@ function AdminCRM() {
                 onChangePassword={handleChangePassword}
                 onRestoreBackup={(backupData) => dispatchAction("restore_backup", { backupData })}
                 onOpenHostingerModal={() => setIsHostingerModalOpen(true)}
-                fullData={{ stats, visitors, leads, enquiries, backlinks, blogs, reviews, projects, regions, browsers, devices, settings: { webhook_url: webhookUrl } }}
+                defaultSubTab={
+                  activeTab === "branding"
+                    ? "branding"
+                    : activeTab === "layout"
+                    ? "layout"
+                    : activeTab === "conversion"
+                    ? "conversion"
+                    : activeTab === "seo_studio"
+                    ? "seo"
+                    : activeTab === "emergency"
+                    ? "emergency"
+                    : activeTab === "customizer"
+                    ? "branding"
+                    : "system"
+                }
+                onSubTabChange={(sub) => {
+                  if (sub === "branding") setActiveTab("branding");
+                  else if (sub === "layout") setActiveTab("layout");
+                  else if (sub === "conversion") setActiveTab("conversion");
+                  else if (sub === "seo") setActiveTab("seo_studio");
+                  else if (sub === "emergency") setActiveTab("emergency");
+                  else if (sub === "system") setActiveTab("settings");
+                }}
+                fullData={{
+                  stats,
+                  visitors,
+                  leads,
+                  enquiries,
+                  backlinks,
+                  blogs,
+                  reviews,
+                  projects,
+                  regions,
+                  browsers,
+                  devices,
+                  settings: { webhook_url: webhookUrl },
+                }}
               />
             )}
           </div>
