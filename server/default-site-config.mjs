@@ -492,4 +492,33 @@ export const DEFAULT_SITE_CONFIG = {
     position: "bottom-right",
     welcomeMessage: "Hi! How can we help you today? Leave us a message and our team will get right back to you.",
   },
+
+  // Header Social Buttons (Controls visibility and links on header)
+  headerSocials: {
+    linkedin: {
+      enabled: true,
+      url: "https://linkedin.com/company/codexdynamics",
+      label: "LinkedIn",
+    },
+    x: {
+      enabled: true,
+      url: "https://x.com/codexdynamics",
+      label: "X (Twitter)",
+    },
+    github: {
+      enabled: true,
+      url: "https://github.com/codexdynamics",
+      label: "GitHub",
+    },
+    instagram: {
+      enabled: true,
+      url: "https://www.instagram.com/codex_dynamics/",
+      label: "Instagram",
+    },
+    facebook: {
+      enabled: true,
+      url: "https://www.facebook.com/profile.php?id=61571219783449",
+      label: "Facebook",
+    },
+  },
 };

@@ -4,11 +4,27 @@
 export interface GeoLocationDetails {
   country: string;
   countryCode: string;
+  country_code?: string;
   flag: string;
   city: string;
   region: string;
   postalCode: string;
+  postal_code?: string;
   street: string;
+}
+
+export interface GeoLocationInputObject {
+  country?: string | null;
+  countryCode?: string | null;
+  country_code?: string | null;
+  flag?: string | null;
+  city?: string | null;
+  region?: string | null;
+  postalCode?: string | null;
+  postal_code?: string | null;
+  street?: string | null;
+  ip_address?: string | null;
+  [key: string]: any;
 }
 
 const COUNTRY_MAP: Record<
@@ -186,26 +202,68 @@ export function countryCodeToFlag(code: string): string {
 }
 
 export function resolveGeoLocation(
-  countryInput?: string,
+  countryInput?: string | GeoLocationInputObject | null,
   existingFlag?: string,
   existingCity?: string,
   existingPostal?: string,
   existingStreet?: string
 ): GeoLocationDetails {
-  const raw = (countryInput || "").trim();
+  let targetCountry = "";
+  let targetFlag = existingFlag;
+  let targetCity = existingCity;
+  let targetPostal = existingPostal;
+  let targetStreet = existingStreet;
+  let targetRegion = "";
+
+  if (countryInput && typeof countryInput === "object") {
+    targetCountry =
+      typeof countryInput.country === "string"
+        ? countryInput.country
+        : typeof countryInput.country_code === "string"
+        ? countryInput.country_code
+        : typeof countryInput.countryCode === "string"
+        ? countryInput.countryCode
+        : "";
+    if (typeof countryInput.flag === "string" && countryInput.flag) {
+      targetFlag = countryInput.flag;
+    }
+    if (typeof countryInput.city === "string" && countryInput.city) {
+      targetCity = countryInput.city;
+    }
+    if (typeof countryInput.postal_code === "string" && countryInput.postal_code) {
+      targetPostal = countryInput.postal_code;
+    } else if (typeof countryInput.postalCode === "string" && countryInput.postalCode) {
+      targetPostal = countryInput.postalCode;
+    }
+    if (typeof countryInput.street === "string" && countryInput.street) {
+      targetStreet = countryInput.street;
+    }
+    if (typeof countryInput.region === "string" && countryInput.region) {
+      targetRegion = countryInput.region;
+    }
+  } else if (typeof countryInput === "string") {
+    targetCountry = countryInput;
+  } else if (countryInput !== null && countryInput !== undefined) {
+    targetCountry = String(countryInput);
+  }
+
+  const raw = String(targetCountry || "").trim();
   const rawUpper = raw.toUpperCase();
 
   // If 2-letter or 3-letter abbreviation is passed
   if (COUNTRY_MAP[rawUpper]) {
     const matched = COUNTRY_MAP[rawUpper];
+    const code = rawUpper.slice(0, 2);
     return {
       country: matched.name,
-      countryCode: rawUpper.slice(0, 2),
-      flag: matched.flag || countryCodeToFlag(rawUpper.slice(0, 2)),
-      city: existingCity || matched.city,
-      region: matched.region,
-      postalCode: existingPostal || matched.postalCode,
-      street: existingStreet || matched.street,
+      countryCode: code,
+      country_code: code,
+      flag: targetFlag && targetFlag !== "🌐" ? targetFlag : (matched.flag || countryCodeToFlag(code)),
+      city: targetCity || matched.city,
+      region: targetRegion || matched.region,
+      postalCode: targetPostal || matched.postalCode,
+      postal_code: targetPostal || matched.postalCode,
+      street: targetStreet || matched.street,
     };
   }
 
@@ -215,11 +273,13 @@ export function resolveGeoLocation(
       return {
         country: info.name,
         countryCode: code,
-        flag: existingFlag && existingFlag !== "🌐" ? existingFlag : info.flag,
-        city: existingCity || info.city,
-        region: info.region,
-        postalCode: existingPostal || info.postalCode,
-        street: existingStreet || info.street,
+        country_code: code,
+        flag: targetFlag && targetFlag !== "🌐" ? targetFlag : info.flag,
+        city: targetCity || info.city,
+        region: targetRegion || info.region,
+        postalCode: targetPostal || info.postalCode,
+        postal_code: targetPostal || info.postalCode,
+        street: targetStreet || info.street,
       };
     }
   }
@@ -229,79 +289,93 @@ export function resolveGeoLocation(
     return {
       country: "United States",
       countryCode: "US",
-      flag: "🇺🇸",
-      city: existingCity || "San Francisco",
-      region: "California",
-      postalCode: existingPostal || "94105",
-      street: existingStreet || "101 Market St, Financial District",
+      country_code: "US",
+      flag: targetFlag && targetFlag !== "🌐" ? targetFlag : "🇺🇸",
+      city: targetCity || "San Francisco",
+      region: targetRegion || "California",
+      postalCode: targetPostal || "94105",
+      postal_code: targetPostal || "94105",
+      street: targetStreet || "101 Market St, Financial District",
     };
   }
   if (raw.toLowerCase().includes("united kingdom") || raw.toLowerCase().includes("britain") || raw.toLowerCase().includes("england")) {
     return {
       country: "United Kingdom",
       countryCode: "GB",
-      flag: "🇬🇧",
-      city: existingCity || "London",
-      region: "Greater London",
-      postalCode: existingPostal || "EC2A 4NE",
-      street: existingStreet || "25 Old Street, Silicon Roundabout",
+      country_code: "GB",
+      flag: targetFlag && targetFlag !== "🌐" ? targetFlag : "🇬🇧",
+      city: targetCity || "London",
+      region: targetRegion || "Greater London",
+      postalCode: targetPostal || "EC2A 4NE",
+      postal_code: targetPostal || "EC2A 4NE",
+      street: targetStreet || "25 Old Street, Silicon Roundabout",
     };
   }
   if (raw.toLowerCase().includes("ukraine")) {
     return {
       country: "Ukraine",
       countryCode: "UA",
-      flag: "🇺🇦",
-      city: existingCity || "Kyiv",
-      region: "Kyiv City",
-      postalCode: existingPostal || "01001",
-      street: existingStreet || "14 Khreshchatyk St, Pechersk",
+      country_code: "UA",
+      flag: targetFlag && targetFlag !== "🌐" ? targetFlag : "🇺🇦",
+      city: targetCity || "Kyiv",
+      region: targetRegion || "Kyiv City",
+      postalCode: targetPostal || "01001",
+      postal_code: targetPostal || "01001",
+      street: targetStreet || "14 Khreshchatyk St, Pechersk",
     };
   }
   if (raw.toLowerCase().includes("germany") || raw.toLowerCase().includes("deutschland")) {
     return {
       country: "Germany",
       countryCode: "DE",
-      flag: "🇩🇪",
-      city: existingCity || "Berlin",
-      region: "Berlin",
-      postalCode: existingPostal || "10115",
-      street: existingStreet || "Friedrichstraße 43, Mitte",
+      country_code: "DE",
+      flag: targetFlag && targetFlag !== "🌐" ? targetFlag : "🇩🇪",
+      city: targetCity || "Berlin",
+      region: targetRegion || "Berlin",
+      postalCode: targetPostal || "10115",
+      postal_code: targetPostal || "10115",
+      street: targetStreet || "Friedrichstraße 43, Mitte",
     };
   }
   if (raw.toLowerCase().includes("canada")) {
     return {
       country: "Canada",
       countryCode: "CA",
-      flag: "🇨🇦",
-      city: existingCity || "Toronto",
-      region: "Ontario",
-      postalCode: existingPostal || "M5V 2T6",
-      street: existingStreet || "200 Bay St, Financial Core",
+      country_code: "CA",
+      flag: targetFlag && targetFlag !== "🌐" ? targetFlag : "🇨🇦",
+      city: targetCity || "Toronto",
+      region: targetRegion || "Ontario",
+      postalCode: targetPostal || "M5V 2T6",
+      postal_code: targetPostal || "M5V 2T6",
+      street: targetStreet || "200 Bay St, Financial Core",
     };
   }
   if (raw.toLowerCase().includes("emirates") || raw.toLowerCase().includes("dubai")) {
     return {
       country: "United Arab Emirates",
       countryCode: "AE",
-      flag: "🇦🇪",
-      city: existingCity || "Dubai",
-      region: "Dubai Emirate",
-      postalCode: existingPostal || "00000",
-      street: existingStreet || "Sheikh Zayed Rd, DIFC Gate Tower 4",
+      country_code: "AE",
+      flag: targetFlag && targetFlag !== "🌐" ? targetFlag : "🇦🇪",
+      city: targetCity || "Dubai",
+      region: targetRegion || "Dubai Emirate",
+      postalCode: targetPostal || "00000",
+      postal_code: targetPostal || "00000",
+      street: targetStreet || "Sheikh Zayed Rd, DIFC Gate Tower 4",
     };
   }
 
   // Fallback for general location
   const code = raw.length === 2 ? raw.toUpperCase() : "US";
-  const flag = existingFlag && existingFlag !== "🌐" ? existingFlag : countryCodeToFlag(code);
+  const flag = targetFlag && targetFlag !== "🌐" ? targetFlag : countryCodeToFlag(code);
   return {
     country: raw || "United States",
     countryCode: code,
+    country_code: code,
     flag: flag || "🇺🇸",
-    city: existingCity || "San Francisco",
-    region: "California",
-    postalCode: existingPostal || "94105",
-    street: existingStreet || "101 Market St, Financial District",
+    city: targetCity || "San Francisco",
+    region: targetRegion || "California",
+    postalCode: targetPostal || "94105",
+    postal_code: targetPostal || "94105",
+    street: targetStreet || "101 Market St, Financial District",
   };
 }

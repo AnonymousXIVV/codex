@@ -52,11 +52,11 @@ export function Footer() {
   const whatsappUrl = primaryWhatsApp?.href || LINKS.whatsapp;
   const telegramUrl = primaryTelegram?.href || LINKS.telegram;
   const viberUrl = primaryViber?.href || LINKS.viber;
-  const instagramUrl = socialsGrouped.instagram?.[0]?.href || LINKS.instagram;
-  const facebookUrl = socialsGrouped.facebook?.[0]?.href || LINKS.facebook;
-  const linkedinUrl = socialsGrouped.linkedin?.[0]?.href || LINKS.linkedin;
-  const twitterUrl = socialsGrouped.twitter?.[0]?.href || LINKS.twitter;
-  const githubUrl = socialsGrouped.github?.[0]?.href || LINKS.github;
+  const instagramUrl = config.headerSocials?.instagram?.url || socialsGrouped.instagram?.[0]?.href || LINKS.instagram;
+  const facebookUrl = config.headerSocials?.facebook?.url || socialsGrouped.facebook?.[0]?.href || LINKS.facebook;
+  const linkedinUrl = config.headerSocials?.linkedin?.url || socialsGrouped.linkedin?.[0]?.href || LINKS.linkedin;
+  const twitterUrl = config.headerSocials?.x?.url || socialsGrouped.twitter?.[0]?.href || LINKS.twitter;
+  const githubUrl = config.headerSocials?.github?.url || socialsGrouped.github?.[0]?.href || LINKS.github;
 
   return (
     <footer className="border-t border-hairline bg-background py-14 pb-28 text-sm text-muted-foreground sm:py-16 sm:pb-28">

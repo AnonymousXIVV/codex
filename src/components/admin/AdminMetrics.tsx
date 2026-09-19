@@ -1,4 +1,4 @@
-import { Users, UserPlus, Link2, FileText, Star, Briefcase, Contact } from "lucide-react";
+import { Users, UserPlus, Link2, FileText, Star, Briefcase, Contact, Globe } from "lucide-react";
 import type { CrmStats } from "@/types/crm";
 import type { AdminTabKey } from "./AdminSidebar";
 
@@ -75,43 +75,71 @@ export function AdminMetrics({ stats, activeTab, setActiveTab }: AdminMetricsPro
     },
   ];
 
+  const isContentActive = activeTab === "content" || activeTab === "site_content";
+
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
-      {cards.map((c) => {
-        const Icon = c.icon;
-        const isSelected = activeTab === c.id;
-        return (
-          <button
-            key={c.id}
-            type="button"
-            onClick={() => setActiveTab(c.id as any)}
-            className={`surface-lift text-left p-4 rounded-2xl bg-card border transition-all duration-200 cursor-pointer ${
-              isSelected
-                ? "border-blue/50 ring-2 ring-blue/10 shadow-sm"
-                : "border-black/8 hover:border-black/15 shadow-[0_0_0_1px_rgb(0_0_0_/_0.04)]"
-            }`}
-          >
-            <div className="flex items-center justify-between gap-1 mb-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-subtle">
-                {c.title}
-              </span>
-              <div className={`p-1 rounded-lg ${c.badgeColor}`}>
-                <Icon className="size-3.5" />
+    <div className="space-y-3">
+      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-7 gap-3">
+        {cards.map((c) => {
+          const Icon = c.icon;
+          const isSelected = activeTab === c.id;
+          return (
+            <button
+              key={c.id}
+              type="button"
+              onClick={() => setActiveTab(c.id as any)}
+              className={`surface-lift text-left p-4 rounded-2xl bg-card border transition-all duration-200 cursor-pointer ${
+                isSelected
+                  ? "border-blue/50 ring-2 ring-blue/10 shadow-sm"
+                  : "border-black/8 hover:border-black/15 shadow-[0_0_0_1px_rgb(0_0_0_/_0.04)]"
+              }`}
+            >
+              <div className="flex items-center justify-between gap-1 mb-2">
+                <span className="text-[11px] font-semibold uppercase tracking-wider text-subtle">
+                  {c.title}
+                </span>
+                <div className={`p-1 rounded-lg ${c.badgeColor}`}>
+                  <Icon className="size-3.5" />
+                </div>
               </div>
-            </div>
 
-            <div className="flex items-baseline gap-2">
-              <span className="text-2xl font-bold tracking-tight font-display text-label">
-                {c.value}
-              </span>
-            </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-bold tracking-tight font-display text-label">
+                  {c.value}
+                </span>
+              </div>
 
-            <div className="text-[11px] font-medium text-muted-foreground mt-1 truncate">
-              {c.subValue}
-            </div>
-          </button>
-        );
-      })}
+              <div className="text-[11px] font-medium text-muted-foreground mt-1 truncate">
+                {c.subValue}
+              </div>
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Quick Jump Bar for Live Website Content & Contacts */}
+      <div className="flex flex-wrap items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-blue/5 border border-blue/15 text-xs">
+        <div className="flex items-center gap-2.5 text-label font-medium">
+          <span className="size-6 rounded-lg bg-blue/10 text-blue flex items-center justify-center shrink-0">
+            <Globe className="size-3.5" />
+          </span>
+          <span className="text-xs text-label font-medium">
+            Manage public site contacts, phone, WhatsApp, email, studio address & social accounts
+          </span>
+        </div>
+        <button
+          type="button"
+          onClick={() => setActiveTab("content")}
+          className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-xs cursor-pointer ${
+            isContentActive
+              ? "bg-blue text-white"
+              : "bg-blue text-white hover:bg-blue-dark"
+          }`}
+        >
+          <Globe className="size-3.5" />
+          <span>{isContentActive ? "Editing Site Content Below" : "Edit Site Contacts & Socials"}</span>
+        </button>
+      </div>
     </div>
   );
 }

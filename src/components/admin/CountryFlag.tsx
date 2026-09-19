@@ -9,9 +9,18 @@ export interface CountryFlagProps {
 }
 
 // Normalize country string or country code to standard 2-letter uppercase code
-function normalizeCountryCode(countryOrCode?: string): string {
+function normalizeCountryCode(countryOrCode?: any): string {
   if (!countryOrCode) return "US";
-  const str = countryOrCode.trim();
+  let raw = "";
+  if (typeof countryOrCode === "string") {
+    raw = countryOrCode;
+  } else if (typeof countryOrCode === "object") {
+    raw = countryOrCode.countryCode || countryOrCode.country_code || countryOrCode.country || "";
+  } else {
+    raw = String(countryOrCode);
+  }
+
+  const str = raw.trim();
   const lower = str.toLowerCase();
 
   if (lower === "us" || lower === "usa" || lower.includes("united states") || lower.includes("america")) return "US";

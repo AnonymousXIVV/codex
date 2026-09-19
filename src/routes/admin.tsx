@@ -348,6 +348,7 @@ function AdminCRM() {
             onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
             onOpenHostingerModal={() => setIsHostingerModalOpen(true)}
             onLogout={handleLogout}
+            onSelectTab={setActiveTab}
           />
         )}
 
@@ -372,7 +373,7 @@ function AdminCRM() {
           <div className="pt-1">
             {activeTab === "tidio" && <TidioTab />}
 
-            {activeTab === "site_content" && <SiteContentTab />}
+            {(activeTab === "site_content" || activeTab === "content") && <SiteContentTab />}
 
             {activeTab === "visitors" && (
               <VisitorsTab

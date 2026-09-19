@@ -37,69 +37,83 @@ function Mark({ letter }: { letter?: string }) {
 
 function HeaderSocials({
   className,
-  instagramUrl,
-  facebookUrl,
-  linkedinUrl,
-  twitterUrl,
-  githubUrl,
+  headerSocials,
+  fallbackSocials,
 }: {
   className?: string;
-  instagramUrl?: string;
-  facebookUrl?: string;
-  linkedinUrl?: string;
-  twitterUrl?: string;
-  githubUrl?: string;
+  headerSocials?: any;
+  fallbackSocials?: {
+    instagram?: string;
+    facebook?: string;
+    linkedin?: string;
+    twitter?: string;
+    github?: string;
+  };
 }) {
+  const items = [
+    {
+      key: "linkedin",
+      enabled: headerSocials?.linkedin !== undefined ? Boolean(headerSocials.linkedin.enabled) : true,
+      url: headerSocials?.linkedin?.url || fallbackSocials?.linkedin || LINKS.linkedin,
+      label: "LinkedIn",
+      logo: LinkedInLogo,
+      iconClass: "size-5 sm:size-6",
+    },
+    {
+      key: "x",
+      enabled: headerSocials?.x !== undefined ? Boolean(headerSocials.x.enabled) : true,
+      url: headerSocials?.x?.url || fallbackSocials?.twitter || LINKS.twitter,
+      label: "Twitter / X",
+      logo: TwitterXLogo,
+      iconClass: "size-5 sm:size-6",
+    },
+    {
+      key: "github",
+      enabled: headerSocials?.github !== undefined ? Boolean(headerSocials.github.enabled) : true,
+      url: headerSocials?.github?.url || fallbackSocials?.github || LINKS.github,
+      label: "GitHub",
+      logo: GitHubLogo,
+      iconClass: "size-5 sm:size-6",
+    },
+    {
+      key: "instagram",
+      enabled: headerSocials?.instagram !== undefined ? Boolean(headerSocials.instagram.enabled) : true,
+      url: headerSocials?.instagram?.url || fallbackSocials?.instagram || LINKS.instagram,
+      label: "Instagram",
+      logo: InstagramLogo,
+      iconClass: "size-6 sm:size-7",
+    },
+    {
+      key: "facebook",
+      enabled: headerSocials?.facebook !== undefined ? Boolean(headerSocials.facebook.enabled) : true,
+      url: headerSocials?.facebook?.url || fallbackSocials?.facebook || LINKS.facebook,
+      label: "Facebook",
+      logo: FacebookLogo,
+      iconClass: "size-6 sm:size-7",
+    },
+  ];
+
+  const visible = items.filter((item) => item.enabled && item.url);
+  if (visible.length === 0) return null;
+
   return (
-    <div className={cn("flex items-center gap-0.5", className)}>
-      <a
-        href={linkedinUrl || LINKS.linkedin}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="LinkedIn"
-        title="LinkedIn"
-        className="hidden lg:flex size-9 items-center justify-center rounded-full transition-transform duration-150 ease-out hover:scale-105 active:scale-[0.96] sm:size-10"
-      >
-        <LinkedInLogo className="size-6 sm:size-7" />
-      </a>
-      <a
-        href={twitterUrl || LINKS.twitter}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Twitter / X"
-        title="Twitter / X"
-        className="hidden lg:flex size-9 items-center justify-center rounded-full transition-transform duration-150 ease-out hover:scale-105 active:scale-[0.96] sm:size-10"
-      >
-        <TwitterXLogo className="size-6 sm:size-7" />
-      </a>
-      <a
-        href={githubUrl || LINKS.github}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="GitHub"
-        title="GitHub"
-        className="hidden lg:flex size-9 items-center justify-center rounded-full transition-transform duration-150 ease-out hover:scale-105 active:scale-[0.96] sm:size-10"
-      >
-        <GitHubLogo className="size-6 sm:size-7" />
-      </a>
-      <a
-        href={instagramUrl || LINKS.instagram}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Instagram"
-        className="flex size-9 items-center justify-center rounded-full transition-transform duration-150 ease-out hover:scale-105 active:scale-[0.96] sm:size-10"
-      >
-        <InstagramLogo className="size-7 sm:size-8" />
-      </a>
-      <a
-        href={facebookUrl || LINKS.facebook}
-        target="_blank"
-        rel="noopener noreferrer"
-        aria-label="Facebook"
-        className="flex size-9 items-center justify-center rounded-full transition-transform duration-150 ease-out hover:scale-105 active:scale-[0.96] sm:size-10"
-      >
-        <FacebookLogo className="size-7 sm:size-8" />
-      </a>
+    <div className={cn("flex items-center gap-0.5 sm:gap-1", className)}>
+      {visible.map((item) => {
+        const LogoComponent = item.logo;
+        return (
+          <a
+            key={item.key}
+            href={item.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label={item.label}
+            title={item.label}
+            className="flex size-8 sm:size-9 items-center justify-center rounded-full transition-transform duration-150 ease-out hover:scale-105 active:scale-[0.96]"
+          >
+            <LogoComponent className={item.iconClass} />
+          </a>
+        );
+      })}
     </div>
   );
 }
@@ -129,11 +143,11 @@ export function Nav() {
   const whatsappHref = primaryWhatsApp?.href || LINKS.whatsapp;
   const telegramHref = primaryTelegram?.href || LINKS.telegram;
   const viberHref = primaryViber?.href || LINKS.viber;
-  const instagramHref = socialsGrouped.instagram?.[0]?.href || LINKS.instagram;
-  const facebookHref = socialsGrouped.facebook?.[0]?.href || LINKS.facebook;
-  const linkedinHref = socialsGrouped.linkedin?.[0]?.href || LINKS.linkedin;
-  const twitterHref = socialsGrouped.twitter?.[0]?.href || LINKS.twitter;
-  const githubHref = socialsGrouped.github?.[0]?.href || LINKS.github;
+  const instagramHref = config.headerSocials?.instagram?.url || socialsGrouped.instagram?.[0]?.href || LINKS.instagram;
+  const facebookHref = config.headerSocials?.facebook?.url || socialsGrouped.facebook?.[0]?.href || LINKS.facebook;
+  const linkedinHref = config.headerSocials?.linkedin?.url || socialsGrouped.linkedin?.[0]?.href || LINKS.linkedin;
+  const twitterHref = config.headerSocials?.x?.url || socialsGrouped.twitter?.[0]?.href || LINKS.twitter;
+  const githubHref = config.headerSocials?.github?.url || socialsGrouped.github?.[0]?.href || LINKS.github;
 
   const { openContactModal } = useContactModal();
   const preview = usePreviewMode();
@@ -358,11 +372,14 @@ export function Nav() {
 
           <div className="flex items-center gap-1.5 sm:gap-2">
             <HeaderSocials
-              instagramUrl={instagramHref}
-              facebookUrl={facebookHref}
-              linkedinUrl={linkedinHref}
-              twitterUrl={twitterHref}
-              githubUrl={githubHref}
+              headerSocials={config.headerSocials}
+              fallbackSocials={{
+                instagram: instagramHref,
+                facebook: facebookHref,
+                linkedin: linkedinHref,
+                twitter: twitterHref,
+                github: githubHref,
+              }}
             />
             <Button
               type="button"

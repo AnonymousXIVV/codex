@@ -1431,6 +1431,15 @@ export function getSiteConfig() {
       footer: { ...DEFAULT_SITE_CONFIG.footer, ...(parsed.footer || {}) },
       theme: { ...DEFAULT_SITE_CONFIG.theme, ...(parsed.theme || {}) },
       tidio: { ...DEFAULT_SITE_CONFIG.tidio, ...(parsed.tidio || {}) },
+      headerSocials: {
+        ...DEFAULT_SITE_CONFIG.headerSocials,
+        ...(parsed.headerSocials || {}),
+        linkedin: { ...DEFAULT_SITE_CONFIG.headerSocials.linkedin, ...(parsed.headerSocials?.linkedin || {}) },
+        x: { ...DEFAULT_SITE_CONFIG.headerSocials.x, ...(parsed.headerSocials?.x || {}) },
+        github: { ...DEFAULT_SITE_CONFIG.headerSocials.github, ...(parsed.headerSocials?.github || {}) },
+        instagram: { ...DEFAULT_SITE_CONFIG.headerSocials.instagram, ...(parsed.headerSocials?.instagram || {}) },
+        facebook: { ...DEFAULT_SITE_CONFIG.headerSocials.facebook, ...(parsed.headerSocials?.facebook || {}) },
+      },
       socialContacts:
         Array.isArray(parsed.socialContacts) && parsed.socialContacts.length > 0
           ? parsed.socialContacts

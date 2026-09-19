@@ -21,6 +21,9 @@ interface SiteConfigContextType {
     email: SocialContact[];
     instagram: SocialContact[];
     facebook: SocialContact[];
+    linkedin: SocialContact[];
+    twitter: SocialContact[];
+    github: SocialContact[];
     custom: SocialContact[];
   };
   addresses: AddressItem[];
@@ -108,6 +111,9 @@ export function SiteConfigProvider({ children }: { children: React.ReactNode }) 
       email: [] as SocialContact[],
       instagram: [] as SocialContact[],
       facebook: [] as SocialContact[],
+      linkedin: [] as SocialContact[],
+      twitter: [] as SocialContact[],
+      github: [] as SocialContact[],
       custom: [] as SocialContact[],
     };
 

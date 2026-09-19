@@ -32,6 +32,7 @@ export type AdminTabKey =
   | "reviews"
   | "projects"
   | "content"
+  | "site_content"
   | "settings";
 
 interface AdminSidebarProps {
@@ -57,6 +58,20 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   const navSections = [
     {
+      group: "Live Site & Branding",
+      items: [
+        {
+          id: "content" as const,
+          label: "Site Contacts & Socials",
+          icon: Globe,
+          count: null,
+          badgeLive: true,
+          badgeText: "Public Site",
+          badgeColor: "bg-blue/10 text-blue border-blue/20",
+        },
+      ],
+    },
+    {
       group: "Live Chat & Support",
       items: [
         {
@@ -65,6 +80,7 @@ export function AdminSidebar({
           icon: MessageSquare,
           count: null,
           badgeLive: true,
+          badgeText: null,
           badgeColor: "bg-[#0066FF]/10 text-[#0066FF] border-[#0066FF]/20",
         },
       ],
@@ -78,6 +94,7 @@ export function AdminSidebar({
           icon: Activity,
           count: stats.totalVisitors,
           badgeLive: true,
+          badgeText: null,
           badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200/70",
         },
         {
@@ -86,6 +103,7 @@ export function AdminSidebar({
           icon: BarChart3,
           count: null,
           badgeLive: false,
+          badgeText: null,
           badgeColor: "",
         },
       ],
@@ -99,6 +117,7 @@ export function AdminSidebar({
           icon: Users,
           count: stats.totalLeads ?? 0,
           badgeLive: (stats.newLeads ?? 0) > 0,
+          badgeText: null,
           badgeColor: "bg-emerald-50 text-emerald-700 border-emerald-200/70",
         },
         {
@@ -107,6 +126,7 @@ export function AdminSidebar({
           icon: Inbox,
           count: stats.totalEnquiries,
           badgeLive: false,
+          badgeText: null,
           badgeColor: "bg-blue/10 text-blue border-blue/20",
         },
         {
@@ -115,6 +135,7 @@ export function AdminSidebar({
           icon: Star,
           count: stats.totalReviews,
           badgeLive: false,
+          badgeText: null,
           badgeColor: "bg-amber-50 text-amber-700 border-amber-200/70",
         },
       ],
@@ -128,6 +149,7 @@ export function AdminSidebar({
           icon: FileText,
           count: stats.totalBlogs,
           badgeLive: false,
+          badgeText: null,
           badgeColor: "bg-blue/10 text-blue border-blue/20",
         },
         {
@@ -136,6 +158,7 @@ export function AdminSidebar({
           icon: Link2,
           count: stats.totalBacklinks,
           badgeLive: false,
+          badgeText: null,
           badgeColor: "bg-purple-50 text-purple-700 border-purple-200/70",
         },
         {
@@ -144,15 +167,8 @@ export function AdminSidebar({
           icon: Briefcase,
           count: stats.totalProjects,
           badgeLive: false,
+          badgeText: null,
           badgeColor: "bg-black/5 text-subtle border-black/5",
-        },
-        {
-          id: "content" as const,
-          label: "Website Copy & Info",
-          icon: Globe,
-          count: null,
-          badgeLive: false,
-          badgeColor: "",
         },
       ],
     },
@@ -165,6 +181,7 @@ export function AdminSidebar({
           icon: Shield,
           count: null,
           badgeLive: false,
+          badgeText: null,
           badgeColor: "",
         },
       ],
@@ -249,7 +266,10 @@ export function AdminSidebar({
             <div className="space-y-0.5">
               {section.items.map((item) => {
                 const Icon = item.icon;
-                const isActive = activeTab === item.id;
+                const isActive =
+                  activeTab === item.id ||
+                  (item.id === "content" && activeTab === "site_content") ||
+                  (item.id === "site_content" && activeTab === "content");
                 return (
                   <button
                     key={item.id}
@@ -275,6 +295,18 @@ export function AdminSidebar({
                         <span className="relative flex h-2 w-2">
                           <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
                           <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" />
+                        </span>
+                      )}
+
+                      {item.badgeText && (
+                        <span
+                          className={`text-[9px] px-1.5 py-0.5 rounded font-medium border ${
+                            isActive
+                              ? "bg-blue/10 text-blue border-blue/20 font-semibold"
+                              : "bg-black/5 text-subtle border-black/5"
+                          }`}
+                        >
+                          {item.badgeText}
                         </span>
                       )}
 

@@ -306,7 +306,7 @@ export function VisitorsTab({
                       {/* Location */}
                       <td className="py-3.5 px-4">
                         <div className="flex items-center gap-2">
-                          <CountryFlag flag={geo.flag} countryCode={geo.country_code} country={geo.country} />
+                          <CountryFlag flag={geo.flag} countryCode={geo.country_code || geo.countryCode} country={geo.country} />
                           <div>
                             <div className="font-medium text-label text-xs">
                               {geo.city ? `${geo.city}, ${geo.country}` : geo.country}

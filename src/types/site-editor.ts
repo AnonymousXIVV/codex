@@ -95,6 +95,21 @@ export interface ResultMetric {
   decimals?: number;
 }
 
+export interface HeaderSocialItem {
+  enabled: boolean;
+  url: string;
+  label?: string;
+}
+
+export interface HeaderSocialsConfig {
+  linkedin: HeaderSocialItem;
+  x: HeaderSocialItem;
+  github: HeaderSocialItem;
+  instagram: HeaderSocialItem;
+  facebook: HeaderSocialItem;
+  [key: string]: HeaderSocialItem | undefined;
+}
+
 export interface SiteConfig {
   siteName: string;
   siteTagline?: string;
@@ -166,6 +181,7 @@ export interface SiteConfig {
     copyrightText: string;
     [key: string]: any;
   };
+  headerSocials?: HeaderSocialsConfig;
   theme?: ThemeSettings;
   tidio?: TidioSettings;
   [key: string]: any;
@@ -699,5 +715,33 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
     hideOnMobile: false,
     position: "bottom-right",
     welcomeMessage: "Hi! How can we help you today? Leave us a message and our team will get right back to you.",
+  },
+
+  headerSocials: {
+    linkedin: {
+      enabled: true,
+      url: "https://linkedin.com/company/codexdynamics",
+      label: "LinkedIn",
+    },
+    x: {
+      enabled: true,
+      url: "https://x.com/codexdynamics",
+      label: "X (Twitter)",
+    },
+    github: {
+      enabled: true,
+      url: "https://github.com/codexdynamics",
+      label: "GitHub",
+    },
+    instagram: {
+      enabled: true,
+      url: "https://www.instagram.com/codex_dynamics/",
+      label: "Instagram",
+    },
+    facebook: {
+      enabled: true,
+      url: "https://www.facebook.com/profile.php?id=61571219783449",
+      label: "Facebook",
+    },
   },
 };

@@ -14,6 +14,7 @@ import {
   Shield,
   Users,
   MessageSquare,
+  Globe,
 } from "lucide-react";
 import type { AdminTabKey } from "./AdminSidebar";
 
@@ -24,6 +25,7 @@ interface AdminHeaderProps {
   onOpenMobileSidebar: () => void;
   onOpenHostingerModal: () => void;
   onLogout: () => void;
+  onSelectTab?: (tab: AdminTabKey) => void;
 }
 
 const tabMeta: Record<AdminTabKey, { label: string; icon: any; subtitle: string }> = {
@@ -31,6 +33,16 @@ const tabMeta: Record<AdminTabKey, { label: string; icon: any; subtitle: string 
     label: "Tidio Live Chat",
     icon: MessageSquare,
     subtitle: "Live customer chat automation, lead triggers, and visitor conversation desk",
+  },
+  content: {
+    label: "Site Contacts, Socials & Copy",
+    icon: Globe,
+    subtitle: "Manage live phone numbers, WhatsApp, addresses, header social icons, and site hero copy",
+  },
+  site_content: {
+    label: "Site Contacts, Socials & Copy",
+    icon: Globe,
+    subtitle: "Manage live phone numbers, WhatsApp, addresses, header social icons, and site hero copy",
   },
   visitors: {
     label: "Live Visitors",
@@ -85,9 +97,11 @@ export function AdminHeader({
   onRefresh,
   onOpenMobileSidebar,
   onOpenHostingerModal,
+  onSelectTab,
 }: AdminHeaderProps) {
   const current = tabMeta[activeTab] || tabMeta.visitors;
   const TabIcon = current.icon;
+  const isContentActive = activeTab === "content" || activeTab === "site_content";
 
   return (
     <header className="sticky top-0 z-20 bg-white/80 backdrop-blur-xl border-b border-black/8 px-4 sm:px-6 lg:px-8 py-3.5 transition-colors">
@@ -126,6 +140,22 @@ export function AdminHeader({
 
         {/* Right Side: Quick Actions */}
         <div className="flex items-center gap-2 sm:gap-2.5 shrink-0">
+          {onSelectTab && (
+            <button
+              type="button"
+              onClick={() => onSelectTab("content")}
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium border transition-all hover:shadow-xs cursor-pointer ${
+                isContentActive
+                  ? "bg-blue text-white border-blue shadow-xs"
+                  : "bg-blue/10 hover:bg-blue/20 text-blue border-blue/25"
+              }`}
+              title="Edit live phone, WhatsApp, email, addresses, header social buttons & site copy"
+            >
+              <Globe className="size-3.5" />
+              <span>Edit Contacts & Site</span>
+            </button>
+          )}
+
           <button
             type="button"
             onClick={onOpenHostingerModal}
