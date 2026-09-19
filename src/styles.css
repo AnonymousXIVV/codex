@@ -586,31 +586,6 @@
   --color-prose-code-text: #0071e3;
 }
 
-html.dark,
-[data-theme="dark"] {
-  --color-background: #090a0f;
-  --color-foreground: #f3f4f6;
-  --color-card: #151720;
-  --color-card-foreground: #f3f4f6;
-  --color-popover: #151720;
-  --color-popover-foreground: #f3f4f6;
-  --color-paper: #151720;
-  --color-fill: #1b1e2b;
-  --color-fill-elevated: #222637;
-  --color-label: #f9fafb;
-  --color-subtle: #9ca3af;
-  --color-muted: #1c202d;
-  --color-muted-foreground: #9ca3af;
-  --color-border: #2a2f3f;
-  --color-input: #1b1e2b;
-  --color-hairline: rgb(255 255 255 / 0.12);
-  --color-hairline-on-dark: rgb(255 255 255 / 0.18);
-  --color-prose-body: #d1d5db;
-  --color-prose-heading: #ffffff;
-  --color-prose-code-bg: rgba(255, 255, 255, 0.08);
-  --color-prose-code-text: #60a5fa;
-}
-
 /* Blog Article Prose Typography */
 .article-prose {
   font-family: var(--font-sans);
@@ -667,33 +642,6 @@ html.dark,
   color: var(--color-blue-hover);
 }
 
-/* Dark mode overrides for cards, surfaces and borders */
-.dark .bg-white {
-  background-color: var(--color-card) !important;
-}
-
-.dark .text-label {
-  color: var(--color-label) !important;
-}
-
-.dark .border-black\/8,
-.dark .border-black\/6,
-.dark .border-black\/10 {
-  border-color: var(--color-hairline) !important;
-}
-
-.dark .ios-island-light {
-  background: rgb(21 23 32 / 0.85);
-  box-shadow:
-    0 0 0 0.5px rgb(255 255 255 / 0.16),
-    inset 0 0.5px 0 rgb(255 255 255 / 0.15),
-    0 10px 36px rgb(0 0 0 / 0.4);
-}
-
-.dark .ios-island-scrolled.ios-island-light {
-  background: rgb(21 23 32 / 0.94);
-}
-
 /* Live theme engine — tokens applied on .site-canvas */
 .site-canvas {
   font-family: var(--font-sans);
@@ -748,18 +696,5 @@ html.dark,
   background: color-mix(in srgb, var(--color-card) 82%, transparent);
   backdrop-filter: saturate(170%) blur(18px);
   -webkit-backdrop-filter: saturate(170%) blur(18px);
-}
-
-.site-canvas[data-theme="dark"] .map-card,
-.site-canvas[data-theme="dark"] .dock-label {
-  background: color-mix(in srgb, var(--color-card) 88%, transparent);
-  color: var(--color-foreground);
-  box-shadow:
-    0 0 0 0.5px var(--color-hairline),
-    0 12px 32px rgb(0 0 0 / 0.35);
-}
-
-.site-canvas[data-theme="dark"] img {
-  outline-color: rgb(255 255 255 / 0.1);
 }
 

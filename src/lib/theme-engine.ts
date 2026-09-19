@@ -1,6 +1,5 @@
 import type { CSSProperties } from "react";
 import type { SiteColors, SiteConfig, ThemeSettings } from "@/types/site-editor";
-import type { FullThemeItem, ThemeLayoutSettings } from "@/components/admin/themes/theme-types";
 
 export const DEFAULT_THEME_ID = "codex-pro";
 
@@ -29,7 +28,6 @@ export const THEME_COMPONENT_IDS = [
   "footer-widgets",
   "sticky-contact-dock",
   "tidio-chat-widget",
-  "elementor-engine",
 ] as const;
 
 export type ThemeComponentId = (typeof THEME_COMPONENT_IDS)[number];
@@ -45,12 +43,10 @@ export const DEFAULT_ENABLED_COMPONENTS: string[] = [
   "gutenberg-blocks",
   "footer-widgets",
   "sticky-contact-dock",
-  "elementor-engine",
 ];
 
 const CAMEL_TO_KEBAB: Record<string, string> = {
   headerBuilder: "header-builder",
-  elementorEngine: "elementor-engine",
   gutenbergBlocks: "gutenberg-blocks",
   footerWidgets: "footer-widgets",
   stickyContactDock: "sticky-contact-dock",
@@ -70,19 +66,8 @@ export function isDefaultThemeId(id?: string | null) {
   return !id || id === DEFAULT_THEME_ID;
 }
 
-export function isDarkHex(hex?: string) {
-  if (!hex) return false;
-  const h = hex.trim().toLowerCase();
-  const normalized =
-    h.length === 4 && h.startsWith("#")
-      ? `#${h[1]}${h[1]}${h[2]}${h[2]}${h[3]}${h[3]}`
-      : h;
-  if (normalized.length !== 7 || !normalized.startsWith("#")) return false;
-  const r = parseInt(normalized.slice(1, 3), 16);
-  const g = parseInt(normalized.slice(3, 5), 16);
-  const b = parseInt(normalized.slice(5, 7), 16);
-  if ([r, g, b].some((n) => Number.isNaN(n))) return false;
-  return (r * 299 + g * 587 + b * 114) / 1000 < 140;
+export function isDarkHex(_hex?: string) {
+  return false;
 }
 
 export function normalizeComponentIds(active: ThemeSettings["activeComponents"] | undefined): string[] {
@@ -202,8 +187,7 @@ export function buildThemeStyle(config: SiteConfig): CSSProperties {
   const scale = t?.fontSizeScale || t?.layout?.fontSizeScale;
   const leading = t?.lineHeight;
   const cw = t?.containerWidth || "1280px";
-  const dark = isDarkHex(c.background);
-  const primaryFg = isDarkHex(c.primary) ? "#ffffff" : "#0b0b0d";
+  const primaryFg = "#ffffff";
 
   const style: Record<string, string> = {
     "--color-primary": c.primary || "#0071e3",
@@ -221,17 +205,17 @@ export function buildThemeStyle(config: SiteConfig): CSSProperties {
     "--color-secondary": c.secondary || c.background || "#f5f5f7",
     "--color-card": c.cardBg || "#ffffff",
     "--color-site-card": c.cardBg || "#ffffff",
-    "--color-paper": dark ? (c.textMain || "#f5f5f7") : "#ffffff",
+    "--color-paper": "#ffffff",
     "--color-surface": c.surface || c.cardBg || "#ffffff",
     "--color-foreground": c.textMain || "#1d1d1f",
     "--color-label": c.textMain || "#1d1d1f",
     "--color-card-foreground": c.textMain || "#1d1d1f",
     "--color-muted-foreground": c.textMuted || "#6e6e73",
     "--color-subtle": c.textMuted || "#6e6e73",
-    "--color-border": c.border || (dark ? "rgba(255,255,255,0.14)" : "#d2d2d7"),
-    "--color-hairline": c.border || (dark ? "rgba(255,255,255,0.12)" : "rgba(0,0,0,0.08)"),
+    "--color-border": c.border || "#d2d2d7",
+    "--color-hairline": c.border || "rgba(0,0,0,0.08)",
     "--color-highlight": c.highlight || c.accent || c.primary || "#0071e3",
-    "--color-inverse": c.inverse || (dark ? "#f5f5f7" : "#1d1d1f"),
+    "--color-inverse": c.inverse || "#1d1d1f",
     "--font-display": fonts.display,
     "--font-sans": fonts.sans,
     "--radius-sm": radius.sm,
@@ -254,53 +238,6 @@ export function buildThemeStyle(config: SiteConfig): CSSProperties {
   return style as CSSProperties;
 }
 
-export function themeToSettings(theme: FullThemeItem): ThemeSettings {
-  const layout: ThemeLayoutSettings = {
-    heroLayout: theme.heroLayout || theme.layout?.heroLayout || "streamer",
-    sectionsOrder: theme.layout?.sectionsOrder || [...DEFAULT_HOME_SEQUENCE],
-    sectionVisibility:
-      theme.layout?.sectionVisibility ||
-      Object.fromEntries(DEFAULT_HOME_SEQUENCE.map((id) => [id, true])),
-    cardStyle: theme.layout?.cardStyle || "glass",
-    fontSizeScale: theme.layout?.fontSizeScale || "normal",
-  };
-
-  return {
-    activeTheme: theme.id,
-    preset: theme.id,
-    fontFamily: theme.fontFamily,
-    containerWidth: theme.containerWidth,
-    borderRadius: theme.borderRadius,
-    headerStyle: theme.headerStyle,
-    heroLayout: layout.heroLayout,
-    fontSizeScale: layout.fontSizeScale,
-    cardStyle: layout.cardStyle,
-    sectionsOrder: layout.sectionsOrder,
-    layout,
-    customCss: theme.customCss || "",
-    activeComponents: [...DEFAULT_ENABLED_COMPONENTS],
-  };
-}
-
-export function applyThemeToConfig(
-  config: SiteConfig,
-  theme: FullThemeItem,
-  colorOverride?: SiteColors,
-): SiteConfig {
-  return {
-    ...config,
-    colors: {
-      ...config.colors,
-      ...theme.colors,
-      ...(colorOverride || {}),
-    },
-    theme: {
-      ...config.theme,
-      ...themeToSettings(theme),
-    },
-  };
-}
-
 export function hrefToPreviewPage(href: string): PreviewPage {
   if (href.includes("work") || href.includes("portfolio")) return "work";
   if (href.includes("capabilities") || href.includes("services")) return "services";
@@ -308,22 +245,6 @@ export function hrefToPreviewPage(href: string): PreviewPage {
   if (href.includes("insights") || href.includes("blog")) return "blog";
   if (href.includes("contact")) return "contact";
   return "home";
-}
-
-export function patchSiteTheme(config: SiteConfig, patch: Partial<ThemeSettings>): SiteConfig {
-  return {
-    ...config,
-    theme: {
-      activeTheme: DEFAULT_THEME_ID,
-      fontFamily: "system",
-      containerWidth: "1280px",
-      borderRadius: "modern",
-      headerStyle: "floating",
-      ...config.theme,
-      ...patch,
-      activeTheme: patch.activeTheme || config.theme?.activeTheme || DEFAULT_THEME_ID,
-    },
-  };
 }
 
 export async function persistSiteConfig(config: SiteConfig) {

@@ -71,6 +71,13 @@ export interface ServiceItem {
   points: string[];
   src: string;
   poster: string;
+  role?: string;
+  whatWeDo?: string;
+  deliverables?: { title: string; desc: string }[];
+  techStack?: string[];
+  timeline?: string;
+  idealFor?: string;
+  offYourPlate?: string;
 }
 
 export interface HighlightItem {
@@ -179,7 +186,6 @@ export interface ThemeSettings {
   sectionsOrder?: string[];
   activeComponents?: string[] | {
     headerBuilder?: boolean;
-    elementorEngine?: boolean;
     gutenbergBlocks?: boolean;
     footerWidgets?: boolean;
     megaMenu?: boolean;
@@ -379,38 +385,155 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   },
 
   services: {
-    badge: "Services",
-    title: "Three things. Done as one.",
+    badge: "What We Do For You",
+    title: "Complete Digital Services Built & Managed For You",
     subtitle:
-      "Web development, web design, and social media marketing — the site, the system, and the signal that grows it.",
+      "We don't just hand you templates or tell you what to do. Our team does the actual heavy lifting — custom coding your website, designing your brand, and managing your social media campaigns so you get real clients.",
     items: [
       {
         id: "web-dev",
-        kicker: "01  /  Build",
-        title: "Web Development",
+        kicker: "01  /  Engineering",
+        title: "Custom Web Development",
+        role: "Full-Stack Development, Fast Web Apps & Storefronts",
         description:
-          "Custom websites and web applications — React, TypeScript, and the quiet craft that makes a page feel inevitable. Fast, accessible, and wired for analytics from day one.",
-        points: ["Websites & web apps", "React · TypeScript", "Performance as a feature"],
+          "We build and code custom, lightning-fast websites and web applications tailored specifically to your business operations. Whether you need a high-converting corporate website, an e-commerce store, or an interactive web app, we write clean, scalable code that loads in under a second and drives qualified sales.",
+        whatWeDo:
+          "We take your project from architecture and database design to full frontend implementation, payment integrations, and turnkey server deployment. You get a bulletproof, secure digital asset you 100% own.",
+        points: [
+          "Custom React & TypeScript Code",
+          "Sub-Second Load Times (95+ PageSpeed)",
+          "E-Commerce & Stripe Checkout",
+          "Automated Lead & CRM Sync",
+          "No Bloated Plugins or Builders",
+        ],
+        deliverables: [
+          {
+            title: "Custom Responsive Web Application",
+            desc: "Bespoke frontend built with React, TypeScript, and Tailwind CSS that renders seamlessly on iPhones, Androids, tablets, laptops, and 4K displays.",
+          },
+          {
+            title: "Client-Friendly Content Management (CMS)",
+            desc: "An intuitive administration panel so you and your team can effortlessly update copy, team members, blog posts, and projects with zero coding.",
+          },
+          {
+            title: "Secure Payment & Checkout Integrations",
+            desc: "Turnkey Stripe, PayPal, or Apple Pay processing with automatic customer receipts, invoicing, and webhook fulfillment.",
+          },
+          {
+            title: "Instant Lead & Inquiry Routing",
+            desc: "Contact forms that instantly ping your WhatsApp, Telegram, or CRM the second an inquiry arrives so you never miss a deal.",
+          },
+          {
+            title: "Core Web Vitals & Speed Optimization",
+            desc: "Image compression pipelines (WebP/AVIF), code-splitting, and caching headers configured to achieve 95+ Google PageSpeed benchmarks.",
+          },
+          {
+            title: "Production Deployment & Security",
+            desc: "Domain DNS routing, SSL certificate setup, automated database backups, and DDoS protection so your site stays online 24/7.",
+          },
+        ],
+        techStack: ["React 19", "TypeScript", "Tailwind CSS", "Node.js", "SQLite / Postgres", "Stripe API", "Vite", "Cloudflare"],
+        timeline: "Typical Delivery: 2 to 4 Weeks",
+        idealFor: "Businesses, startups, and founders needing high-performing sites that scale without monthly builder subscription lock-ins.",
+        offYourPlate: "No wrestling with broken WordPress plugins, outdated PHP versions, or unreliable offshore developers.",
         src: "/hero/web-dev.mp4",
         poster: "/hero/web-dev.jpg",
       },
       {
         id: "web-design",
-        kicker: "02  /  Form",
-        title: "Web Design",
+        kicker: "02  /  Visual Identity",
+        title: "Web Design & UI/UX",
+        role: "Conversion-Focused Interfaces & Complete Brand Systems",
         description:
-          "Interfaces that feel expensive. Type, color, motion, and a system the whole brand can live in — designed as one material, not a pile of screens.",
-        points: ["Identity & type", "Design systems", "Pages that convert"],
+          "We design premium, conversion-optimized interfaces that instantly position your company as the premier leader in your industry. Every color, font, button state, and layout is strategically crafted in Figma to guide visitors toward booking calls and purchasing your offers.",
+        whatWeDo:
+          "We research your target audience, analyze your top competitors, and build comprehensive wireframes and high-fidelity mockups. You get to review interactive prototypes and request adjustments before any coding begins.",
+        points: [
+          "Bespoke High-Fidelity Figma UI",
+          "User Experience & Frictionless Journeys",
+          "Design Systems & Brand Guidelines",
+          "Mobile-First Interaction Patterns",
+          "Conversion Rate Optimization (CRO)",
+        ],
+        deliverables: [
+          {
+            title: "Strategic Wireframing & Site Architecture",
+            desc: "Information hierarchy that leads visitors naturally from problem identification to solution, social proof, and compelling call-to-action.",
+          },
+          {
+            title: "Pixel-Perfect Mobile & Desktop Screens",
+            desc: "Custom high-fidelity mockups for all viewports, crafted with precision typography, generous negative space, and polished visual contrast.",
+          },
+          {
+            title: "Cohesive Brand Identity & UI Kit",
+            desc: "Brand color palettes, accessible font hierarchies, button states, form inputs, badges, and icon libraries ready for development.",
+          },
+          {
+            title: "Clickable Figma Prototype",
+            desc: "An interactive prototype allowing you to click through and experience the entire user journey on your phone and desktop before development.",
+          },
+          {
+            title: "Conversion Elements & Social Proof Layouts",
+            desc: "High-trust testimonial sliders, statistical counter ribbons, trust badges, and comparison matrices designed to overcome objections.",
+          },
+          {
+            title: "Production Asset Suite",
+            desc: "Full vector SVG exports, favicon suites, high-resolution social share preview cards (OpenGraph), and marketing assets.",
+          },
+        ],
+        techStack: ["Figma", "Adobe Creative Suite", "Illustrator", "Tailwind Typography", "Framer Motion"],
+        timeline: "Typical Delivery: 1 to 3 Weeks",
+        idealFor: "Established companies looking to rebrand, elevate their perceived value, and charge premium prices for their services.",
+        offYourPlate: "No guessing whether your website looks professional or trustworthy. We deliver an elevated aesthetic that converts.",
         src: "/hero/design.mp4",
         poster: "/hero/design.jpg",
       },
       {
         id: "social",
-        kicker: "03  /  Signal",
+        kicker: "03  /  Acquisition",
         title: "Social Media Marketing",
+        role: "Paid Ad Campaigns & Organic Content Growth",
         description:
-          "Content, creative, and campaigns that match the site. Feeds, stories, and ads treated like a product — tested weekly, killed fast, grown on purpose.",
-        points: ["Content systems", "Paid + organic", "Creative that compounds"],
+          "A great website only produces revenue when high-intent prospects see it. We create your content, run your paid ad campaigns on Meta and Google, and drive qualified leads directly into your sales pipeline with measurable return on ad spend.",
+        whatWeDo:
+          "We plan monthly content strategies, produce scroll-stopping video and graphic creatives, set up tracking pixels, write conversion copy, and actively manage your paid ad budgets to generate predictable client inquiries.",
+        points: [
+          "Full-Funnel Meta & Google Ads",
+          "Scroll-Stopping Video & Graphic Creatives",
+          "Monthly Content Calendar & Copywriting",
+          "Pixel & Conversion API Tracking",
+          "Weekly A/B Split Testing & Scaling",
+        ],
+        deliverables: [
+          {
+            title: "Targeted Paid Ad Campaign Management",
+            desc: "Complete ad setup, custom audience segmentation, retargeting funnels, and daily optimization on Meta (Instagram & Facebook) and Google Ads.",
+          },
+          {
+            title: "High-Converting Creative Production",
+            desc: "Attention-grabbing short-form video reels, multi-slide carousels, and promotional graphic banners designed to stop the feed scroll.",
+          },
+          {
+            title: "Strategic Copywriting & Content Scheduling",
+            desc: "Captions, headlines, and call-to-actions written using proven direct-response frameworks, scheduled across your primary channels.",
+          },
+          {
+            title: "Tracking Pixels & Funnel Attribution",
+            desc: "Installation of Meta Pixel, Google Analytics 4, and Conversion API so you see exactly which campaigns produce leads and sales.",
+          },
+          {
+            title: "A/B Testing & Cost-Per-Lead Optimization",
+            desc: "Continuous testing of creative variations, headlines, and target audiences to lower your cost-per-acquisition and scale winning ads.",
+          },
+          {
+            title: "Transparent Monthly ROI Reporting",
+            desc: "Clear, jargon-free monthly performance reports detailing ad spend, reach, click-through rates, qualified leads, and return on investment.",
+          },
+        ],
+        techStack: ["Meta Ads Manager", "Google Ads", "Google Analytics 4", "CapCut / Premiere", "Canva Pro", "Buffer"],
+        timeline: "Ongoing Monthly Sprints",
+        idealFor: "Business owners who want a consistent pipeline of inbound inquiries without having to spend hours every day posting on social media.",
+        offYourPlate: "No more wondering what to post, wasting money on unoptimized boosted posts, or struggling with confusing ad managers.",
         src: "/hero/social.mp4",
         poster: "/hero/social.jpg",
       },
@@ -566,7 +689,6 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
       "gutenberg-blocks",
       "footer-widgets",
       "sticky-contact-dock",
-      "elementor-engine",
     ],
   },
 

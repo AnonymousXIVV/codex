@@ -28,8 +28,6 @@ import { EnquiriesTab } from "@/components/admin/EnquiriesTab";
 import { ReviewsTab } from "@/components/admin/ReviewsTab";
 import { ProjectsTab } from "@/components/admin/ProjectsTab";
 import { SettingsTab } from "@/components/admin/SettingsTab";
-import { SiteEditorTab } from "@/components/admin/SiteEditorTab";
-import { ThemesTab } from "@/components/admin/ThemesTab";
 import { TidioTab } from "@/components/admin/TidioTab";
 import { HostingerModal } from "@/components/admin/HostingerModal";
 
@@ -359,8 +357,8 @@ function AdminCRM() {
               : "max-w-7xl px-4 sm:px-6 lg:px-8 py-6"
           } mx-auto space-y-6 relative z-10`}
         >
-          {/* KPI Metrics - Hidden during full-page site-editor or blog editing for maximum workspace */}
-          {activeTab !== "site-editor" && (!isBlogEditing || activeTab !== "blogs") && (
+          {/* KPI Metrics - Hidden during blog editing for maximum workspace */}
+          {(!isBlogEditing || activeTab !== "blogs") && (
             <AdminMetrics
               stats={stats}
               activeTab={activeTab}
@@ -370,12 +368,6 @@ function AdminCRM() {
 
           {/* Active Tab View */}
           <div className="pt-1">
-            {activeTab === "site-editor" && <SiteEditorTab />}
-
-            {activeTab === "themes" && (
-              <ThemesTab onGoToSiteEditor={() => setActiveTab("site-editor")} />
-            )}
-
             {activeTab === "tidio" && <TidioTab />}
 
             {activeTab === "visitors" && (

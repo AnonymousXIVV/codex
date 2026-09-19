@@ -18,7 +18,6 @@ import { NAV_LINKS } from "@/lib/nav";
 import { CONTACT, LINKS } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { useSiteConfig } from "@/context/SiteConfigContext";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useContactModal } from "@/context/ContactModalContext";
 import { usePreviewMode } from "@/context/PreviewModeContext";
 import { hrefToPreviewPage } from "@/lib/theme-engine";
@@ -238,14 +237,13 @@ export function Nav() {
                 key={item.href}
                 href={item.href}
                 onClick={onNavHref(item.href)}
-                className="rounded-full px-3 py-1.5 text-[13px] font-medium text-label/80 hover:bg-black/5 dark:hover:bg-white/5"
+                className="rounded-full px-3 py-1.5 text-[13px] font-medium text-label/80 hover:bg-black/5"
               >
                 {item.label}
               </a>
             ))}
           </div>
           <div className="flex items-center gap-2">
-            <ThemeToggle className="text-label" />
             <Button
               type="button"
               size="sm"
@@ -366,7 +364,6 @@ export function Nav() {
               twitterUrl={twitterHref}
               githubUrl={githubHref}
             />
-            <ThemeToggle className={light ? "text-label" : "text-paper"} />
             <Button
               type="button"
               size="sm"
@@ -512,11 +509,6 @@ export function Nav() {
                   >
                     <FacebookLogo className="size-11" />
                   </a>
-                </div>
-
-                <div className="flex items-center justify-between pt-2 border-t border-white/10">
-                  <span className="text-xs text-paper/70 font-medium">Appearance</span>
-                  <ThemeToggle variant="pill" showLabel />
                 </div>
 
                 <p className="text-sm text-paper/70">

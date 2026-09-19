@@ -7,7 +7,6 @@ import {
   recordEnquiry,
   updateEnquiryStatus,
   deleteEnquiry,
-  getAllLeads,
   createLead,
   addVisitorToLeads,
   updateLeadStatus,

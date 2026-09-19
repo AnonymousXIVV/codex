@@ -15,17 +15,12 @@ import {
   ChevronRight,
   Shield,
   Users,
-  LayoutTemplate,
-  Palette,
   MessageSquare,
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import type { CrmStats } from "@/types/crm";
-import { DEFAULT_THEMES } from "@/components/admin/themes/default-themes";
 
 export type AdminTabKey =
-  | "site-editor"
-  | "themes"
   | "tidio"
   | "visitors"
   | "leads"
@@ -60,24 +55,8 @@ export function AdminSidebar({
 }: AdminSidebarProps) {
   const navSections = [
     {
-      group: "WordPress & Site Design",
+      group: "Live Chat & Support",
       items: [
-        {
-          id: "site-editor" as const,
-          label: "Elementor Visual Editor",
-          icon: LayoutTemplate,
-          count: null,
-          badgeLive: true,
-          badgeColor: "bg-[#E24474]/10 text-[#E24474] border-[#E24474]/20",
-        },
-        {
-          id: "themes" as const,
-          label: "Themes",
-          icon: Palette,
-          count: DEFAULT_THEMES.length,
-          badgeLive: false,
-          badgeColor: "bg-[#2271b1]/10 text-[#2271b1] border-[#2271b1]/20",
-        },
         {
           id: "tidio" as const,
           label: "Tidio Live Chat",

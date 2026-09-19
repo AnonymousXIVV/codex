@@ -13,7 +13,6 @@ import {
 import { CONTACT, LINKS } from "@/lib/site";
 import { useSiteConfig } from "@/context/SiteConfigContext";
 import { NewsletterSignup } from "@/components/NewsletterSignup";
-import { ThemeToggle } from "@/components/ThemeToggle";
 import { useContactModal } from "@/context/ContactModalContext";
 import { MessageSquare } from "lucide-react";
 
@@ -324,8 +323,6 @@ export function Footer() {
             >
               Contact Us
             </button>
-            <span className="text-hairline">|</span>
-            <ThemeToggle variant="pill" showLabel />
           </div>
 
           <p>

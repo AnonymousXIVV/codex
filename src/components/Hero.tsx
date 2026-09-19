@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import { useCallback, useEffect, useRef, useState, type PointerEvent } from "react";
 import { cn } from "@/lib/utils";
 import { useSiteConfig } from "@/context/SiteConfigContext";
-import { AlternateHero } from "@/components/theme/AlternateHero";
+import { AlternateHero } from "./AlternateHero";
 
 export const HERO_VIDEOS = [
   {

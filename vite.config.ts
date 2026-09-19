@@ -210,11 +210,11 @@ function preventViteReloadPlugin(): Plugin {
   };
 }
 
-// `0.0.0.0:8080` is the server contract.
+// `0.0.0.0:3000` is the server contract.
 export default defineConfig(({ command, isPreview }) => ({
   server: {
     host: "0.0.0.0",
-    port: 8080,
+    port: 3000,
     strictPort: true,
     allowedHosts: true,
     watch: {

@@ -1,6 +1,6 @@
 // @ts-nocheck
 import { DatabaseSync } from "node:sqlite";
-import { existsSync, mkdirSync, writeFileSync, copyFileSync } from "node:fs";
+import { existsSync, mkdirSync, copyFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { DEFAULT_SITE_CONFIG } from "./default-site-config.mjs";
@@ -1217,7 +1217,16 @@ export function getSiteConfig() {
       colors: { ...DEFAULT_SITE_CONFIG.colors, ...(parsed.colors || {}) },
       hero: { ...DEFAULT_SITE_CONFIG.hero, ...(parsed.hero || {}) },
       highlights: { ...DEFAULT_SITE_CONFIG.highlights, ...(parsed.highlights || {}) },
-      services: { ...DEFAULT_SITE_CONFIG.services, ...(parsed.services || {}) },
+      services: {
+        ...DEFAULT_SITE_CONFIG.services,
+        ...(parsed.services || {}),
+        items: Array.isArray(parsed.services?.items) && parsed.services.items.length > 0
+          ? parsed.services.items.map((item) => {
+              const defaultItem = DEFAULT_SITE_CONFIG.services.items.find((d) => d.id === item.id) || {};
+              return { ...defaultItem, ...item };
+            })
+          : DEFAULT_SITE_CONFIG.services.items,
+      },
       about: { ...DEFAULT_SITE_CONFIG.about, ...(parsed.about || {}) },
       studio: { ...DEFAULT_SITE_CONFIG.studio, ...(parsed.studio || {}) },
       results: { ...DEFAULT_SITE_CONFIG.results, ...(parsed.results || {}) },

@@ -5,32 +5,33 @@ import { useSiteConfig } from "@/context/SiteConfigContext";
 const processSteps = [
   {
     number: "01",
-    title: "Brief",
+    title: "Strategy & Discovery",
     description:
-      "Goals, audience, offer, and the social data we already have.",
+      "We consult directly with you to understand your commercial goals, audience, and offer. We map out the exact scope, timeline, and deliverables with no surprises.",
   },
   {
     number: "02",
-    title: "Web Design",
+    title: "Bespoke UI/UX Design",
     description:
-      "Wireframes, brand system, and high-fidelity pages that convert.",
+      "We design custom wireframes and clickable Figma prototypes. You review every mobile and desktop screen and iterate with us until you are completely thrilled.",
   },
   {
     number: "03",
-    title: "Web Development",
+    title: "Custom Web Development",
     description:
-      "Production websites and web apps — fast, accessible, built to last.",
+      "Our engineers hand-code your platform using React, TypeScript, and Tailwind CSS. Clean, scalable architecture, sub-second speeds, and zero template bloat.",
   },
   {
     number: "04",
-    title: "Launch",
-    description: "QA, analytics, pixels, and a cutover that does not break ads.",
+    title: "Turnkey Launch & QA",
+    description:
+      "We test thoroughly across real smartphones, tablets, and browsers, configure your domain and SSL security, and connect your payment gateways and forms.",
   },
   {
     number: "05",
-    title: "Social Growth",
+    title: "Social Growth & Campaigns",
     description:
-      "Creative tests, audiences, and landing-page loops after ship.",
+      "We launch your targeted Meta and Google ad campaigns, produce weekly creative assets, and optimize your funnels to drive continuous qualified leads.",
   },
 ];
 

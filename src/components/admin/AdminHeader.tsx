@@ -13,8 +13,6 @@ import {
   Briefcase,
   Shield,
   Users,
-  Palette,
-  LayoutTemplate,
   MessageSquare,
 } from "lucide-react";
 import type { AdminTabKey } from "./AdminSidebar";
@@ -29,16 +27,6 @@ interface AdminHeaderProps {
 }
 
 const tabMeta: Record<AdminTabKey, { label: string; icon: any; subtitle: string }> = {
-  "site-editor": {
-    label: "Elementor Visual Editor",
-    icon: LayoutTemplate,
-    subtitle: "Real-time visual page builder with responsive device preview",
-  },
-  themes: {
-    label: "WordPress Themes & Layouts",
-    icon: Palette,
-    subtitle: "Manage, customize, and preview full themes, layouts, typography, and styles",
-  },
   tidio: {
     label: "Tidio Live Chat",
     icon: MessageSquare,

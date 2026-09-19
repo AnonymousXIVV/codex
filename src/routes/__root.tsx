@@ -21,7 +21,7 @@ export const Route = createRootRoute({
         content:
           "High-performance websites, web design, web development, and digital marketing studio website.",
       },
-      { name: "theme-color", content: "#000000" },
+      { name: "theme-color", content: "#ffffff" },
     ],
     links: [
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
@@ -44,6 +44,11 @@ export const Route = createRootRoute({
           dangerouslySetInnerHTML={{
             __html: `
               (function() {
+                try {
+                  document.documentElement.classList.remove('dark');
+                  document.documentElement.setAttribute('data-theme', 'light');
+                  localStorage.setItem('codex-theme', 'light');
+                } catch (e) {}
                 try {
                   var now = Date.now();
                   var history = JSON.parse(sessionStorage.getItem('__cdx_reload_history') || '[]');
