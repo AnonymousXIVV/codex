@@ -625,7 +625,7 @@ function seedInitialDataIfEmpty(db) {
         site_url: "https://nordic-goods.example.com",
         description: "High-volume dropshipping and direct-to-consumer e-commerce storefront with automated inventory fulfillment and sub-second Apple Pay checkout.",
         category: "Web Development · E-Commerce",
-        image_url: "/work/ecommerce-storefront.jpg",
+        image_url: "/work/nordic-goods.jpg",
         is_published: 1,
       },
       {

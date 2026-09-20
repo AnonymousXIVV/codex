@@ -429,8 +429,9 @@ export function Services() {
                       {(() => {
                         const isCrm =
                           service.id === "crm-calling" ||
-                          service.title.toLowerCase().includes("crm") ||
-                          service.title.toLowerCase().includes("calling");
+                          ((service.title.toLowerCase().includes("crm") ||
+                            service.title.toLowerCase().includes("calling")) &&
+                            !service.title.toLowerCase().includes("application"));
                         const isAcquisition =
                           service.id === "email-marketing" ||
                           service.id === "social-ads" ||
@@ -439,7 +440,8 @@ export function Services() {
                           service.title.toLowerCase().includes("email marketing");
                         const isWebApps =
                           service.id === "web-apps" ||
-                          service.title.toLowerCase().includes("application");
+                          (service.title.toLowerCase().includes("web application") &&
+                            !service.title.toLowerCase().includes("website"));
                         const isDesign =
                           service.id === "graphic-design" ||
                           service.title.toLowerCase().includes("brand") ||
@@ -448,15 +450,21 @@ export function Services() {
                         const mediaSrc = isCrm
                           ? "/services/crm-calling.jpg"
                           : isAcquisition
-                          ? "/services/acquisition-retention.jpg"
+                          ? "/hero/acquisition.mp4"
                           : isWebApps
-                          ? "/work/developer-portal.jpg"
+                          ? "/hero/web-apps.mp4"
                           : service.src || service.poster || "/hero/web-dev.jpg";
+
+                        const mediaPoster = isWebApps
+                          ? "/hero/web-apps.jpg"
+                          : isAcquisition
+                          ? "/services/acquisition-retention.jpg"
+                          : isCrm
+                          ? "/services/crm-calling.jpg"
+                          : service.poster;
 
                         const isVideo =
                           !isCrm &&
-                          !isAcquisition &&
-                          !isWebApps &&
                           typeof mediaSrc === "string" &&
                           mediaSrc.endsWith(".mp4");
 
@@ -495,7 +503,7 @@ export function Services() {
                             {isVideo ? (
                               <video
                                 src={mediaSrc}
-                                poster={service.poster}
+                                poster={mediaPoster}
                                 className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
                                 autoPlay
                                 muted

@@ -48,12 +48,16 @@ export function ProjectShowcaseGrid() {
       .then((data) => {
         if (data.ok && Array.isArray(data.projects) && data.projects.length > 0) {
           const fallbackPool = [
-            "/work/system.jpg",
-            "/work/storefront.jpg",
-            "/work/social.jpg",
-            "/work/ecommerce-storefront.jpg",
-            "/work/crm-telephony.jpg",
+            "/work/nordic-goods.jpg",
+            "/work/krypton-horology.jpg",
+            "/work/omnicall-sales.jpg",
+            "/work/aura-growth.jpg",
+            "/work/kinetic-fitness.jpg",
+            "/work/flow-retain-email.jpg",
+            "/work/northline-logistics.jpg",
+            "/work/apex-sales.jpg",
             "/work/developer-portal.jpg",
+            "/work/brand-identity.jpg",
           ];
           const dbProjects: ShowcaseProject[] = data.projects.map((p: CrmProject, idx: number) => ({
             id: `db-${p.id}`,

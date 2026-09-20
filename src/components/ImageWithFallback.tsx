@@ -13,7 +13,7 @@ export function ImageWithFallback({
   alt,
   className,
   style,
-  fallback = "/work/storefront.jpg",
+  fallback = "/hero/web-apps.jpg",
 }: ImageWithFallbackProps) {
   const [imgSrc, setImgSrc] = useState(src);
   const [hasError, setHasError] = useState(false);
