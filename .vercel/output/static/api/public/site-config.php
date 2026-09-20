@@ -6,6 +6,9 @@
 
 require_once __DIR__ . '/../db.php';
 
+header('Content-Type: application/json; charset=utf-8');
+header('Cache-Control: no-cache, no-store, must-revalidate');
+
 $pdo = getCrmPdo();
 
 try {
@@ -20,7 +23,8 @@ try {
 
     echo json_encode([
         'ok' => true,
-        'config' => $config
+        'config' => $config,
+        'is_default' => ($config === null)
     ]);
 } catch (Exception $e) {
     http_response_code(500);

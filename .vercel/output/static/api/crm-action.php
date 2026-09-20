@@ -418,12 +418,13 @@ try {
 
         case 'save_project':
             $stmt = $pdo->prepare("
-                INSERT INTO projects (title, site_name, site_url, description, category, is_published)
-                VALUES (?, ?, ?, ?, ?, ?)
+                INSERT INTO projects (title, site_name, site_url, description, category, image_url, is_published)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
             ");
             $stmt->execute([
                 $input['title'] ?? '', $input['site_name'] ?? '', $input['site_url'] ?? '',
                 $input['description'] ?? '', $input['category'] ?? 'Web Development',
+                $input['image_url'] ?? '',
                 !empty($input['is_published']) ? 1 : 0
             ]);
             break;
@@ -437,12 +438,14 @@ try {
                     site_url = COALESCE(?, site_url),
                     description = COALESCE(?, description),
                     category = COALESCE(?, category),
+                    image_url = COALESCE(?, image_url),
                     is_published = COALESCE(?, is_published)
                 WHERE id = ?
             ");
             $stmt->execute([
                 $input['title'] ?? null, $input['site_name'] ?? null, $input['site_url'] ?? null,
                 $input['description'] ?? null, $input['category'] ?? null,
+                $input['image_url'] ?? null,
                 isset($input['is_published']) ? ($input['is_published'] ? 1 : 0) : null,
                 $id
             ]);
@@ -554,9 +557,9 @@ try {
 
                 if (isset($backup['projects']) && is_array($backup['projects'])) {
                     $pdo->exec("DELETE FROM projects");
-                    $ins = $pdo->prepare("INSERT INTO projects (id, title, site_name, site_url, description, category, is_published, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))");
+                    $ins = $pdo->prepare("INSERT INTO projects (id, title, site_name, site_url, description, category, image_url, is_published, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, COALESCE(?, CURRENT_TIMESTAMP))");
                     foreach ($backup['projects'] as $p) {
-                        $ins->execute([$p['id'] ?? null, $p['title'] ?? '', $p['site_name'] ?? '', $p['site_url'] ?? '', $p['description'] ?? '', $p['category'] ?? 'Web Development', !empty($p['is_published']) ? 1 : 0, $p['created_at'] ?? null]);
+                        $ins->execute([$p['id'] ?? null, $p['title'] ?? '', $p['site_name'] ?? '', $p['site_url'] ?? '', $p['description'] ?? '', $p['category'] ?? 'Web Development', $p['image_url'] ?? '', !empty($p['is_published']) ? 1 : 0, $p['created_at'] ?? null]);
                     }
                 }
 
