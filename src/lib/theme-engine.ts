@@ -10,7 +10,6 @@ export const DEFAULT_HOME_SEQUENCE = [
   "portfolio",
   "results",
   "about",
-  "studio",
   "blog",
   "reviews",
   "contact",

@@ -15,10 +15,10 @@ function Home() {
   return (
     <SiteCanvas>
       <SEO
-        title="High-Performance Websites & Digital Studio"
-        description="High-performance websites, web design, web development, and digital marketing studio. Precision engineering on every screen."
+        title="High-Performance Websites & Digital Agency"
+        description="High-performance websites, custom web apps, CRM calling systems, and high-ROAS marketing campaigns. Precision quality on every screen."
         ogType="website"
-        keywords={["web design", "web development", "digital studio", "high-performance websites", "UI/UX", "Rank Math SEO"]}
+        keywords={["web design", "web development", "digital agency", "custom CRM", "e-commerce", "high-performance websites"]}
       />
       <SiteChrome page="home" />
     </SiteCanvas>

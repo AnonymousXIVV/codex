@@ -215,7 +215,7 @@ export function Nav() {
               {brandName}
             </button>
             <p className="mt-1 text-[11px] tracking-[0.22em] text-subtle uppercase">
-              {config.siteTagline || "Digital studio"}
+              {config.siteTagline || "Digital Agency"}
             </p>
           </div>
           <nav className="flex items-center justify-center gap-1 border-t border-hairline py-2" aria-label="Primary">

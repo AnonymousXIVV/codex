@@ -258,26 +258,26 @@ export function Contact() {
             {config.contact?.title || "One number. Every channel."}
           </h2>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-muted-foreground">
-            {config.contact?.subtitle || "WhatsApp, Telegram, Viber, calls — same line. Write us, or walk into the studio."}
+            {config.contact?.subtitle || "WhatsApp, Telegram, Viber, calls — same line. Write us, or visit our office."}
           </p>
         </Reveal>
 
-        <div className="mt-12 grid items-start gap-6 lg:grid-cols-2 lg:gap-8">
-          <Reveal>
-            <article className="surface-lift overflow-hidden rounded-xl bg-card">
-              <div className="flex flex-col items-center px-6 pt-10 pb-6 text-center">
-                <span className="flex size-16 items-center justify-center rounded-[1.35rem] bg-blue text-2xl font-semibold text-paper shadow-[inset_0_0.5px_0_rgb(255_255_255_/_0.35)]">
+        <div className="mt-12 grid items-stretch gap-6 lg:grid-cols-2 lg:gap-8">
+          <Reveal className="h-full">
+            <article className="surface-lift flex h-full max-h-[740px] flex-col overflow-hidden rounded-xl bg-card">
+              <div className="shrink-0 flex flex-col items-center px-6 pt-8 pb-5 text-center">
+                <span className="flex size-14 items-center justify-center rounded-[1.25rem] bg-blue text-xl font-semibold text-paper shadow-[inset_0_0.5px_0_rgb(255_255_255_/_0.35)]">
                   {config.siteName?.[0] || CONTACT.name[0] || "C"}
                 </span>
-                <h3 className="mt-4 text-2xl font-semibold tracking-tight text-label">
+                <h3 className="mt-3.5 text-2xl font-semibold tracking-tight text-label">
                   {config.siteName || CONTACT.name}
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  {currentAddress.city} studio · {currentAddress.street}
+                  {currentAddress.city} office · {currentAddress.street}
                 </p>
               </div>
 
-              <div className="grid grid-cols-5 gap-1 px-3 pb-7 sm:px-5">
+              <div className="shrink-0 grid grid-cols-5 gap-1 border-b border-hairline px-3 pb-5 sm:px-5">
                 {actionList.map((action) => (
                   <a
                     key={action.label}
@@ -287,7 +287,7 @@ export function Contact() {
                       : {})}
                     className="flex flex-col items-center gap-2 rounded-xl py-2 transition-colors duration-150 hover:bg-fill"
                   >
-                    <action.Logo className="size-11 sm:size-12" />
+                    <action.Logo className="size-10 sm:size-11" />
                     <span className="text-[10px] font-medium tracking-wide text-label sm:text-[11px]">
                       {action.hint}
                     </span>
@@ -295,7 +295,8 @@ export function Contact() {
                 ))}
               </div>
 
-              <ul className="divide-y divide-hairline border-t border-hairline">
+              <div className="flex-1 overflow-y-auto overscroll-contain">
+                <ul className="divide-y divide-hairline">
                 {/* Phone Numbers */}
                 {socialsGrouped.phone?.map((phone, idx) => (
                   <li key={`phone-${phone.id || idx}`}>
@@ -460,7 +461,7 @@ export function Contact() {
                   </li>
                 ))}
 
-                {/* Physical Studio Addresses */}
+                {/* Physical Office Addresses */}
                 {addresses?.map((addr, idx) => (
                   <li key={`addr-${addr.id || idx}`}>
                     <a
@@ -472,7 +473,7 @@ export function Contact() {
                       <MapsLogo className="size-8 sm:size-9 shrink-0" />
                       <span className="min-w-0 truncate">
                         <span className="block text-xs text-subtle truncate">
-                          {addr.label || (addr.city ? `${addr.city} Studio` : "Studio Location")} {addr.isPrimary && "· Primary HQ"}
+                          {addr.label || (addr.city ? `${addr.city} Office` : "Office Location")} {addr.isPrimary && "· Primary HQ"}
                         </span>
                         <span className="mt-0.5 block text-[14px] sm:text-[15px] font-medium text-label truncate">
                           {addr.street} {addr.city ? `· ${addr.city}` : ""}
@@ -481,9 +482,10 @@ export function Contact() {
                     </a>
                   </li>
                 ))}
-              </ul>
+                </ul>
+              </div>
 
-              <div className="flex flex-wrap items-center justify-center gap-3 border-t border-hairline px-5 py-4">
+              <div className="shrink-0 flex flex-wrap items-center justify-center gap-3 border-t border-hairline px-5 py-3.5 bg-card">
                 {instagramUrl && (
                   <a
                     href={instagramUrl}
@@ -521,8 +523,8 @@ export function Contact() {
             </article>
           </Reveal>
 
-          <Reveal delay={80}>
-            <div className="surface-lift overflow-hidden rounded-xl bg-card">
+          <Reveal delay={80} className="h-full">
+            <div className="surface-lift flex h-full flex-col justify-between overflow-hidden rounded-xl bg-card">
               {live ? (
                 <form
                   action="/send-mail.php"
@@ -624,7 +626,7 @@ export function Contact() {
                             }))
                           }
                           className="w-full bg-transparent text-base text-label outline-none placeholder:text-subtle"
-                          placeholder="e.g. Acme Corp or Studio"
+                          placeholder="e.g. Acme Corp or Retail Brand"
                         />
                       </label>
                     )}
@@ -647,10 +649,11 @@ export function Contact() {
                           className="w-full bg-transparent text-base text-label outline-none"
                         >
                           <option value="">Select a service focus...</option>
-                          <option value="Web Development & Engineering">Web Development & Engineering</option>
-                          <option value="Brand Identity & Web Design">Brand Identity & Web Design</option>
-                          <option value="SMM & Digital Campaigns">SMM & Digital Campaigns</option>
-                          <option value="Full Digital Ecosystem Rebuild">Full Digital Ecosystem Rebuild</option>
+                          <option value="Custom Web Development & Storefronts">Custom Web Development & Storefronts</option>
+                          <option value="Bespoke CRM & VoIP Calling Desks">Bespoke CRM & VoIP Calling Desks</option>
+                          <option value="Paid Ad Campaigns & Acquisition">Paid Ad Campaigns & Acquisition</option>
+                          <option value="Email Marketing & Automation Flows">Email Marketing & Automation Flows</option>
+                          <option value="Brand Identity & Web Systems">Brand Identity & Web Systems</option>
                         </select>
                       </label>
                     )}
@@ -753,16 +756,16 @@ export function Contact() {
         <Reveal delay={100} className="mt-6">
           <article className="map-frame surface-lift relative overflow-hidden rounded-xl bg-muted">
             <iframe
-              title="Codex Dynamics studio — Sportyvna, 1A, Kyiv"
+              title="Codex Dynamics office — Sportyvna, 1A, Kyiv"
               src={LINKS.mapsEmbed}
               className="relative z-10 h-[22rem] w-full border-0 sm:h-[28rem]"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
               allowFullScreen
             />
-            <div className="map-card pointer-events-auto absolute bottom-4 left-4 z-20 max-w-[min(calc(100%-5.75rem),22rem)] rounded-xl p-4 sm:bottom-5 sm:left-5">
+            <div className="map-card pointer-events-auto absolute bottom-4 right-4 z-20 max-w-[min(calc(100%-2rem),22rem)] rounded-xl p-4 sm:bottom-5 sm:right-5">
               <p className="text-[11px] font-medium tracking-[0.18em] text-subtle uppercase">
-                The studio
+                Kyiv Office
               </p>
               <p className="mt-1 text-lg font-semibold tracking-tight text-label">
                 {CONTACT.addressStreet}

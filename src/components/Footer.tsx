@@ -41,7 +41,7 @@ export function Footer() {
   const emailItem = primaryEmail || { value: CONTACT.email, href: LINKS.mailto };
   const addressItem = primaryAddress || {
     id: "addr-kyiv",
-    label: "Kyiv Studio",
+    label: "Kyiv Office",
     city: "Kyiv",
     street: CONTACT.addressStreet,
     fullAddress: CONTACT.addressFull,
@@ -205,7 +205,7 @@ export function Footer() {
 
           {/* Navigation Links Columns */}
           <div className="lg:col-span-2">
-            <h3 className="mb-4 font-medium text-label">Studio</h3>
+            <h3 className="mb-4 font-medium text-label">Company</h3>
             <ul className="space-y-2.5">
               <li>
                 <a href="#process" className="hover:text-label transition-colors">
@@ -218,8 +218,8 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a href="#studio" className="hover:text-label transition-colors">
-                  The standard
+                <a href="#about" className="hover:text-label transition-colors">
+                  About
                 </a>
               </li>
               <li>

@@ -19,7 +19,7 @@ export const Route = createRootRoute({
       {
         name: "description",
         content:
-          "High-performance websites, web design, web development, and digital marketing studio website.",
+          "High-performance websites, web design, web development, custom CRMs, and digital marketing agency.",
       },
       { name: "theme-color", content: "#ffffff" },
     ],

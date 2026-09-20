@@ -43,7 +43,7 @@ export const DEFAULT_SITE_CONFIG = {
     {
       id: "ph-2",
       type: "phone",
-      label: "Kyiv Studio Landline",
+      label: "Kyiv Office Landline",
       value: "+380 44 233 4567",
       href: "tel:+380442334567",
       isPrimary: false,
@@ -91,7 +91,7 @@ export const DEFAULT_SITE_CONFIG = {
     {
       id: "em-2",
       type: "email",
-      label: "Direct Studio Desk",
+      label: "Direct Agency Desk",
       value: "hello@codexdynamics.com",
       href: "mailto:hello@codexdynamics.com",
       isPrimary: false,
@@ -118,7 +118,7 @@ export const DEFAULT_SITE_CONFIG = {
   addresses: [
     {
       id: "addr-1",
-      label: "Kyiv Studio (HQ)",
+      label: "Kyiv Office (HQ)",
       street: "Sportyvna, 1A",
       city: "Kyiv, 012023, Ukraine",
       fullAddress: "Sportyvna, 1A, Kyiv, 012023, Ukraine",
@@ -148,7 +148,7 @@ export const DEFAULT_SITE_CONFIG = {
       {
         id: "clip-1",
         label: "Codex Dynamics",
-        line: "The studio. The standard.",
+        line: "Digital Agency. The standard.",
         src: "/hero/studio.mp4",
         poster: "/hero/studio.jpg",
       },
@@ -192,8 +192,8 @@ export const DEFAULT_SITE_CONFIG = {
         copy: "Design, development, and social media in a single loop.",
       },
       {
-        href: "#studio",
-        kicker: "Studio",
+        href: "#about",
+        kicker: "About",
         title: "One standard.",
         copy: "The same care on the page, in the brand, and in the feed.",
       },
@@ -278,8 +278,8 @@ export const DEFAULT_SITE_CONFIG = {
         timeline: "Typical Delivery: 3 to 6 Weeks",
         idealFor: "Companies requiring custom business software, client self-service portals, or high-density operational dashboards.",
         offYourPlate: "No paying thousands every month for rigid third-party software that forces your team to compromise on workflow.",
-        src: "/work/storefront.mp4",
-        poster: "/work/storefront.jpg",
+        src: "/work/developer-portal.jpg",
+        poster: "/work/developer-portal.jpg",
       },
       {
         id: "graphic-design",
@@ -389,8 +389,8 @@ export const DEFAULT_SITE_CONFIG = {
         timeline: "Setup: 1 to 2 Weeks + Monthly Sprints",
         idealFor: "Businesses looking for a consistent, scalable engine of new inquiries and automated lifetime customer value.",
         offYourPlate: "No wasting ad budget on ineffective boosted posts or watching leads go cold without automated follow-up.",
-        src: "/hero/social.mp4",
-        poster: "/hero/social.jpg",
+        src: "/services/acquisition-retention.jpg",
+        poster: "/services/acquisition-retention.jpg",
       },
     ],
   },
@@ -468,14 +468,14 @@ export const DEFAULT_SITE_CONFIG = {
     ],
   },
 
-  // Studio Section
+  // About / Company Section
   studio: {
-    badge: "The studio",
-    title: "A small team. A high standard.",
+    badge: "About Us",
+    title: "Direct Access. Proven Results.",
     subtitle:
-      "Codex Dynamics is a studio, not a hiring board. Senior design, development, and social sit on the same desk — and stay on the work until it performs.",
-    heroImage: "/studio/headquarters.jpg",
-    heroImageAlt: "Codex Dynamics studio, Sportyvna 1A, Kyiv",
+      "Codex Dynamics is an agile agency. Senior developers, designers, and growth specialists handle your project directly — and stay on the work until it performs.",
+    heroImage: "/hero/studio.jpg",
+    heroImageAlt: "Codex Dynamics office, Sportyvna 1A, Kyiv",
     studioCityTag: "Kyiv",
     studioLocationTag: "Gulliver · Open in Maps",
     principles: [
@@ -517,7 +517,7 @@ export const DEFAULT_SITE_CONFIG = {
     phoneCardSubtitle: "Mon–Fri · 9:00–19:00 EET",
     emailCardTitle: "Email us",
     emailCardSubtitle: "Briefs, RFPs, decks",
-    locationCardTitle: "Kyiv Studio",
+    locationCardTitle: "Kyiv Office",
     locationCardSubtitle: "Visits by appointment",
   },
 
@@ -629,8 +629,8 @@ export const DEFAULT_SITE_CONFIG = {
 
   // SEO & Social OpenGraph
   seo: {
-    metaTitle: "Codex Dynamics — High-Performance Websites & Digital Studio",
-    metaDescription: "High-performance websites, web design, web development, and digital marketing studio. Precision engineering on every screen.",
+    metaTitle: "Codex Dynamics — High-Performance Websites & Digital Agency",
+    metaDescription: "High-performance websites, web design, web development, and digital marketing agency. Precision quality on every screen.",
     canonicalUrl: "https://codexdynamics.com",
     ogImage: "/hero/studio.jpg",
     gaId: "",
@@ -643,8 +643,8 @@ export const DEFAULT_SITE_CONFIG = {
   emergency: {
     maintenanceMode: false,
     headline: "System Maintenance & Upgrades in Progress",
-    subtext: "We are fine-tuning our high-performance digital studio platform. We will be back shortly with enhanced capabilities.",
-    message: "We are fine-tuning our high-performance digital studio platform. We will be back shortly with enhanced capabilities.",
+    subtext: "We are fine-tuning our high-performance digital platform. We will be back shortly with enhanced capabilities.",
+    message: "We are fine-tuning our high-performance digital platform. We will be back shortly with enhanced capabilities.",
     estimatedLaunch: "2026-10-01T12:00",
     estimatedReturn: "2026-10-01T12:00",
     notifyEmail: "codexdynamix@gmail.com",

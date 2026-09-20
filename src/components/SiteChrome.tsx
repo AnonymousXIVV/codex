@@ -7,7 +7,6 @@ import { Results } from "@/components/Results";
 import { Reviews } from "@/components/Reviews";
 import { About } from "@/components/About";
 import { Services } from "@/components/Services";
-import { Studio } from "@/components/Studio";
 import { BlogSection } from "@/components/BlogSection";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
@@ -31,7 +30,6 @@ const SECTION_MAP: Record<string, () => ReactNode> = {
   reviews: () => <Reviews />,
   about: () => <About />,
   services: () => <Services />,
-  studio: () => <Studio />,
   blog: () => <BlogSection />,
   contact: () => <Contact />,
 };
@@ -40,7 +38,7 @@ const PAGE_SECTIONS: Record<PreviewPage, string[]> = {
   home: [],
   work: ["portfolio", "results"],
   services: ["services"],
-  studio: ["studio", "about"],
+  studio: ["about"],
   blog: ["blog"],
   contact: ["contact"],
 };

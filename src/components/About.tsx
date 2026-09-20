@@ -1,4 +1,3 @@
-import { ImageWithFallback } from "@/components/ImageWithFallback";
 import { Reveal } from "@/components/Reveal";
 import { useSiteConfig } from "@/context/SiteConfigContext";
 
@@ -19,7 +18,7 @@ const processSteps = [
     number: "03",
     title: "Custom Web Development",
     description:
-      "Our engineers hand-code your platform using React, TypeScript, and Tailwind CSS. Clean, scalable architecture, sub-second speeds, and zero template bloat.",
+      "Our developers hand-craft your platform using React, TypeScript, and Tailwind CSS. Clean, scalable architecture, sub-second speeds, and zero template bloat.",
   },
   {
     number: "04",
@@ -35,43 +34,9 @@ const processSteps = [
   },
 ];
 
-const gallery = [
-  {
-    src: "/studio/interior.jpg",
-    alt: "The Codex Dynamics studio overlooking the city",
-    className: "col-span-2 min-h-44 sm:min-h-56",
-  },
-  {
-    src: "/studio/code.jpg",
-    alt: "Engineer writing production code",
-    className: "col-span-2 min-h-44 sm:min-h-56",
-  },
-  {
-    src: "/studio/design.jpg",
-    alt: "Designer reviewing a web interface",
-    className: "min-h-36 sm:min-h-44",
-  },
-  {
-    src: "/studio/wireframes.jpg",
-    alt: "Website wireframes on a desk",
-    className: "min-h-36 sm:min-h-44",
-  },
-  {
-    src: "/studio/social.jpg",
-    alt: "Social media creative on a phone",
-    className: "min-h-36 sm:min-h-44",
-  },
-  {
-    src: "/studio/analytics.jpg",
-    alt: "Performance dashboard and analytics",
-    className: "min-h-36 sm:min-h-44",
-  },
-];
-
 export function About() {
   const { config } = useSiteConfig();
   const steps = config.about?.steps?.length ? config.about.steps : processSteps;
-  const shots = config.about?.gallery?.length ? config.about.gallery : gallery;
 
   return (
     <section
@@ -79,6 +44,7 @@ export function About() {
       aria-label="Process"
       className="scroll-mt-24 bg-background py-16 sm:py-24"
     >
+      <div id="about" className="relative -top-24" />
       <div className="shell">
         <Reveal>
           <p className="mb-3 text-[11px] font-medium tracking-[0.22em] text-subtle uppercase">
@@ -111,24 +77,6 @@ export function About() {
             </li>
           ))}
         </ol>
-
-        <Reveal className="mt-16">
-          <p className="mb-5 text-sm text-muted-foreground">Inside the studio</p>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-            {shots.map((shot, i) => (
-              <div
-                key={shot.src + i}
-                className={`media-zoom overflow-hidden rounded-lg bg-muted ${shot.className || (i < 2 ? "col-span-2 min-h-44 sm:min-h-56" : "min-h-36 sm:min-h-44")}`}
-              >
-                <ImageWithFallback
-                  src={shot.src}
-                  alt={shot.alt}
-                  className="h-full min-h-36 w-full object-cover sm:min-h-44"
-                />
-              </div>
-            ))}
-          </div>
-        </Reveal>
       </div>
     </section>
   );

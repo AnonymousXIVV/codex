@@ -24,7 +24,6 @@ import { scrollToId } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { useSiteConfig } from "@/context/SiteConfigContext";
 import { useContactModal } from "@/context/ContactModalContext";
-import { VoipCallingAnimation } from "@/components/VoipCallingAnimation";
 import type { ServiceItem } from "@/types/site-editor";
 
 const fallbackServices: ServiceItem[] = [
@@ -221,8 +220,8 @@ const fallbackServices: ServiceItem[] = [
     timeline: "Typical Delivery: 1 to 2 Weeks",
     idealFor: "Businesses wanting to build an owned audience asset and generate predictable sales without relying solely on paid ads.",
     offYourPlate: "No wondering why your emails are hitting the spam tab or struggling with broken email layouts on mobile devices.",
-    src: "/work/storefront.mp4",
-    poster: "/services/email-marketing.jpg",
+    src: "/services/acquisition-retention.jpg",
+    poster: "/services/acquisition-retention.jpg",
   },
   {
     id: "social-ads",
@@ -427,53 +426,126 @@ export function Services() {
                         i % 2 === 1 && "lg:order-2",
                       )}
                     >
-                      {service.id === "crm-calling" ? (
-                        <VoipCallingAnimation
-                          poster={
-                            service.poster && service.poster !== "/hero/studio.jpg"
-                              ? service.poster
-                              : "/services/crm-calling.jpg"
-                          }
-                          kicker={service.kicker}
-                          timeline={service.timeline}
-                        />
-                      ) : (
-                        <>
-                          {service.src && service.src.endsWith(".mp4") && service.src !== "/hero/studio.mp4" ? (
-                            <video
-                              src={service.src}
-                              poster={service.poster}
-                              className="absolute inset-0 h-full w-full object-cover"
-                              autoPlay
-                              muted
-                              loop
-                              playsInline
-                              preload="metadata"
-                            />
-                          ) : (
-                            <img
-                              src={service.poster || service.src || "/services/web-development.jpg"}
-                              alt={service.title}
-                              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
-                              loading="lazy"
-                              referrerPolicy="no-referrer"
-                            />
-                          )}
-                          <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent pointer-events-none" />
-                          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-paper pointer-events-none">
-                            <span className="inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2.5 py-1 text-xs font-medium backdrop-blur-md">
-                              <Icon className="size-3.5 text-blue" />
-                              {service.kicker}
-                            </span>
-                            {service.timeline && (
-                              <span className="inline-flex items-center gap-1 text-xs text-paper/80">
-                                <Clock className="size-3" />
-                                {service.timeline}
-                              </span>
+                      {(() => {
+                        const isCrm =
+                          service.id === "crm-calling" ||
+                          service.title.toLowerCase().includes("crm") ||
+                          service.title.toLowerCase().includes("calling");
+                        const isAcquisition =
+                          service.id === "email-marketing" ||
+                          service.id === "social-ads" ||
+                          service.id === "social" ||
+                          service.title.toLowerCase().includes("acquisition") ||
+                          service.title.toLowerCase().includes("email marketing");
+                        const isWebApps =
+                          service.id === "web-apps" ||
+                          service.title.toLowerCase().includes("application");
+                        const isDesign =
+                          service.id === "graphic-design" ||
+                          service.title.toLowerCase().includes("brand") ||
+                          service.title.toLowerCase().includes("graphic");
+
+                        const mediaSrc = isCrm
+                          ? "/services/crm-calling.jpg"
+                          : isAcquisition
+                          ? "/services/acquisition-retention.jpg"
+                          : isWebApps
+                          ? "/work/developer-portal.jpg"
+                          : service.src || service.poster || "/hero/web-dev.jpg";
+
+                        const isVideo =
+                          !isCrm &&
+                          !isAcquisition &&
+                          !isWebApps &&
+                          typeof mediaSrc === "string" &&
+                          mediaSrc.endsWith(".mp4");
+
+                        const tagLabel = isCrm
+                          ? "Bespoke CRM · Native Browser VoIP"
+                          : isAcquisition
+                          ? "Meta & Google Ads · Klaviyo Drip Engine"
+                          : isWebApps
+                          ? "Full-Stack Portal · Real-Time WebSockets"
+                          : isDesign
+                          ? "Figma UI Systems · Vector Brand Master"
+                          : "Sub-Second Edge Code · 99+ Core Vitals";
+
+                        const tagPulseColor = isCrm
+                          ? "bg-emerald-400"
+                          : isAcquisition
+                          ? "bg-blue"
+                          : isWebApps
+                          ? "bg-indigo-400"
+                          : isDesign
+                          ? "bg-amber-400"
+                          : "bg-emerald-400";
+
+                        const tagBorder = isCrm
+                          ? "border-emerald-500/30"
+                          : isAcquisition
+                          ? "border-blue/30"
+                          : isWebApps
+                          ? "border-indigo-500/30"
+                          : isDesign
+                          ? "border-amber-500/30"
+                          : "border-white/20";
+
+                        return (
+                          <>
+                            {isVideo ? (
+                              <video
+                                src={mediaSrc}
+                                poster={service.poster}
+                                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
+                                autoPlay
+                                muted
+                                loop
+                                playsInline
+                                preload="metadata"
+                              />
+                            ) : (
+                              <img
+                                src={mediaSrc}
+                                alt={service.title}
+                                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out hover:scale-105"
+                                loading="lazy"
+                                referrerPolicy="no-referrer"
+                              />
                             )}
-                          </div>
-                        </>
-                      )}
+
+                            {/* Top & Bottom Apple Vignettes */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-ink/90 via-ink/20 to-transparent pointer-events-none" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent pointer-events-none" />
+
+                            {/* Top Status Pill */}
+                            <div className="absolute top-4 left-4 right-4 flex items-center justify-between pointer-events-none">
+                              <span
+                                className={cn(
+                                  "inline-flex items-center gap-1.5 rounded-full bg-black/60 px-2.5 py-1 text-[11px] font-medium text-paper/90 backdrop-blur-md border",
+                                  tagBorder,
+                                )}
+                              >
+                                <span className={cn("size-1.5 rounded-full animate-pulse", tagPulseColor)} />
+                                {tagLabel}
+                              </span>
+                            </div>
+
+                            {/* Bottom Floating Bar */}
+                            <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-paper pointer-events-none">
+                              <span className="inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2.5 py-1 text-xs font-medium backdrop-blur-md">
+                                <Icon className="size-3.5 text-blue" />
+                                {service.kicker}
+                              </span>
+                              {service.timeline && (
+                                <span className="inline-flex items-center gap-1 text-xs text-paper/80">
+                                  <Clock className="size-3" />
+                                  {service.timeline}
+                                </span>
+                              )}
+                            </div>
+                          </>
+                        );
+                      })()}
                     </div>
 
                     {/* Summary & Core Offer */}

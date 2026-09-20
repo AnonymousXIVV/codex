@@ -734,12 +734,12 @@ export const DEFAULT_SITE_CONFIG: SiteConfig = {
   },
 
   studio: {
-    badge: "The studio",
-    title: "A small team. A high standard.",
+    badge: "About Us",
+    title: "Direct Access. Proven Results.",
     subtitle:
-      "Codex Dynamics is a studio, not a hiring board. Senior design, development, and social sit on the same desk — and stay on the work until it performs.",
-    heroImage: "/studio/headquarters.jpg",
-    heroImageAlt: "Codex Dynamics studio, Sportyvna 1A, Kyiv",
+      "Codex Dynamics is an agile agency. Senior developers, designers, and growth specialists handle your project directly — and stay on the work until it performs.",
+    heroImage: "/hero/studio.jpg",
+    heroImageAlt: "Codex Dynamics office, Sportyvna 1A, Kyiv",
     studioCityTag: "Kyiv",
     studioLocationTag: "Gulliver · Open in Maps",
     principles: [
