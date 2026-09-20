@@ -1,5 +1,5 @@
 import { ArrowUp, ArrowDown, Eye, EyeOff, RotateCcw, Layout, Compass, ShieldCheck } from "lucide-react";
-import type { SiteConfig } from "@/types/site-editor";
+import type { SiteConfig, ThemeSettings } from "@/types/site-editor";
 import { DEFAULT_HOME_SEQUENCE, resolveSectionsOrder, resolveSectionVisibility } from "@/lib/theme-engine";
 
 interface LayoutSettingsSectionProps {
@@ -30,12 +30,15 @@ const HERO_LAYOUT_OPTIONS = [
 const HEADER_OPTIONS = [
   { id: "floating", label: "Floating Island Bar", desc: "Detached pill navigation with blur backdrop" },
   { id: "minimal", label: "Clean Edge-to-Edge", desc: "Minimal borderless top navigation bar" },
-  { id: "solid", label: "Solid Framed Nav", desc: "Framed surface with subtle divider line" },
+  { id: "sticky", label: "Sticky Top Header", desc: "Header pinned to top on scroll with subtle border" },
 ] as const;
 
 export function LayoutSettingsSection({ config, onChange }: LayoutSettingsSectionProps) {
-  const currentTheme = config.theme || {
+  const currentTheme: ThemeSettings = config.theme || {
     activeTheme: "codex-pro",
+    fontFamily: "system",
+    containerWidth: "1280px",
+    borderRadius: "modern",
     heroLayout: "streamer",
     headerStyle: "floating",
   };

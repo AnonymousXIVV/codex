@@ -336,7 +336,7 @@ export function VisitorsTab({
                         <div className="flex items-center gap-1.5 text-xs">
                           <Clock className="size-3 text-subtle" />
                           <span className="font-medium text-label">{formatDuration(v.duration_seconds)}</span>
-                          {v.visit_count > 1 && (
+                          {(v.visit_count ?? 0) > 1 && (
                             <span className="text-[10px] px-1.5 py-0.2 rounded-md bg-blue/10 text-blue font-semibold">
                               {v.visit_count}x
                             </span>

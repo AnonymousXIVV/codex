@@ -4,6 +4,7 @@ import {
   ExternalLink,
   Menu,
   Database,
+  Download,
   Activity,
   BarChart3,
   Inbox,
@@ -217,11 +218,11 @@ export function AdminHeader({
           <button
             type="button"
             onClick={onOpenHostingerModal}
-            className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white hover:bg-fill-elevated text-label text-xs font-medium border border-black/8 transition-all hover:shadow-xs cursor-pointer"
-            title="Hostinger shared hosting & SQLite3 documentation"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue/10 hover:bg-blue/15 text-blue text-xs font-semibold border border-blue/20 transition-all hover:shadow-xs cursor-pointer"
+            title="Download Hostinger public_html ZIP Package"
           >
-            <Database className="size-3.5 text-blue" />
-            <span className="hidden lg:inline">Hostinger Docs</span>
+            <Download className="size-3.5 text-blue" />
+            <span>Hostinger ZIP</span>
           </button>
 
           <button

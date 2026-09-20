@@ -52,8 +52,8 @@ function safeMergeConfig(base: SiteConfig, override: Partial<SiteConfig>): SiteC
     results: { ...base.results, ...(override.results || {}) },
     contact: { ...base.contact, ...(override.contact || {}) },
     footer: { ...base.footer, ...(override.footer || {}) },
-    theme: { ...base.theme, ...(override.theme || {}) },
-    tidio: { ...base.tidio, ...(override.tidio || {}) },
+    theme: { ...base.theme, ...(override.theme || {}) } as any,
+    tidio: { ...base.tidio, ...(override.tidio || {}) } as any,
     headerSocials: {
       ...base.headerSocials,
       ...(override.headerSocials || {}),
@@ -62,7 +62,7 @@ function safeMergeConfig(base: SiteConfig, override: Partial<SiteConfig>): SiteC
       github: { ...base.headerSocials?.github, ...(override.headerSocials?.github || {}) },
       instagram: { ...base.headerSocials?.instagram, ...(override.headerSocials?.instagram || {}) },
       facebook: { ...base.headerSocials?.facebook, ...(override.headerSocials?.facebook || {}) },
-    },
+    } as any,
     socialContacts: Array.isArray(override.socialContacts) && override.socialContacts.length > 0
       ? override.socialContacts
       : (base.socialContacts || []),
@@ -70,21 +70,21 @@ function safeMergeConfig(base: SiteConfig, override: Partial<SiteConfig>): SiteC
       ? override.addresses
       : (base.addresses || []),
     branding: { ...base.branding, ...(override.branding || {}) },
-    banner: { ...base.banner, ...(override.banner || {}) },
-    whatsapp: { ...base.whatsapp, ...(override.whatsapp || {}) },
+    banner: { ...base.banner, ...(override.banner || {}) } as any,
+    whatsapp: { ...base.whatsapp, ...(override.whatsapp || {}) } as any,
     contactForm: { ...base.contactForm, ...(override.contactForm || {}) },
-    seo: { ...base.seo, ...(override.seo || {}) },
+    seo: { ...base.seo, ...(override.seo || {}) } as any,
     emergency: {
       ...base.emergency,
       ...(override.emergency || {}),
-      subtext: override.emergency?.subtext || override.emergency?.message || base.emergency?.subtext,
-      message: override.emergency?.message || override.emergency?.subtext || base.emergency?.message,
+      subtext: (override.emergency?.subtext || override.emergency?.message || base.emergency?.subtext || "") as string,
+      message: (override.emergency?.message || override.emergency?.subtext || base.emergency?.message || "") as string,
       estimatedLaunch: override.emergency?.estimatedLaunch || override.emergency?.estimatedReturn || base.emergency?.estimatedLaunch,
       estimatedReturn: override.emergency?.estimatedReturn || override.emergency?.estimatedLaunch || base.emergency?.estimatedReturn,
-    },
+    } as any,
     codeInjection: { ...base.codeInjection, ...(override.codeInjection || {}) },
     snapshots: Array.isArray(override.snapshots) ? override.snapshots : (base.snapshots || []),
-  };
+  } as SiteConfig;
 }
 
 const SiteConfigContext = createContext<SiteConfigContextType | null>(null);
@@ -240,6 +240,9 @@ function deriveFromConfig(config: SiteConfig) {
     email: [] as SocialContact[],
     instagram: [] as SocialContact[],
     facebook: [] as SocialContact[],
+    linkedin: [] as SocialContact[],
+    twitter: [] as SocialContact[],
+    github: [] as SocialContact[],
     custom: [] as SocialContact[],
   };
   for (const item of contacts) {

@@ -1,5 +1,5 @@
 // @ts-nocheck
-import { existsSync, mkdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, writeFileSync, createReadStream, statSync } from "node:fs";
 import { join } from "node:path";
 import {
   getAllCrmData,
@@ -85,6 +85,62 @@ export function crmApiPlugin() {
     configureServer(server) {
       server.middlewares.use(async (req, res, next) => {
         const url = req.url || "";
+
+        // Explicit Hostinger ZIP download endpoint with Content-Disposition attachment
+        if (
+          url === "/hostinger-public_html.zip" ||
+          url.startsWith("/hostinger-public_html.zip?") ||
+          url === "/api/download-hostinger-zip" ||
+          url.startsWith("/api/download-hostinger-zip?")
+        ) {
+          try {
+            const zipPath = existsSync(join(process.cwd(), "public", "hostinger-public_html.zip"))
+              ? join(process.cwd(), "public", "hostinger-public_html.zip")
+              : join(process.cwd(), "hostinger-public_html.zip");
+
+            if (existsSync(zipPath)) {
+              const stat = statSync(zipPath);
+              res.setHeader("Content-Type", "application/zip");
+              res.setHeader("Content-Disposition", 'attachment; filename="hostinger-public_html.zip"');
+              res.setHeader("Content-Length", stat.size);
+              res.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+              res.setHeader("Pragma", "no-cache");
+              res.setHeader("Expires", "0");
+              res.statusCode = 200;
+              createReadStream(zipPath).pipe(res);
+              return;
+            }
+          } catch (err) {
+            console.error("Error serving hostinger ZIP:", err);
+          }
+        }
+
+        // Static Uploaded Image Serving
+        if (url.startsWith("/uploads/")) {
+          try {
+            const parsedUrl = new URL(url, "http://localhost:3000");
+            const safeFilename = parsedUrl.pathname.replace(/^\/uploads\//, "").replace(/[^a-zA-Z0-9_.-]/g, "");
+            const targetPath = join(process.cwd(), "public", "uploads", safeFilename);
+            if (existsSync(targetPath)) {
+              const ext = safeFilename.split(".").pop().toLowerCase();
+              const mimeMap = {
+                png: "image/png",
+                jpg: "image/jpeg",
+                jpeg: "image/jpeg",
+                webp: "image/webp",
+                gif: "image/gif",
+                svg: "image/svg+xml",
+              };
+              res.setHeader("Content-Type", mimeMap[ext] || "application/octet-stream");
+              res.setHeader("Cache-Control", "public, max-age=86400");
+              res.statusCode = 200;
+              createReadStream(targetPath).pipe(res);
+              return;
+            }
+          } catch {
+            // pass through to next
+          }
+        }
 
         // Public Dynamic Content Endpoint (for public website: work projects, client reviews, published blogs)
         if (url.startsWith("/api/public/content")) {

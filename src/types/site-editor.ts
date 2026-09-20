@@ -6,6 +6,7 @@ export interface SocialContact {
   href?: string;
   isPrimary?: boolean;
   platform?: string;
+  isVisible?: boolean;
 }
 
 export interface AddressItem {
@@ -208,12 +209,15 @@ export interface BannerSettings {
   ctaText?: string;
   ctaUrl?: string;
   styleVariant?: "blue" | "dark" | "gradient" | "amber" | "emerald";
+  variant?: string;
   closable?: boolean;
+  dismissible?: boolean;
 }
 
 export interface WhatsAppSettings {
   enabled: boolean;
   number: string;
+  phone?: string;
   defaultMessage: string;
   position: "bottom-right" | "bottom-left";
   showExtraChannels?: boolean;
@@ -239,8 +243,8 @@ export interface SeoSettings {
 
 export interface EmergencySettings {
   maintenanceMode: boolean;
-  headline: string;
-  subtext: string;
+  headline?: string;
+  subtext?: string;
   message?: string;
   estimatedLaunch?: string;
   estimatedReturn?: string;
@@ -259,6 +263,8 @@ export interface SnapshotItem {
   timestamp: string;
   config: Partial<SiteConfig>;
 }
+
+export type ConfigSnapshot = SnapshotItem;
 
 export interface ThemeSettings {
   activeTheme: string;

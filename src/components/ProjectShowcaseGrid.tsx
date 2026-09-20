@@ -23,6 +23,15 @@ import {
   type ShowcaseProject,
 } from "@/data/showcaseProjects";
 
+const DEFAULT_CATEGORIES = [
+  "All",
+  "Websites & Web Apps",
+  "CRMs & Calling Systems",
+  "Graphic Design & Branding",
+  "Meta & Google Ads",
+  "Email Marketing",
+];
+
 export function ProjectShowcaseGrid() {
   const [projects, setProjects] = useState<ShowcaseProject[]>(RECENT_WEB_PROJECTS);
   const [activeCategory, setActiveCategory] = useState<string>("All");
@@ -51,7 +60,7 @@ export function ProjectShowcaseGrid() {
             title: p.title,
             client: p.site_name || p.title,
             tag: p.category || "Web Development",
-            category: "Web Development",
+            category: p.category || "Websites & Web Apps",
             shortDescription:
               p.description ||
               "High-performance bespoke web development solution crafted for conversion, speed, and responsive elegance.",
@@ -93,13 +102,34 @@ export function ProjectShowcaseGrid() {
       });
   }, []);
 
+  const categories = useMemo(() => {
+    const set = new Set<string>();
+    set.add("All");
+    for (const c of DEFAULT_CATEGORIES.slice(1)) {
+      set.add(c);
+    }
+    for (const p of projects) {
+      if (p.category && p.category.trim() && p.category.trim() !== "All") {
+        set.add(p.category.trim());
+      }
+    }
+    return Array.from(set);
+  }, [projects]);
+
   // Filtered & Searched Projects
   const filteredProjects = useMemo(() => {
     return projects.filter((project) => {
+      const pCat = (project.category || "").toLowerCase();
+      const pTag = (project.tag || "").toLowerCase();
+      const aCat = activeCategory.toLowerCase();
+
       const matchesCategory =
         activeCategory === "All" ||
-        project.category === activeCategory ||
-        project.tag.toLowerCase().includes(activeCategory.toLowerCase());
+        pCat === aCat ||
+        pTag === aCat ||
+        pCat.includes(aCat) ||
+        aCat.includes(pCat) ||
+        pTag.includes(aCat);
 
       const query = searchQuery.trim().toLowerCase();
       if (!query) return matchesCategory;
@@ -108,20 +138,13 @@ export function ProjectShowcaseGrid() {
         project.title.toLowerCase().includes(query) ||
         project.client.toLowerCase().includes(query) ||
         project.shortDescription.toLowerCase().includes(query) ||
+        pCat.includes(query) ||
+        pTag.includes(query) ||
         project.techStack.some((tech) => tech.toLowerCase().includes(query));
 
       return matchesCategory && matchesQuery;
     });
   }, [projects, activeCategory, searchQuery]);
-
-  const categories = [
-    "All",
-    "Websites & Web Apps",
-    "CRMs & Calling Systems",
-    "Graphic Design & Branding",
-    "Meta & Google Ads",
-    "Email Marketing",
-  ];
 
   const featured = filteredProjects[0];
   const gridItems = layoutMode === "bento" ? filteredProjects.slice(1) : filteredProjects;
