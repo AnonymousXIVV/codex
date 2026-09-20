@@ -1,8 +1,9 @@
 export const NAV_LINKS = [
-  { href: "#work", label: "Work" },
+  { href: "#services", label: "Services" },
+  { href: "#work", label: "Projects" },
   { href: "#process", label: "Process" },
-  { href: "#capabilities", label: "Services" },
-  { href: "#insights", label: "Insights" },
+  { href: "#studio", label: "About" },
+  { href: "#reviews", label: "Reviews" },
   { href: "#contact", label: "Contact" },
 ] as const;
 

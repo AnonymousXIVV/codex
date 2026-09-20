@@ -6,6 +6,9 @@ import {
   CheckCircle2,
   Code2,
   Palette,
+  PhoneCall,
+  Mail,
+  Megaphone,
   TrendingUp,
   ShieldCheck,
   Clock,
@@ -21,24 +24,25 @@ import { scrollToId } from "@/lib/nav";
 import { cn } from "@/lib/utils";
 import { useSiteConfig } from "@/context/SiteConfigContext";
 import { useContactModal } from "@/context/ContactModalContext";
+import { VoipCallingAnimation } from "@/components/VoipCallingAnimation";
 import type { ServiceItem } from "@/types/site-editor";
 
 const fallbackServices: ServiceItem[] = [
   {
     id: "web-dev",
-    kicker: "01  /  Engineering",
-    title: "Custom Web Development",
-    role: "Full-Stack Development, Fast Web Apps & Custom Storefronts",
+    kicker: "01  /  Websites & Web Apps",
+    title: "Custom Web Development & Web Applications",
+    role: "Full-Stack Web Development, Custom Web Apps & E-Commerce",
     description:
-      "We build and code custom, lightning-fast websites and web applications tailored specifically to your business operations. Whether you need a high-converting corporate website, an e-commerce store, or an interactive web app, we write clean, scalable code that loads in under a second and turns visitors into paying customers.",
+      "We design and code bespoke, ultra-fast websites and web applications tailored specifically to your business operations. Whether you need a high-converting corporate website, an e-commerce platform, a customer portal, or an internal dashboard, we write clean, scalable code that loads in under a second and drives qualified client conversions.",
     whatWeDo:
-      "We take full ownership of your technical build — from database architecture and API connections to custom front-end implementation, checkout gateways, and turnkey cloud deployment. You receive a fast, secure digital asset that you 100% own.",
+      "We handle the entire build from software architecture and database design to modern React frontends, payment checkout flows, API integrations, and turnkey cloud server deployment. You get a bulletproof, secure digital asset that you 100% own.",
     points: [
-      "Custom React & TypeScript Code",
-      "Sub-Second Page Load Speed (95+ Score)",
-      "Secure Stripe & PayPal Checkout",
-      "Automated Lead Capture & CRM Sync",
-      "No Bloated Plugins or Builders",
+      "Custom React & TypeScript Code (No slow builders)",
+      "Sub-Second Load Times (95+ PageSpeed benchmark)",
+      "Bespoke Client Portals & Web Applications",
+      "Secure Stripe, PayPal & Apple Pay Checkout",
+      "Automated Lead Capture & Instant CRM Sync",
     ],
     deliverables: [
       {
@@ -74,20 +78,20 @@ const fallbackServices: ServiceItem[] = [
     poster: "/hero/web-dev.jpg",
   },
   {
-    id: "web-design",
-    kicker: "02  /  Visual Identity",
-    title: "Web Design & UI/UX",
-    role: "Conversion-Focused Interfaces & Complete Brand Systems",
+    id: "graphic-design",
+    kicker: "02  /  Visual Identity & UI/UX",
+    title: "Graphic Design & Brand Identity",
+    role: "Conversion-Focused Interfaces, Logos & Brand Systems",
     description:
-      "We design premium, conversion-optimized interfaces that instantly position your company as the premier leader in your industry. Every color, font, button state, and layout is strategically crafted in Figma to guide visitors toward booking calls and purchasing your offers.",
+      "We design premium, conversion-optimized visual identities and graphic assets that instantly position your company as the premier leader in your industry. Every color palette, custom logo, typography system, button state, and marketing graphic is strategically crafted in Figma and Illustrator to establish high trust.",
     whatWeDo:
-      "We research your target audience, analyze your top competitors, and build comprehensive wireframes and high-fidelity mockups. You get to review interactive prototypes and request adjustments before any coding begins.",
+      "We research your market and competitors, design comprehensive logo suites and brand style guides, produce high-fidelity Figma UI/UX screens, and deliver vector marketing collateral ready for print and web.",
     points: [
-      "Bespoke High-Fidelity Figma UI",
-      "User Experience & Frictionless Journeys",
-      "Design Systems & Brand Guidelines",
-      "Mobile-First Interaction Patterns",
-      "Conversion Rate Optimization (CRO)",
+      "Bespoke Logo Design & Complete Brand Identity",
+      "High-Fidelity UI/UX Interface Design in Figma",
+      "Marketing Collateral & Social Media Graphics",
+      "Design Systems & Reusable UI Component Kits",
+      "Full Vector SVG, PNG & Print Production Exports",
     ],
     deliverables: [
       {
@@ -115,66 +119,168 @@ const fallbackServices: ServiceItem[] = [
         desc: "Full vector SVG exports, favicon suites, high-resolution social share preview cards (OpenGraph), and marketing assets.",
       },
     ],
-    techStack: ["Figma", "Adobe Creative Suite", "Illustrator", "Tailwind Typography", "Framer Motion"],
+    techStack: ["Figma", "Adobe Illustrator", "Photoshop", "Tailwind Typography", "Vector Graphics"],
     timeline: "Typical Delivery: 1 to 3 Weeks",
     idealFor: "Established companies looking to rebrand, elevate their perceived value, and charge premium prices for their services.",
-    offYourPlate: "No guessing whether your website looks professional or trustworthy. We deliver an elevated aesthetic that converts.",
+    offYourPlate: "No guessing whether your design looks professional or trustworthy. We deliver an elevated aesthetic that converts.",
     src: "/hero/design.mp4",
     poster: "/hero/design.jpg",
   },
   {
-    id: "social",
-    kicker: "03  /  Acquisition",
-    title: "Social Media Marketing",
-    role: "Paid Ad Campaigns & Organic Content Growth",
+    id: "crm-calling",
+    kicker: "03  /  Sales Infrastructure",
+    title: "Custom CRMs & Calling Systems",
+    role: "Tailored Customer Pipelines, VoIP Dialers & Automated Sales Desks",
     description:
-      "A great website only produces revenue when high-intent prospects see it. We create your content, run your paid ad campaigns on Meta and Google, and drive qualified leads directly into your sales pipeline with measurable return on ad spend.",
+      "Stop losing deals to disorganization. We build custom Customer Relationship Management (CRM) platforms paired with integrated VoIP calling systems tailored directly to your sales workflow. Manage leads, track deal pipelines, trigger automated follow-ups, and make or record client calls directly inside your browser.",
     whatWeDo:
-      "We plan monthly content strategies, produce scroll-stopping video and graphic creatives, set up tracking pixels, write conversion copy, and actively manage your paid ad budgets to generate predictable client inquiries.",
+      "We architect a dedicated CRM database matching your exact sales stages, connect browser-based VoIP telephony (click-to-call, inbound routing, call recording & transcription), and hook up instant notifications to WhatsApp and Telegram so your team can close deals faster.",
     points: [
-      "Full-Funnel Meta & Google Ads",
-      "Scroll-Stopping Video & Graphic Creatives",
-      "Monthly Content Calendar & Copywriting",
-      "Pixel & Conversion API Tracking",
-      "Weekly A/B Split Testing & Scaling",
+      "Custom CRM Built Exactly for Your Workflow",
+      "Browser-Based VoIP Telephony & Click-to-Call Dialer",
+      "Call Recording, Audio Playback & Telemetry Logs",
+      "Visual Deal Stages & Automated Pipeline Tracking",
+      "Instant WhatsApp, Telegram & SMS Lead Dispatch",
     ],
     deliverables: [
       {
-        title: "Targeted Paid Ad Campaign Management",
-        desc: "Complete ad setup, custom audience segmentation, retargeting funnels, and daily optimization on Meta (Instagram & Facebook) and Google Ads.",
+        title: "Bespoke CRM Dashboard & Deal Pipelines",
+        desc: "Custom visual Kanban and tabular deal pipelines designed specifically around your sales stages and customer lifecycle.",
+      },
+      {
+        title: "Integrated VoIP Calling System & Softphone",
+        desc: "One-click browser dialing, inbound caller routing, hold queues, and seamless customer phone connectivity without external hardware.",
+      },
+      {
+        title: "Call Recording & Automatic Activity Logging",
+        desc: "Secure audio recording archives, call duration logs, customer history timelines, and searchable agent call notes.",
+      },
+      {
+        title: "Automated Lead Notifications & Desk Routing",
+        desc: "Real-time alerts via WhatsApp, Telegram, or email the instant a new lead requests contact or books an appointment.",
+      },
+      {
+        title: "Role-Based Team Permissions & Management",
+        desc: "Granular access controls for sales agents, managers, and administrators to track individual rep activity and team performance.",
+      },
+      {
+        title: "REST API & Webhook Integrations",
+        desc: "Seamless synchronization with your external accounting, advertising channels, and customer communication tools.",
+      },
+    ],
+    techStack: ["WebRTC / VoIP", "Twilio Voice API", "Node.js", "WebSockets", "React", "SQLite / PostgreSQL"],
+    timeline: "Typical Delivery: 2 to 4 Weeks",
+    idealFor: "Sales teams, agencies, and businesses with outbound or inbound call volume that have outgrown rigid off-the-shelf CRMs.",
+    offYourPlate: "No paying thousands every month in expensive per-seat CRM licenses and disconnected phone subscriptions.",
+    src: "/services/crm-calling.jpg",
+    poster: "/services/crm-calling.jpg",
+  },
+  {
+    id: "email-marketing",
+    kicker: "04  /  Retention & Nurturing",
+    title: "Email Marketing & Automated Drip Funnels",
+    role: "High-Deliverability Sequences, Newsletters & Customer Retention",
+    description:
+      "Turn one-time website visitors into lifelong repeat clients. We design responsive, branded email templates, set up bulletproof domain authentication (SPF, DKIM, DMARC) for flawless primary inbox deliverability, and engineer automated email funnels that nurture prospects 24/7.",
+    whatWeDo:
+      "We write compelling direct-response copy, configure welcome drip sequences, re-engage cold prospects, set up cart and inquiry abandonment automations, and manage regular broadcasts with clear conversion tracking.",
+    points: [
+      "Automated Welcome & Lead Nurturing Sequences",
+      "Custom Branded Responsive Email Templates",
+      "Bulletproof Deliverability (SPF, DKIM, DMARC)",
+      "Smart List Segmentation & Behavioral Triggers",
+      "Continuous Open & Click-Through Rate Optimization",
+    ],
+    deliverables: [
+      {
+        title: "Complete Automated Welcome & Onboarding Drip",
+        desc: "A multi-step email sequence that welcomes new inquiries, builds high authority, and guides prospects to book a call or purchase.",
+      },
+      {
+        title: "Responsive Custom Branded Email Templates",
+        desc: "Modern, beautifully styled email designs tested across Apple Mail, Gmail, Outlook, and all major mobile email clients.",
+      },
+      {
+        title: "Domain DNS & Inbox Deliverability Configuration",
+        desc: "Full verification of SPF, DKIM, DMARC, and custom sending subdomains to protect your domain reputation and prevent spam folder drops.",
+      },
+      {
+        title: "Audience Tagging & Behavioral Segmentation",
+        desc: "Automated tagging based on customer interests, purchase status, and website interactions so every recipient receives relevant content.",
+      },
+      {
+        title: "Abandoned Lead & Re-Engagement Automations",
+        desc: "Automated trigger flows that win back interested leads who started a form or checkout but didn't finish.",
+      },
+      {
+        title: "Transparent Performance & Revenue Reports",
+        desc: "In-depth tracking of open rates, click-through rates, unsubscribe benchmarks, and direct revenue generated per campaign.",
+      },
+    ],
+    techStack: ["Klaviyo / Mailchimp / SendGrid", "HTML Email Standards", "DNS SPF/DKIM/DMARC", "CRM Sync"],
+    timeline: "Typical Delivery: 1 to 2 Weeks",
+    idealFor: "Businesses wanting to build an owned audience asset and generate predictable sales without relying solely on paid ads.",
+    offYourPlate: "No wondering why your emails are hitting the spam tab or struggling with broken email layouts on mobile devices.",
+    src: "/work/storefront.mp4",
+    poster: "/services/email-marketing.jpg",
+  },
+  {
+    id: "social-ads",
+    kicker: "05  /  Targeted Acquisition",
+    title: "Social Media Marketing (Meta & Google Ads)",
+    role: "Paid Ad Campaigns, Creative Production & High-ROAS Traffic",
+    description:
+      "A high-converting website needs consistent, high-intent traffic. We create thumb-stopping ad creatives, configure conversion tracking pixels, write direct-response copy, and actively manage your paid ad campaigns on Meta (Facebook & Instagram) and Google (Search, Display & YouTube) to deliver qualified leads.",
+    whatWeDo:
+      "We perform audience and competitor research, produce video reels and graphic ad variations, set up Meta Conversion API and Google Analytics 4 tracking, launch multi-variant A/B tests, and optimize bids weekly to maximize return on ad spend.",
+    points: [
+      "Full-Funnel Meta Ads (Instagram & Facebook)",
+      "High-Intent Google Search & Display Campaigns",
+      "Scroll-Stopping Graphic & Video Ad Production",
+      "Pixel & Conversion API (CAPI) Tracking Setup",
+      "Proactive Weekly A/B Testing & Budget Optimization",
+    ],
+    deliverables: [
+      {
+        title: "Targeted Paid Ad Campaign Setup & Management",
+        desc: "Full-funnel ad campaigns structured for cold acquisition, warm retargeting, and lookalike scaling on Meta and Google.",
       },
       {
         title: "High-Converting Creative Production",
         desc: "Attention-grabbing short-form video reels, multi-slide carousels, and promotional graphic banners designed to stop the feed scroll.",
       },
       {
-        title: "Strategic Copywriting & Content Scheduling",
-        desc: "Captions, headlines, and call-to-actions written using proven direct-response frameworks, scheduled across your primary channels.",
+        title: "Strategic Copywriting & Headline Testing",
+        desc: "Compelling direct-response ad copy written with emotional hooks, clear benefit statements, and high-urgency calls to action.",
       },
       {
-        title: "Tracking Pixels & Funnel Attribution",
-        desc: "Installation of Meta Pixel, Google Analytics 4, and Conversion API so you see exactly which campaigns produce leads and sales.",
+        title: "Tracking Pixels & Server-Side Funnel Attribution",
+        desc: "Installation of Meta Pixel, Google Analytics 4, Google Tag Manager, and Conversion API for complete conversion tracking.",
       },
       {
-        title: "A/B Testing & Cost-Per-Lead Optimization",
+        title: "A/B Testing & Cost-Per-Acquisition Optimization",
         desc: "Continuous testing of creative variations, headlines, and target audiences to lower your cost-per-acquisition and scale winning ads.",
       },
       {
-        title: "Transparent Monthly ROI Reporting",
+        title: "Transparent Monthly ROI & Lead Reporting",
         desc: "Clear, jargon-free monthly performance reports detailing ad spend, reach, click-through rates, qualified leads, and return on investment.",
       },
     ],
-    techStack: ["Meta Ads Manager", "Google Ads", "Google Analytics 4", "CapCut / Premiere", "Canva Pro", "Buffer"],
-    timeline: "Ongoing Monthly Sprints",
-    idealFor: "Business owners who want a consistent pipeline of inbound inquiries without having to spend hours every day posting on social media.",
-    offYourPlate: "No more wondering what to post, wasting money on unoptimized boosted posts, or struggling with confusing ad managers.",
+    techStack: ["Meta Ads Manager", "Google Ads", "Google Analytics 4", "Meta CAPI", "Figma", "CapCut / Premiere"],
+    timeline: "Ongoing Monthly Optimization Sprints",
+    idealFor: "Companies ready to aggressively scale customer acquisition with predictable, measurable paid advertising return.",
+    offYourPlate: "No more burning money on boosted posts or struggling with complex, ever-changing advertising dashboards.",
     src: "/hero/social.mp4",
     poster: "/hero/social.jpg",
   },
 ];
 
-const serviceIcons: Record<string, typeof Code2> = {
+const serviceIcons: Record<string, any> = {
   "web-dev": Code2,
+  "graphic-design": Palette,
+  "crm-calling": PhoneCall,
+  "email-marketing": Mail,
+  "social-ads": Megaphone,
   "web-design": Palette,
   social: TrendingUp,
 };
@@ -207,8 +313,10 @@ export function Services() {
   const { openContactModal } = useContactModal();
   const [expandedServices, setExpandedServices] = useState<Record<string, boolean>>({
     "web-dev": true,
-    "web-design": false,
-    social: false,
+    "graphic-design": false,
+    "crm-calling": false,
+    "email-marketing": false,
+    "social-ads": false,
   });
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
@@ -216,7 +324,7 @@ export function Services() {
 
   // Merge with fallbackServices to ensure rich detailed properties exist even if database only had brief fields
   const items: ServiceItem[] = rawItems.map((item) => {
-    const fallback = fallbackServices.find((f) => f.id === item.id);
+    const fallback = fallbackServices.find((f) => f.id === item.id) || fallbackServices.find((f) => f.id === "web-dev");
     if (!fallback) return item;
     return {
       ...fallback,
@@ -228,6 +336,7 @@ export function Services() {
       timeline: item.timeline || fallback.timeline,
       idealFor: item.idealFor || fallback.idealFor,
       offYourPlate: item.offYourPlate || fallback.offYourPlate,
+      poster: item.poster || fallback.poster,
     };
   });
 
@@ -240,10 +349,11 @@ export function Services() {
 
   return (
     <section
-      id="capabilities"
+      id="services"
       aria-label="Services"
       className="scroll-mt-24 bg-fill-elevated py-16 sm:py-24"
     >
+      <div id="capabilities" className="relative -top-24" />
       <div className="shell">
         {/* Section Header */}
         <Reveal>
@@ -317,29 +427,53 @@ export function Services() {
                         i % 2 === 1 && "lg:order-2",
                       )}
                     >
-                      <video
-                        src={service.src}
-                        poster={service.poster}
-                        className="absolute inset-0 h-full w-full object-cover"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="metadata"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent" />
-                      <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-paper">
-                        <span className="inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2.5 py-1 text-xs font-medium backdrop-blur-md">
-                          <Icon className="size-3.5 text-blue" />
-                          {service.kicker}
-                        </span>
-                        {service.timeline && (
-                          <span className="inline-flex items-center gap-1 text-xs text-paper/80">
-                            <Clock className="size-3" />
-                            {service.timeline}
-                          </span>
-                        )}
-                      </div>
+                      {service.id === "crm-calling" ? (
+                        <VoipCallingAnimation
+                          poster={
+                            service.poster && service.poster !== "/hero/studio.jpg"
+                              ? service.poster
+                              : "/services/crm-calling.jpg"
+                          }
+                          kicker={service.kicker}
+                          timeline={service.timeline}
+                        />
+                      ) : (
+                        <>
+                          {service.src && service.src.endsWith(".mp4") && service.src !== "/hero/studio.mp4" ? (
+                            <video
+                              src={service.src}
+                              poster={service.poster}
+                              className="absolute inset-0 h-full w-full object-cover"
+                              autoPlay
+                              muted
+                              loop
+                              playsInline
+                              preload="metadata"
+                            />
+                          ) : (
+                            <img
+                              src={service.poster || service.src || "/services/web-development.jpg"}
+                              alt={service.title}
+                              className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 hover:scale-105"
+                              loading="lazy"
+                              referrerPolicy="no-referrer"
+                            />
+                          )}
+                          <div className="absolute inset-0 bg-gradient-to-t from-ink/80 via-transparent to-transparent pointer-events-none" />
+                          <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between text-paper pointer-events-none">
+                            <span className="inline-flex items-center gap-1.5 rounded-md bg-black/60 px-2.5 py-1 text-xs font-medium backdrop-blur-md">
+                              <Icon className="size-3.5 text-blue" />
+                              {service.kicker}
+                            </span>
+                            {service.timeline && (
+                              <span className="inline-flex items-center gap-1 text-xs text-paper/80">
+                                <Clock className="size-3" />
+                                {service.timeline}
+                              </span>
+                            )}
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     {/* Summary & Core Offer */}

@@ -3,22 +3,22 @@ import { Reveal } from "@/components/Reveal";
 
 const items = [
   {
-    href: "#capabilities",
+    href: "#services",
     kicker: "Services",
     title: "Everything built for you.",
-    copy: "Custom web development, UI/UX design, and social media campaigns handled end-to-end by our team.",
+    copy: "Web development, web apps, graphic design, CRMs & calling systems, email marketing, and Meta & Google ad campaigns.",
+  },
+  {
+    href: "#work",
+    kicker: "Projects",
+    title: "Proven client work.",
+    copy: "Explore storefronts, custom web applications, sales calling desks, and paid ad funnels engineered for measurable ROI.",
   },
   {
     href: "#process",
     kicker: "Process",
     title: "Done-for-you delivery.",
-    copy: "From strategy to custom Figma design, clean code, and ad launch — we manage the entire process.",
-  },
-  {
-    href: "#work",
-    kicker: "Results",
-    title: "Websites that convert.",
-    copy: "Fast storefronts, web applications, and marketing funnels engineered to turn visitors into paying clients.",
+    copy: "From discovery and Figma UI design to clean code, CRM telephony integrations, and turnkey campaign launch.",
   },
 ];
 

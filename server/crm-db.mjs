@@ -625,6 +625,7 @@ function seedInitialDataIfEmpty(db) {
         site_url: "https://aetherial.example.com",
         description: "Next-generation design system and cloud interface with real-time collaborative canvas.",
         category: "Web Application & SaaS",
+        image_url: "/work/system.jpg",
         is_published: 1,
       },
       {
@@ -633,6 +634,7 @@ function seedInitialDataIfEmpty(db) {
         site_url: "https://krypton-watches.example.com",
         description: "Bespoke high-contrast e-commerce storefront with 3D product previews and ultra-fast checkout.",
         category: "E-Commerce & Retail",
+        image_url: "/work/storefront.jpg",
         is_published: 1,
       },
       {
@@ -641,12 +643,13 @@ function seedInitialDataIfEmpty(db) {
         site_url: "https://sovereign-capital.example.com",
         description: "Global institutional investment portal featuring investor reports and live portfolio telemetry.",
         category: "Corporate & Finance",
+        image_url: "/work/social.jpg",
         is_published: 1,
       },
     ];
-    const stmt = db.prepare("INSERT INTO projects (title, site_name, site_url, description, category, is_published) VALUES (?, ?, ?, ?, ?, ?)");
+    const stmt = db.prepare("INSERT INTO projects (title, site_name, site_url, description, category, image_url, is_published) VALUES (?, ?, ?, ?, ?, ?, ?)");
     for (const pr of initialProjects) {
-      stmt.run(pr.title, pr.site_name, pr.site_url, pr.description, pr.category, pr.is_published);
+      stmt.run(pr.title, pr.site_name, pr.site_url, pr.description, pr.category, pr.image_url, pr.is_published);
     }
   }
 }

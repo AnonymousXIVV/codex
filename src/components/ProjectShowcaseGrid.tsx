@@ -38,7 +38,15 @@ export function ProjectShowcaseGrid() {
       .then((res) => res.json())
       .then((data) => {
         if (data.ok && Array.isArray(data.projects) && data.projects.length > 0) {
-          const dbProjects: ShowcaseProject[] = data.projects.map((p: CrmProject) => ({
+          const fallbackPool = [
+            "/work/system.jpg",
+            "/work/storefront.jpg",
+            "/work/social.jpg",
+            "/work/ecommerce-storefront.jpg",
+            "/work/crm-telephony.jpg",
+            "/work/developer-portal.jpg",
+          ];
+          const dbProjects: ShowcaseProject[] = data.projects.map((p: CrmProject, idx: number) => ({
             id: `db-${p.id}`,
             title: p.title,
             client: p.site_name || p.title,
@@ -65,7 +73,7 @@ export function ProjectShowcaseGrid() {
               "Sub-second First Contentful Paint",
               "Full accessibility & SEO compliance",
             ],
-            image: p.image_url || "/work/storefront.jpg",
+            image: p.image_url || fallbackPool[idx % fallbackPool.length],
             site_url: p.site_url,
             completionDate: p.created_at ? new Date(p.created_at).getFullYear().toString() : "Recent",
             lighthouse: {
@@ -106,7 +114,14 @@ export function ProjectShowcaseGrid() {
     });
   }, [projects, activeCategory, searchQuery]);
 
-  const categories = ["All", "Web Development", "E-Commerce", "SaaS & Apps", "Web Design"];
+  const categories = [
+    "All",
+    "Websites & Web Apps",
+    "CRMs & Calling Systems",
+    "Graphic Design & Branding",
+    "Meta & Google Ads",
+    "Email Marketing",
+  ];
 
   const featured = filteredProjects[0];
   const gridItems = layoutMode === "bento" ? filteredProjects.slice(1) : filteredProjects;
@@ -117,6 +132,7 @@ export function ProjectShowcaseGrid() {
       aria-label="Project Showcase"
       className="scroll-mt-24 bg-background py-16 sm:py-24"
     >
+      <div id="projects" className="relative -top-24" />
       <div className="shell">
         {/* Section Header with Reveal Animation */}
         <Reveal direction="up" threshold={0.1}>
@@ -124,14 +140,13 @@ export function ProjectShowcaseGrid() {
             <div className="max-w-2xl">
               <div className="inline-flex items-center gap-2 rounded-full border border-hairline bg-muted/60 px-3 py-1 text-[11px] font-medium tracking-[0.2em] text-subtle uppercase">
                 <Sparkles className="size-3 text-blue" />
-                <span>Featured Engineering & Design</span>
+                <span>Client Portfolio & Case Studies</span>
               </div>
               <h2 className="mt-3 text-3xl font-semibold tracking-tight text-label sm:text-5xl">
-                Recent web development projects.
+                Projects we have done for our clients.
               </h2>
               <p className="mt-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
-                High-performance web applications, headless e-commerce systems, and bespoke digital platforms.
-                Engineered for speed, conversion, and enduring craft.
+                Explore our portfolio of delivered client work: custom websites and web applications, bespoke CRMs and calling systems, graphic design and brand systems, high-ROAS Meta & Google ad campaigns, and automated email marketing.
               </p>
             </div>
 

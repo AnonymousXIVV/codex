@@ -59,7 +59,7 @@ export function Studio() {
             className="surface-lift media-zoom group relative block overflow-hidden rounded-xl bg-muted"
           >
             <ImageWithFallback
-              src={config.studio?.image || "/studio/interior.jpg"}
+              src={config.studio?.image || (config.studio?.heroImage !== "/studio/interior.jpg" ? config.studio?.heroImage : undefined) || "/studio/headquarters.jpg"}
               alt={config.studio?.title || "Codex Dynamics studio"}
               className="aspect-[16/8] h-auto w-full object-cover"
             />

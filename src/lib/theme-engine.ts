@@ -6,13 +6,13 @@ export const DEFAULT_THEME_ID = "codex-pro";
 export const DEFAULT_HOME_SEQUENCE = [
   "hero",
   "highlights",
+  "services",
   "portfolio",
   "results",
-  "reviews",
   "about",
-  "services",
   "studio",
   "blog",
+  "reviews",
   "contact",
 ] as const;
 
@@ -239,7 +239,7 @@ export function buildThemeStyle(config: SiteConfig): CSSProperties {
 }
 
 export function hrefToPreviewPage(href: string): PreviewPage {
-  if (href.includes("work") || href.includes("portfolio")) return "work";
+  if (href.includes("work") || href.includes("portfolio") || href.includes("project")) return "work";
   if (href.includes("capabilities") || href.includes("services")) return "services";
   if (href.includes("studio") || href.includes("process") || href.includes("about")) return "studio";
   if (href.includes("insights") || href.includes("blog")) return "blog";
